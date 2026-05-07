@@ -1,0 +1,96 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    title Manager Panel - NYONDO System
+
+    //- Fonts & Icons
+    link(rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css")
+    link(href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet")
+
+    //- Main CSS
+    link(rel="stylesheet" href="/css/pages.css")
+
+  body
+
+    // ================= WRAPPER =================
+    .dashboard-wrapper
+
+      // ================= SIDEBAR =================
+      aside.sidebar
+
+        .brand
+          h2 NYONDO MANAGER
+
+        ul.nav-links
+
+          // ================= DASHBOARD =================
+          li
+            a(href="/store")
+              i.fa-solid.fa-gauge
+              span Dashboard
+
+          // ================= STOCK MODULE =================
+          li
+            a(href="/store/inventory")
+              i.fa-solid.fa-boxes-stacked
+              span Stock List
+
+          li
+            a(href="/store/stock-details")
+              i.fa-solid.fa-circle-info
+              span Stock Details
+
+          // ================= SUPPLIERS =================
+          li
+            a(href="/store/suppliers")
+              i.fa-solid.fa-truck-field
+              span Suppliers
+
+          li
+            a(href="/store/add-suppliers")
+              i.fa-solid.fa-user-plus
+              span Add Supplier
+
+          // ================= CREDIT (IMPORTANT BUSINESS MODULE) =================
+          li
+            a(href="/store/credits")
+              i.fa-solid.fa-money-bill-trend-up
+              span Supplier Credit
+
+          li
+            a(href="/store/credit-payments")
+              i.fa-solid.fa-hand-holding-dollar
+              span Credit Payments
+
+          // ================= REPORTS (MANAGER VIEW) =================
+          li
+            a(href="/store/reports")
+              i.fa-solid.fa-chart-line
+              span Reports
+
+          // ================= LOGOUT =================
+          li
+            a(href="/")
+              i.fa-solid.fa-right-from-bracket
+              span Logout
+
+      // ================= MAIN CONTENT =================
+      main.main-content
+
+        // ================= TOPBAR =================
+        header.topbar
+
+          .left
+            h3 Store Manager Panel
+
+          .right
+            .user-info
+              i.fa-solid.fa-user-tie
+              span Store Manager
+
+        // ================= PAGE CONTENT =================
+        section.content
+
+          block content

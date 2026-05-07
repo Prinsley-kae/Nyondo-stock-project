@@ -1,0 +1,66 @@
+doctype html
+html
+  head
+    meta(charset='UTF-8')
+    meta(name='viewport' content='width=device-width, initial-scale=1.0')
+    title NYONDO Stock System
+
+    // Font Awesome
+    link(rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css')
+
+    // Google Font
+    link(href='https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap' rel='stylesheet')
+
+    // CSS
+    link(rel='stylesheet' href='/css/style.css')
+
+  body
+
+    // HERO SECTION
+    .hero
+      .hero-content
+
+        // LOGO SECTION
+        .logo-container
+          img.logo(src='/Images/logo.png' alt='NYONDO Logo')
+
+        h1 NYONDO STOCK SYSTEM
+        p Smart Hardware Inventory, Sales, Credit & Deposit Management System
+
+        .hero-buttons
+          a.btn.primary(href='/login')
+            i.fa-solid.fa-right-to-bracket
+            |  Login
+
+          a.btn.secondary(href='/signup')
+            i.fa-solid.fa-user-plus
+            |  Create Account
+
+    // FEATURES SECTION
+    .features
+      .feature-card
+        i.fa-solid.fa-box
+        h3 Stock Tracking
+        p Monitor and manage hardware inventory in real time
+
+      .feature-card
+        i.fa-solid.fa-cart-shopping
+        h3 Sales Management
+        p Record sales and automatically generate receipts
+
+      .feature-card
+        i.fa-solid.fa-hand-holding-dollar
+        h3 Credit & Deposits
+        p Track supplier credit and customer deposit schemes
+
+      .feature-card
+        i.fa-solid.fa-truck
+        h3 Transport Management
+        p Calculate delivery charges automatically
+
+    // FOOTER
+    footer
+      p © 2026 NYONDO General Hardware LTD. All rights reserved.
+      p 
+        i.fa-solid.fa-location-dot
+        |  Nansana, Uganda

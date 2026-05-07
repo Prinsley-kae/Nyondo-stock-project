@@ -1,0 +1,88 @@
+extends stock-layout
+
+block content
+
+  // ================= PAGE HEADER =================
+  .page-header
+    h2 Edit Stock Item
+    p Update product details, pricing, and quantity
+
+  // ================= EDIT FORM =================
+  form(method="POST" action=`/manager/stock/edit/${stock._id}`)
+
+    // ================= PRODUCT NAME =================
+    .form-group
+      label Product Name
+      input(
+        type="text"
+        name="productName"
+        value=stock.productName
+        required
+      )
+
+    // ================= CATEGORY =================
+    .form-group
+      label Category
+      select(name="category" required)
+        option(value="cement" selected=stock.category=="cement") Cement
+        option(value="iron-bars" selected=stock.category=="iron-bars") Iron Bars
+        option(value="nails" selected=stock.category=="nails") Nails
+        option(value="iron-sheets" selected=stock.category=="iron-sheets") Iron Sheets
+        option(value="wire-mesh" selected=stock.category=="wire-mesh") Wire Mesh
+        option(value="barbed-wire" selected=stock.category=="barbed-wire") Barbed Wire
+        option(value="wheelbarrow" selected=stock.category=="wheelbarrow") Wheelbarrow
+        option(value="other" selected=stock.category=="other") Other
+
+    // ================= QUANTITY =================
+    .form-group
+      label Quantity
+      input(
+        type="number"
+        name="quantity"
+        min="0"
+        value=stock.quantity
+        required
+      )
+
+    // ================= PRICING =================
+    .form-group
+      label Unit Cost (UGX)
+      input(
+        type="number"
+        name="unitCost"
+        min="0"
+        value=stock.unitCost
+        required
+      )
+
+    .form-group
+      label Unit Selling Price (UGX)
+      input(
+        type="number"
+        name="unitPrice"
+        min="0"
+        value=stock.unitPrice
+        required
+      )
+
+    // ================= SUPPLIER =================
+    .form-group
+      label Supplier Name
+      input(
+        type="text"
+        name="supplierName"
+        value=stock.supplierName
+      )
+
+    .form-group
+      label Supplier Phone
+      input(
+        type="text"
+        name="supplierPhone"
+        value=stock.supplierPhone
+      )
+
+    // ================= SUBMIT =================
+    button.btn(type="submit")
+      i.fa-solid.fa-floppy-disk
+      |  Update Stock

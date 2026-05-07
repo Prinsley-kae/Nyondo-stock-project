@@ -1,0 +1,59 @@
+extends admin-layout
+
+block content
+
+  // ================= PAGE HEADER =================
+  .page-header
+    h2 User Management
+    p Create and manage system users and their roles
+
+  // ================= ACTION BAR =================
+  .action-bar
+    a.btn(href="/admin/users/add")
+      i.fa-solid.fa-user-plus
+      |  Add New User
+
+  // ================= USERS TABLE =================
+  .table-container
+
+    table
+      thead
+        tr
+          th Name
+          th Email
+          th Role
+          th Status
+          th Actions
+
+      tbody
+        if users && users.length
+          each user in users
+            tr
+
+              td= user.name
+              td= user.email
+              td= user.role
+
+              // ================= STATUS =================
+              td
+                if user.isActive
+                  span.badge.good Active
+                else
+                  span.badge.low Disabled
+
+              // ================= ACTIONS =================
+              td
+                a.btn.small(href=`/admin/users/${user._id}`)
+                  i.fa-solid.fa-eye
+                  | View
+
+                a.btn.small.secondary(href=`/admin/users/edit/${user._id}`)
+                  i.fa-solid.fa-pen
+                  | Edit
+
+                a.btn.small.danger(href=`/admin/users/delete/${user._id}`)
+                  i.fa-solid.fa-trash
+                  | Delete
+        else
+          tr
+            td(colspan="5") No users found

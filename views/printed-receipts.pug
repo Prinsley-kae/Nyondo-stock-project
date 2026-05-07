@@ -1,0 +1,90 @@
+extends sales-layout
+
+block content
+
+  // ================= PAGE HEADER =================
+  .page-header
+    h2 Printed Receipts
+    p.subtitle List of all generated receipts
+
+  // ================= SEARCH BAR =================
+  .filter-bar(style="display:flex; gap:10px; margin-bottom:20px;")
+
+    input#searchInput(
+      type="text"
+      placeholder="Search receipts by customer, item, or ID..."
+      style="width:700px; height:50px; "
+    )
+
+    button.btn(type="button" onclick="window.print()")
+      i.fa-solid.fa-print
+      |  Print Page
+
+  // ================= TABLE =================
+  .table-section
+
+    .table-container
+      table
+        thead
+          tr
+            th No.
+            th Receipt ID
+            th Date
+            th Customer Name
+            th Item Name
+            th Quantity
+            th Total (UGX)
+            th Attendant
+            th Action
+
+        tbody
+          if sales && sales.length
+
+            each sale, i in sales
+              tr
+
+                td= i + 1
+
+                td
+                  | #{sale._id.toString().slice(-6)}
+
+                td
+                  | #{new Date(sale.date || sale.createdAt).toLocaleString()}
+
+                td= sale.customerName || 'Walk-in'
+
+                td
+                  if sale.itemName && sale.itemName.itemName
+                    | #{sale.itemName.itemName}
+                  else
+                    | Deleted Item
+
+                td= sale.quantity
+
+                td
+                  | #{sale.finalTotal ? sale.finalTotal.toLocaleString() : 0}
+
+                td
+                  | #{sale.attendant ? sale.attendant.fullname : 'N/A'}
+
+                td.actions
+                  a.icon-btn.view(href=`/sales/receipts/${sale._id}`)
+                    i.fa-solid.fa-eye
+                        view
+          else
+            tr
+              td(colspan="9") No receipts found
+
+
+  // ================= SEARCH SCRIPT =================
+  script.
+    const searchInput = document.getElementById('searchInput');
+
+    searchInput.addEventListener('keyup', function () {
+      const value = this.value.toLowerCase();
+      const rows = document.querySelectorAll("table tbody tr");
+
+      rows.forEach(row => {
+        row.style.display = row.innerText.toLowerCase().includes(value) ? "" : "none";
+      });
+    });

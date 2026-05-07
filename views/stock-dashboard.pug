@@ -1,0 +1,68 @@
+extends stock-layout
+
+block content
+
+  // ================= PAGE HEADER =================
+  .page-header
+    h2 Store Manager Dashboard
+    p Overview of stock, pricing, and supplier activity
+
+  // ================= SUMMARY CARDS =================
+  .stats-grid
+
+    .card
+      i.fa-solid.fa-boxes-stacked
+      .info
+        h3 Total Stock Items
+        p 0
+
+    .card
+      i.fa-solid.fa-triangle-exclamation
+      .info
+        h3 Low Stock Alerts
+        p 0
+
+    .card
+      i.fa-solid.fa-coins
+      .info
+        h3 Inventory Value
+        p UGX #{stats.inventoryValue.toLocaleString()}
+
+    .card
+      i.fa-solid.fa-truck-field
+      .info
+        h3 Suppliers
+        p 0
+
+  // ================= QUICK ACTIONS =================
+  .quick-actions
+    h3 Quick Actions
+
+    .action-buttons
+
+      a.btn(href="/store/add-stock")
+        i.fa-solid.fa-plus
+        |  Add Stock
+
+      a.btn.secondary(href="/store/inventory")
+        i.fa-solid.fa-boxes-stacked
+        |  View Stock
+
+      a.btn.secondary(href="/store/supplier-credits")
+        i.fa-solid.fa-tags
+        |  view credits
+
+  // ================= LOW STOCK SECTION =================
+  .recent-section
+    h3 Low Stock Items
+
+    table
+      thead
+        tr
+          th Product
+          th Remaining Stock
+          th Status
+
+      tbody
+        tr
+          td(colspan="3") No low stock alerts

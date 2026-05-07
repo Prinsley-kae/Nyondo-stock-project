@@ -1,0 +1,57 @@
+extends sales-layout
+
+block content
+
+  main.content
+
+    .page-header
+      h2 Edit Sale
+      p.subtitle Update transaction details
+
+    .form-section
+      form#salesForm(action=`/sales/add-sale/edit/${sale._id}` method='post')
+
+        .form-grid
+
+          .input-group
+            label Item Name
+            select(name='itemId' required)
+              option(value='') Select Item
+              each item in items
+                option(
+                  value=item._id
+                  selected=(sale.itemName && sale.itemName._id
+                    ? sale.itemName._id.toString() == item._id.toString()
+                    : false)
+                )
+                  | #{item.itemName} (#{item.quantity} | #{item.sellingPrice} UGX)
+
+          .input-group
+            label Customer Name
+            input(type='text' name='customerName' value=sale.customerName required)
+
+          .input-group
+            label Customer Address
+            input(type='text' name='customerAddress' value=sale.customerAddress required)
+
+          .input-group
+            label Phone Number
+            input(type='tel' name='phoneNumber' value=sale.phoneNumber required)
+
+          .input-group
+            label Quantity
+            input(type='number' min='1' name='quantity' value=sale.quantity required)
+
+          .input-group
+            label Unit Price
+            input(type='number' min='1' name='unitPrice' value=sale.unitPrice required)
+
+        .button-group
+          button.btn.primary(type='submit') Update Sale
+          button.btn.primary(type='button' onclick='clearForm()') Reset
+
+  // ================= SCRIPT =================
+  script.
+    function clearForm() {
+      document.getElementById('salesForm').reset();
+    }

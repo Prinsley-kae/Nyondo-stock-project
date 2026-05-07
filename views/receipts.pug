@@ -1,0 +1,121 @@
+extends sales-layout
+
+block content
+
+  .receipt-container
+
+    // ================= HEADER =================
+    .receipt-header
+
+      img.logo(src="/Images/logo.png" alt="Company Logo")
+
+      h2 NYONDO GENERAL HARDWARE LTD
+      p Nansana Branch
+      p Receipt for Goods Purchased
+
+    hr
+
+    // ================= RECEIPT INFO =================
+    .receipt-info
+
+      p
+        strong Receipt ID:
+        |  #{sale._id.toString().slice(-6).toUpperCase()}
+
+      p
+        strong Date:
+        |  #{new Date(sale.date).toLocaleString()}
+
+      p
+        strong Customer:
+        |  #{sale.customerName}
+
+      p
+        strong Phone:
+        |  #{sale.phoneNumber}
+
+      p
+        strong Address:
+        |  #{sale.customerAddress}
+
+      p
+        strong Distance:
+        |  #{sale.distance} KM
+
+      p
+        strong Attendant:
+        |  #{sale.attendant ? sale.attendant.username : 'N/A'}
+
+    hr
+
+    // ================= ITEMS TABLE =================
+    table.receipt-table
+
+      thead
+        tr
+          th Item
+          th Quantity
+          th Unit Price
+          th Total
+
+      tbody
+
+        if sale.items && sale.items.length
+
+          each i in sale.items
+
+            tr
+
+              td
+                | #{i.item ? i.item.itemName : 'Deleted Item'}
+
+              td
+                | #{i.quantity}
+
+              td
+                | UGX #{i.unitPrice.toLocaleString()}
+
+              td
+                | UGX #{i.itemTotal.toLocaleString()}
+
+        else
+
+          tr
+            td(colspan="4")
+              | No items found
+
+    hr
+
+    // ================= SUMMARY =================
+    .receipt-summary
+
+      p
+        strong Subtotal:
+        |  UGX #{sale.subtotal.toLocaleString()}
+
+      p
+        strong Transport:
+        |  UGX #{sale.transportFee.toLocaleString()}
+
+      p.total
+        strong Grand Total:
+        |  UGX #{sale.finalTotal.toLocaleString()}
+
+    hr
+
+    // ================= FOOTER =================
+    .receipt-footer
+
+      p Thank you for shopping with NYONDO GENERAL HARDWARE LTD
+      p Terms: Goods once sold are not returnable
+
+    // ================= ACTIONS =================
+    .receipt-actions
+
+      button.btn.primary(onclick="window.print()")
+        i.fa-solid.fa-print
+        |  Print Receipt
+
+      a.btn.secondary(href="/sales/add-sale")
+        i.fa-solid.fa-plus
+        |  New Sale

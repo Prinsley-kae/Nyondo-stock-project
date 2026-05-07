@@ -1,0 +1,114 @@
+extends sales-layout
+
+block content
+
+  main.content
+
+    .page-header
+      h2 Add New Sale
+      p.subtitle Record multiple items in one transaction
+
+    .form-section
+
+      form#salesForm(method="post" action="/sales/add-sale")
+
+        h3 Select Items
+
+        .items-container
+
+          // ITEM 1
+          .item-row(style="display:flex; gap:10px; margin-bottom:15px;")
+            select(name="items[0][item]" required)
+              option(value="") -- Select Item --
+              each item in items
+                option(value=item._id)
+                  | #{item.itemName} (#{item.sellingPrice} UGX)
+
+            input(
+              type="number"
+              name="items[0][quantity]"
+              placeholder="Quantity"
+              min="1"
+              required
+            )
+
+          // ITEM 2
+          .item-row(style="display:flex; gap:10px; margin-bottom:15px;")
+            select(name="items[1][item]")
+              option(value="") -- Optional Item --
+              each item in items
+                option(value=item._id)
+                  | #{item.itemName} (#{item.sellingPrice} UGX)
+
+            input(
+              type="number"
+              name="items[1][quantity]"
+              placeholder="Quantity"
+              min="1"
+            )
+
+          // ITEM 3
+          .item-row(style="display:flex; gap:10px; margin-bottom:15px;")
+            select(name="items[2][item]")
+              option(value="") -- Optional Item --
+              each item in items
+                option(value=item._id)
+                  | #{item.itemName} (#{item.sellingPrice} UGX)
+
+            input(
+              type="number"
+              name="items[2][quantity]"
+              placeholder="Quantity"
+              min="1"
+            )
+
+        hr
+
+        .form-grid
+
+          .input-group
+            label Customer Name
+            input(
+              type="text"
+              name="customerName"
+              placeholder="Walk-in Customer"
+              required
+            )
+
+          .input-group
+            label Phone Number
+            input(
+              type="text"
+              name="phoneNumber"
+              placeholder="0700000000"
+              required
+            )
+
+          .input-group
+            label Customer Address
+            input(
+              type="text"
+              name="customerAddress"
+              placeholder="Customer Address"
+              required
+            )
+
+          .input-group
+            label Distance (KM)
+            input(
+              type="number"
+              name="distance"
+              placeholder="0"
+              min="0"
+              required
+            )
+
+        .button-group
+
+          button.btn.primary(type="submit")
+            i.fa-solid.fa-cart-plus
+            |  Complete Sale
+
+          button.btn.secondary(type="reset")
+            i.fa-solid.fa-rotate-left
+            |  Clear Form

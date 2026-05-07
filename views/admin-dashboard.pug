@@ -1,0 +1,77 @@
+extends admin-layout
+
+block content
+
+  // ================= PAGE HEADER =================
+  .page-header
+    h2 Admin Dashboard
+    p System overview: sales, stock, suppliers, and credit status
+
+  // ================= KPI CARDS =================
+  .stats-grid
+
+    .card
+      i.fa-solid.fa-coins
+      .info
+        h3 Sales Revenue
+        p UGX #{stats.salesRevenue.toLocaleString()}
+
+    .card
+      i.fa-solid.fa-boxes-stacked
+      .info
+        h3 Stock Expenditure
+        p UGX #{stats.inventoryValue.toLocaleString()}
+
+    .card
+      i.fa-solid.fa-truck-field
+      .info
+        h3 Suppliers
+        p #{supplierCount || 0}
+
+    .card
+      i.fa-solid.fa-money-bill-trend-up
+      .info
+        h3 Outstanding Credit
+        p UGX #{totalCredit || 0}
+
+  // ================= SYSTEM SUMMARY =================
+  .summary-section
+
+    h3 System Overview
+
+    .summary-grid
+
+      .summary-card
+        h4 Sales Performance
+        p Total transactions processed across all attendants.
+
+      .summary-card
+        h4 Inventory Status
+        p Current stock levels and product availability.
+
+      .summary-card
+        h4 Supplier Activity
+        p Credit purchases and payment tracking.
+
+  // ================= QUICK NAVIGATION =================
+  .quick-actions
+
+    h3 Quick Actions
+
+    .action-buttons
+
+      a.btn.secondary(href="/admin/users")
+        i.fa-solid.fa-users
+        | Manage Users
+
+      a.btn.secondary(href="/admin/sales-report")
+        i.fa-solid.fa-chart-line
+        | Sales Report
+
+      a.btn.secondary(href="/admin/stock-report")
+        i.fa-solid.fa-boxes-stacked
+        | Stock Report
+
+      a.btn.secondary(href="/admin/credit-report")
+        i.fa-solid.fa-money-bill
+        | Credit Report

@@ -1,0 +1,69 @@
+extends sales-layout
+
+block content
+
+  // ================= PAGE HEADER =================
+  .page-header
+    h2 Sales Dashboard
+    p Welcome back. Here is your sales summary.
+
+  // ================= STATS CARDS =================
+  .stats-grid
+
+    .card
+      i.fa-solid.fa-cart-shopping
+      .info
+        h3 Today's Sales
+        p 0
+
+    .card
+      i.fa-solid.fa-money-bill-wave
+      .info
+        h3 Total Revenue
+        p UGX 0
+
+    .card
+      i.fa-solid.fa-receipt
+      .info
+        h3 Transactions
+        p 0
+
+    .card
+      i.fa-solid.fa-boxes-stacked
+      .info
+        h3 Stock Items
+        p 0
+
+  // ================= QUICK ACTIONS =================
+  .quick-actions
+    h3 Quick Actions
+
+    .action-buttons
+      a.btn.secondary(href="/sales/add-sale")
+        i.fa-solid.fa-plus
+        |  Add Sale
+
+      a.btn.secondary(href="/sales/receipts")
+        i.fa-solid.fa-receipt
+        |  View Receipts
+
+      a.btn.secondary(href="/store/inventory")
+        i.fa-solid.fa-boxes-stacked
+        |  Check Stock
+
+  // ================= RECENT SALES =================
+  .recent-section
+    h3 Recent Sales
+
+    table
+      thead
+        tr
+          th Customer
+          th Product
+          th Quantity
+          th Total
+          th Transport
+
+      tbody
+        tr
+          td(colspan="5") No sales recorded yet

@@ -1,0 +1,86 @@
+extends stock-layout
+
+block content
+
+  main.content
+
+    // ================= PAGE HEADER =================
+    .page-header
+      h2 Add New Stock
+      p.subtitle Record newly received stock items
+
+    // ================= FORM =================
+    .form-container
+      form(method="POST" action="/store/add-stock" enctype="multipart/form-data")
+
+        .form-grid
+
+          // ========= ITEM NAME =========
+          .form-group
+            label(for="itemName") Item Name
+
+            select#itemName(name="itemName" required)
+              option(value="" disabled selected) -- Select Item --
+
+              option(value="Cement iiN") Cement iiN
+              option(value="Cement iiiN") Cement iiiN
+              option(value="Iron Sheets") Iron Sheets
+              option(value="Nails inc 1") Nails inc 1
+              option(value="Nails inc 3") Nails inc 3
+              option(value="Nails inc 4") Nails inc 4
+              option(value="Nails inc 5") Nails inc 5
+              option(value="Iron bars 10mm") Iron bars 10mm
+              option(value="Iron bars 12mm") Iron bars 12mm
+              option(value="Iron bars 16mm") Iron bars 16mm
+              option(value="Gauges") Gauges
+              option(value="Wire mesh") Wire mesh
+              option(value="Wheel barrows") Wheel barrows
+              option(value="High tensile barbed wire") High tensile barbed wire
+              option(value="Low tensile barbed wire") Low tensile barbed wire
+
+          // ========= QUANTITY =========
+          .form-group
+            label(for="quantity") Quantity Received
+            input#quantity(type="number" name="quantity")
+
+          // ========= BUYING PRICE =========
+          .form-group
+            label(for="buyingPrice") Buying Price (UGX)
+            input#buyingPrice(type="number" name="buyingPrice")
+
+          // ========= SELLING PRICE =========
+          .form-group
+            label(for="sellingPrice") Selling Price (UGX)
+            input#sellingPrice(type="number" name="sellingPrice")
+
+          // ========= SUPPLIER =========
+          .form-group
+            label(for="supplierName") Supplier Name
+            input#supplierName(type="text" name="supplierName" )
+
+          .form-group
+            label(for="supplierContact") Supplier Contact
+            input#supplierContact(type="text" name="supplierContact")
+
+          .form-group
+            label(for="factoryName") Factory/Company Name
+            input#factoryName(type="text" name="factoryName")
+
+
+          // ========= PAYMENT METHOD =========
+          .form-group
+            label(for="paymentMethod") Payment Method
+            select#paymentMethod(name="paymentMethod" )
+              option(value="credit") Credit
+              option(value="cash_at_hand") Cash at hand
+
+          // ========= IMAGE =========
+          .form-group
+            label(for="itemImage") Item Image
+            input#itemImage(type="file" name="itemImage")
+
+        // ========= ACTIONS =========
+        .form-actions
+          button.btn(type="submit")
+            i.fa-solid.fa-plus
+            |  Save Stock

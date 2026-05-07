@@ -1,0 +1,89 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    title Admin Panel - NYONDO System
+
+    //- Fonts & Icons
+    link(rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css")
+    link(href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet")
+
+    //- Main CSS
+    link(rel="stylesheet" href="/css/pages.css")
+
+  body
+
+    // ================= WRAPPER =================
+    .dashboard-wrapper
+
+      // ================= SIDEBAR =================
+      aside.sidebar
+
+        .brand
+          h2 NYONDO HARDWARE
+          p ADMIN PANEL
+
+        ul.nav-links
+
+          li
+            a(href="/admin")
+              i.fa-solid.fa-gauge
+              span Dashboard
+
+          // ================= USER MANAGEMENT =================
+          li
+            a(href="/admin/users")
+              i.fa-solid.fa-users
+              span Users
+
+          // ================= REPORTS =================
+          li
+            a(href="/admin/reports")
+              i.fa-solid.fa-chart-pie
+              span Reports
+
+          li
+            a(href="/admin/deposits")
+              i.fa-solid.fa-chart-pie
+              span Customer deposits
+
+          li
+            a(href="/admin/deposit-details")
+              i.fa-solid.fa-chart-pie
+              span Deposit details
+
+          li
+            a(href="/admin/transport-rules")
+              i.fa-solid.fa-truck
+              span Transport Rules
+            
+          li
+            a(href="/admin/settings")
+              i.fa-solid.fa-gear
+              span Settings
+
+          // ================= AUTH =================
+          li
+            a(href="/")
+              i.fa-solid.fa-right-from-bracket
+              span Logout
+
+      // ================= MAIN CONTENT =================
+      main.main-content
+
+        // ================= TOPBAR =================
+        header.topbar
+
+          .left
+            h3 System Administrator Panel
+
+          .right
+            .user-info
+              i.fa-solid.fa-user-shield
+              span Admin
+
+        // ================= PAGE CONTENT =================
+        section.content
+
+          block content

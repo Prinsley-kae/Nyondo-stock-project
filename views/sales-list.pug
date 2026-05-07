@@ -1,0 +1,80 @@
+extends sales-layout
+
+block content
+  // ================= PAGE HEADER =================
+  .page-header.flex-between
+    div
+      h2 Recent Sales Transactions
+      p View and manage your daily sales records
+    a.btn.btn-secondary(href="/sales/add-sale")
+      i.fa-solid.fa-plus
+      |  New Sale
+
+  // ================= SALES TABLE =================
+  .table-container
+    table.sales-table
+      thead
+        tr
+          th No.
+          th Date
+          th Item Name
+          th Customer Name
+          th Quantity
+          th Unit Price
+          th Total Amount
+          th Transport Fee
+          th Final Total
+          th Actions
+
+      tbody
+        if sales && sales.length
+          each sale in sales
+            tr
+              // DATE
+              td #{new Date(sale.date || sale.createdAt).toLocaleDateString()}
+
+              // ITEM NAME (populated from Stock)
+              td
+                if sale.itemName && sale.itemName.itemName
+                  | #{sale.itemName.itemName}
+                else
+                  span.text-muted Deleted Item
+
+              // QUANTITY
+              td #{sale.quantity}
+
+              // UNIT PRICE
+              td  #{sale.unitPrice ? sale.unitPrice.toLocaleString() : 0}
+
+              // TOTAL
+              td  #{sale.total ? sale.total.toLocaleString() : 0}
+
+              // TRANSPORT FEE
+              td  #{sale.transportFee ? sale.transportFee.toLocaleString() : 0}
+
+              // FINAL TOTAL
+              td  #{sale.finalTotal ? sale.finalTotal.toLocaleString() : 0}
+
+              // CUSTOMER INFO
+              td
+                if sale.customerName
+                  | #{sale.customerName}
+                  br
+                  small.text-muted #{sale.phoneNumber || 'No Phone'}
+                else
+                  span.text-muted Walk-in
+
+              // ACTIONS
+              td
+                .action-btns
+                  a.btn-icon(href=`/sales/add-sale/edit/${sale._id}` title="Edit Sale")
+                    i.fa-solid.fa-pen-to-square
+
+                  a.btn-icon.text-danger(
+                    href=`/sales/add-sale/delete/${sale._id}`
+                    onclick="return confirm('Delete this sale? Stock will be restored.')"
+                  )
+                    i.fa-solid.fa-trash
+        else
+          tr
+            td.text-center(colspan="9") No sales found in the system.

@@ -1,0 +1,81 @@
+extends admin-layout
+
+block content
+
+  // ================= PAGE HEADER =================
+  .page-header
+    h2 Transport Rules Management
+    p Configure delivery charges and free transport conditions
+
+  // ================= CURRENT RULES CARD =================
+  .settings-card
+
+    h3 Current Transport Policy
+
+    p
+      strong Free Delivery Radius:
+      |  #{rules.freeRadius || 10} km
+
+    p
+      strong Minimum Order for Free Delivery:
+      | UGX #{rules.minOrder || 500000}
+
+    p
+      strong Standard Delivery Fee:
+      | UGX #{rules.deliveryFee || 30000}
+
+  // ================= UPDATE FORM =================
+  .settings-card
+
+    h3 Update Transport Rules
+
+    form(method="POST" action="/admin/transport-rules/update")
+
+      // ================= FREE RADIUS =================
+      .form-group
+        label Free Delivery Radius (KM)
+        input(
+          type="number"
+          name="freeRadius"
+          min="0"
+          value=rules.freeRadius
+          required
+        )
+
+      // ================= MIN ORDER =================
+      .form-group
+        label Minimum Order for Free Delivery (UGX)
+        input(
+          type="number"
+          name="minOrder"
+          min="0"
+          value=rules.minOrder
+          required
+        )
+
+      // ================= DELIVERY FEE =================
+      .form-group
+        label Standard Delivery Fee (UGX)
+        input(
+          type="number"
+          name="deliveryFee"
+          min="0"
+          value=rules.deliveryFee
+          required
+        )
+
+      // ================= SUBMIT =================
+      button.btn(type="submit")
+        i.fa-solid.fa-truck
+        | Update Transport Rules
+
+  // ================= INFO SECTION =================
+  .settings-card
+
+    h3 How Transport Works in NYONDO System
+
+    ul
+      li Customers within free radius AND order above minimum qualify for free delivery
+      li Otherwise, standard delivery fee is applied
+      li Attendants must calculate transport during sales entry
+      li Manager/Admin can update rules anytime

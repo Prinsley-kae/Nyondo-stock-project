@@ -1,0 +1,176 @@
+extends stock-layout
+
+block content
+
+  // ================= PAGE HEADER =================
+  .page-header
+    h2 Inventory & Supplier Credits
+    p Manage stock and supplier credit in one place
+
+
+  // ================= FILTER + REPORT =================
+  .filter-bar(style="display:flex; gap:10px; margin-bottom:20px;")
+
+    .search-box(style="position:relative; flex:1;")
+
+      i.fa-solid.fa-magnifying-glass(style="position:absolute; left:10px; top:50%; transform:translateY(-50%); color:#888;")
+
+      input#searchInput(
+        type="text"
+        placeholder="Search stock or credit records..."
+        style="width:100%; padding:8px 8px 8px 30px;"
+      )
+
+    button.btn(type="button" onclick="window.print()")
+      i.fa-solid.fa-print
+      |  Generate Report
+
+
+  // =========================================================
+  // ================= STOCK TABLE =================
+  // =========================================================
+  .table-section
+    h3 Stock Inventory
+
+    .table-container
+      table
+        thead
+          tr
+            th No.
+            th Date
+            th Item Name
+            th Image
+            th Quantity
+            th Buying Price
+            th Selling Price
+            th Total Value
+            th Status
+            th Actions
+
+        tbody
+          if stocks && stocks.length
+            each stock, i in stocks
+              - const d = new Date(stock.createdAt || stock.deliveryDate)
+
+              tr
+
+                td= i + 1
+
+                td
+                  | #{d.toLocaleDateString()}
+                  br
+                  small.text-muted #{d.toLocaleTimeString()}
+
+                td= stock.itemName || 'N/A'
+
+                td
+                  if stock.itemImage
+                    img(src=`/${stock.itemImage}` width="40" height="40")
+                  else
+                    span No Image
+
+                td= stock.quantity || 0
+
+                td UGX #{stock.buyingPrice ? stock.buyingPrice.toLocaleString() : 0}
+
+                td UGX #{stock.sellingPrice ? stock.sellingPrice.toLocaleString() : 0}
+
+                td UGX #{stock.totalValue ? stock.totalValue.toLocaleString() : 0}
+
+                td
+                  if stock.quantity == 0
+                    span.badge.out Out of stock
+                  else if stock.quantity <= 10
+                    span.badge.low Low stock
+                  else
+                    span.badge.good In stock
+
+                // ================= ACTIONS =================
+                td.actions
+                  a.icon-btn.edit(href=`/store/inventory/edit/${stock._id}`)
+                    i.fa-solid.fa-pen
+
+                  form(action=`/store/inventory/delete/${stock._id}` method="POST" style="display:inline")
+                    button.icon-btn.delete(type="submit" onclick="return confirm('Delete this stock?')")
+                      i.fa-solid.fa-trash
+
+          else
+            tr
+              td(colspan="10") No stock available
+
+
+  // =========================================================
+  // ================= SUPPLIER CREDIT TABLE =================
+  // =========================================================
+  .table-section(style="margin-top:40px;")
+    h3 Supplier Credit Records
+
+    .table-container
+      table
+        thead
+          tr
+            th No.
+            th Date
+            th Supplier Name
+            th Supplier Contact
+            th Item Supplied
+            th Amount Owed
+            th Payment Method
+            th Status
+            th Actions
+
+        tbody
+          if credits && credits.length
+            each credit, i in credits
+              - const d = new Date(credit.date)
+
+              tr
+                td= i + 1
+
+                td
+                  | #{d.toLocaleDateString()}
+                  br
+                  small.text-muted #{d.toLocaleTimeString()}
+
+                td= credit.supplierName || 'N/A'
+
+                td= credit.supplierContact || 'N/A'
+
+                td= credit.itemSupplied || 'N/A'
+
+                td UGX #{credit.amount ? credit.amount.toLocaleString() : 0}
+
+                td= credit.paymentMethod
+
+                td
+                  if credit.amount > 0
+                    span.badge.out Unpaid
+                  else
+                    span.badge.good Paid
+
+                // ================= ACTIONS =================
+                td.actions
+                  a.icon-btn.edit(href=`/store/inventory/edit/${credit._id}`)
+                    i.fa-solid.fa-pen
+
+                  form(action=`/store/inventory/delete/${credit._id}` method="POST" style="display:inline")
+                    button.icon-btn.delete(type="submit" onclick="return confirm('Delete this record?')")
+                      i.fa-solid.fa-trash
+
+          else
+            tr
+              td(colspan="9") No credit records found
+
+
+  // ================= SEARCH SCRIPT =================
+  script.
+    const searchInput = document.getElementById('searchInput');
+
+    searchInput.addEventListener('keyup', function () {
+      const value = this.value.toLowerCase();
+      const rows = document.querySelectorAll("table tbody tr");
+
+      rows.forEach(row => {
+        row.style.display = row.innerText.toLowerCase().includes(value) ? "" : "none";
+      });
+    });

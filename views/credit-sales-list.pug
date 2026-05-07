@@ -1,0 +1,160 @@
+extends admin-layout
+
+block content
+
+  // ================= PAGE HEADER =================
+  .page-header
+    h2 Customer Deposits
+    p View and manage all customer deposit transactions
+
+  // ================= TOP ACTION BAR =================
+  .action-bar
+
+    // SEARCH BOX
+    .search-box
+      i.fa-solid.fa-magnifying-glass
+      input#searchInput(
+        type="text"
+        placeholder="Search customer, phone or receipt..."
+      )
+
+    // ACTION BUTTONS
+    .action-buttons
+      button.btn(type="button" onclick="window.print()")
+        i.fa-solid.fa-print
+        |  Generate Report
+
+      a.btn.btn-primary(href="/admin/deposits")
+        i.fa-solid.fa-plus
+        |  New Deposit
+
+  // ================= DEPOSITS TABLE =================
+  .table-container
+    table.deposit-table
+
+      thead
+        tr
+          th No.
+          th Receipt ID
+          th Customer Name
+          th Phone Number
+          th Item
+          th Deposit Amount
+          th Balance
+          th Payment Method
+          th Date
+          th Status
+          th Actions
+
+      tbody
+
+        if deposits && deposits.length
+
+          each deposit, i in deposits
+
+            - const d = new Date(deposit.createdAt || deposit.date)
+
+            tr
+
+              // ================= NUMBER =================
+              td= i + 1
+
+              // ================= RECEIPT =================
+              td
+                span.receipt-id
+                  | ##{deposit._id.toString().slice(-6)}
+
+              // ================= CUSTOMER =================
+              td= deposit.customerName || 'Walk-in'
+
+              // ================= PHONE =================
+              td= deposit.phoneNumber || 'N/A'
+
+              // ================= ITEM =================
+              td
+                if deposit.itemName
+                  | #{deposit.itemName.itemName || deposit.itemName}
+                else
+                  | N/A
+
+              // ================= DEPOSIT =================
+              td
+                | UGX #{deposit.amountPaid ? deposit.amountPaid.toLocaleString() : 0}
+
+              // ================= BALANCE =================
+              td
+                | UGX #{deposit.balance ? deposit.balance.toLocaleString() : 0}
+
+              // ================= PAYMENT =================
+              td= deposit.paymentMethod || 'Credit'
+
+              // ================= DATE =================
+              td
+                | #{d.toLocaleDateString()}
+                br
+                small.text-muted #{d.toLocaleTimeString()}
+
+              // ================= STATUS =================
+              td
+                if deposit.balance > 0
+                  span.badge.out Pending
+                else
+                  span.badge.good Cleared
+
+              // ================= ACTIONS =================
+              td.actions
+
+                a.icon-btn.view(
+                  href=`/admin/deposits/${deposit._id}`
+                  title="View Deposit"
+                )
+                  i.fa-solid.fa-eye
+
+                a.icon-btn.edit(
+                  href=`/admin/deposits/edit/${deposit._id}`
+                  title="Edit Deposit"
+                )
+                  i.fa-solid.fa-pen
+
+                form(
+                  action=`/admin/deposits/delete/${deposit._id}`
+                  method="POST"
+                  style="display:inline;"
+                )
+                  button.icon-btn.delete(
+                    type="submit"
+                    onclick="return confirm('Delete this deposit record?')"
+                    title="Delete Deposit"
+                  )
+                    i.fa-solid.fa-trash
+
+        else
+
+          tr
+            td.text-center(colspan="11")
+              | No customer deposits found
+
+
+  // ================= SEARCH SCRIPT =================
+  script.
+    const searchInput = document.getElementById('searchInput');
+
+    searchInput.addEventListener('keyup', function () {
+
+      const value = this.value.toLowerCase();
+
+      const rows = document.querySelectorAll('tbody tr');
+
+      rows.forEach(row => {
+
+        const text = row.innerText.toLowerCase();
+
+        if (text.includes(value)) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+
+      });
+
+    });

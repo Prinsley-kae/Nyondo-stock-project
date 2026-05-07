@@ -1,0 +1,25 @@
+{
+  "name": "final-nyondo-project",
+  "version": "1.0.0",
+  "description": "\"Final presentation\"",
+  "license": "ISC",
+  "author": "Priscilla Akwee",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "dependencies": {
+    "connect-mongo": "^6.0.0",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-session": "^1.19.0",
+    "mongoose": "^9.6.1",
+    "multer": "^2.1.1",
+    "nodemon": "^3.1.14",
+    "passport": "^0.7.0",
+    "passport-local-mongoose": "^9.1.0",
+    "pug": "^3.0.4"
+  }
+}

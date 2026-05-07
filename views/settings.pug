@@ -1,0 +1,71 @@
+extends admin-layout
+
+block content
+
+  // ================= PAGE HEADER =================
+  .page-header
+    h2 System Settings
+    p Manage your profile and basic system preferences
+
+  // ================= SETTINGS WRAPPER =================
+  .settings-container
+
+    // ================= PROFILE SECTION =================
+    .settings-card
+      h3 Admin Profile
+
+      form(method="POST" action="/admin/settings/profile")
+
+        .form-group
+          label Full Name
+          input(type="text" name="name" value=user.name required)
+
+        .form-group
+          label Email
+          input(type="email" name="email" value=user.email required)
+
+        button.btn(type="submit")
+          i.fa-solid.fa-floppy-disk
+          | Update Profile
+
+    // ================= PASSWORD SECTION =================
+    .settings-card
+      h3 Change Password
+
+      form(method="POST" action="/admin/settings/password")
+
+        .form-group
+          label Current Password
+          input(type="password" name="currentPassword" required)
+
+        .form-group
+          label New Password
+          input(type="password" name="newPassword" required)
+
+        .form-group
+          label Confirm Password
+          input(type="password" name="confirmPassword" required)
+
+        button.btn.secondary(type="submit")
+          i.fa-solid.fa-lock
+          | Change Password
+
+    // ================= SYSTEM INFO =================
+    .settings-card
+      h3 System Information
+
+      p
+        strong System Name:
+        | NYONDO Stock System
+
+      p
+        strong Version:
+        | 1.0.0
+
+      p
+        strong Location:
+        | Nansana, Uganda
+
+      p
+        strong Role:
+        | Administrator

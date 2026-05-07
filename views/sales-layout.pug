@@ -1,0 +1,74 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    title Sales Panel - NYONDO System
+
+    //- Icons & Fonts
+    link(rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css")
+    link(href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet")
+
+    //- Main CSS
+    link(rel="stylesheet" href="/css/pages.css")
+
+  body
+
+    // ================= WRAPPER =================
+    .dashboard-wrapper
+
+      // ================= SIDEBAR =================
+      aside.sidebar
+
+        .brand
+          h2 NYONDO HARDWARE
+          p SALES PANEL
+
+        ul.nav-links
+
+          // ================= DASHBOARD =================
+          li
+            a(href="/sales")
+              i.fa-solid.fa-gauge
+              span Dashboard
+
+          // ================= SALES =================
+          li
+            a(href="/sales/sales-list")
+              i.fa-solid.fa-cart-plus
+              span View Sales
+
+          // ================= RECEIPTS LIST (FIXED) =================
+          li
+            a(href="/sales/printed-receipts")
+              i.fa-solid.fa-receipt
+              span Printed receipts
+
+          // ================= STOCK VIEW =================
+          li
+            a(href="/sales/view-stock")
+              i.fa-solid.fa-boxes-stacked
+              span View Stock
+
+          // ================= LOGOUT =================
+          li
+            a(href="/logout")
+              i.fa-solid.fa-right-from-bracket
+              span Logout
+
+      // ================= MAIN AREA =================
+      main.main-content
+
+        // ================= TOPBAR =================
+        header.topbar
+          .left
+            h3 Sales Attendant Panel
+
+          .right
+            .user-info
+              i.fa-solid.fa-user
+              span Sales Attendant
+
+        // ================= PAGE CONTENT =================
+        section.content
+          block content
