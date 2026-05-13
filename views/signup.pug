@@ -3,87 +3,213 @@ html
   head
     meta(charset='UTF-8')
     meta(name='viewport' content='width=device-width, initial-scale=1.0')
+
     title Sign Up - NYONDO Stock System
 
-    link(rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css')
-    link(href='https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap' rel='stylesheet')
+    //- FONT AWESOME
+    link(
+      rel='stylesheet'
+      href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css'
+    )
+
+    //- GOOGLE FONTS
+    link(
+      href='https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap'
+      rel='stylesheet'
+    )
+
+    //- MAIN CSS
     link(rel='stylesheet' href='/css/style.css')
 
   body
+
     .auth-container
+
       .auth-box
+
         h2 Create Account
+
         p.subtitle Register to access NYONDO system
+
+
+        //- FLASH / ERROR MESSAGE
+        if error
+          .error-message
+            i.fa-solid.fa-circle-exclamation
+            | #{error}
+
 
         form(method='post' action='/signup')
 
-          // USERNAME
+          //- =========================
+          //- FULL NAME
+          //- =========================
           .input-group
-            label Username
+            label Full Name
+
             .icon-input
               i.fa-solid.fa-user
-              input(type='text' name='username' placeholder='Enter username' required)
 
-          // EMAIL
+              input(
+                type='text'
+                name='fullname'
+                placeholder='Enter full name'
+                required
+              )
+
+
+          //- =========================
+          //- EMAIL
+          //- =========================
           .input-group
-            label Email
+            label Email Address
+
             .icon-input
               i.fa-solid.fa-envelope
-              input(type='email' name='email' placeholder='Enter email' required)
 
-          // PHONE
+              input(
+                type='email'
+                name='email'
+                placeholder='Enter email address'
+                required
+              )
+
+
+          //- =========================
+          //- PHONE NUMBER
+          //- =========================
           .input-group
             label Phone Number
-            .icon-input
-              i.fa-solid.fa-phone
-              input(type='text' name='phonenumber' placeholder='Enter phone number' required)
 
-          // NIN
+            .phone-input
+
+              span.phone-prefix +256
+
+              input(
+                type='text'
+                name='phonenumber'
+                placeholder='7XXXXXXXX'
+                maxlength='9'
+                required
+              )
+
+
+          //- =========================
+          //- NIN
+          //- =========================
           .input-group
-            label NIN Number (Optional)
+            label NIN Number
+
             .icon-input
               i.fa-solid.fa-id-card
-              input(type='text' name='nin' placeholder='Enter NIN')
 
-          // ROLE
+              input(
+                type='text'
+                name='nin'
+                placeholder='Enter NIN number'
+                required
+              )
+
+
+          //- =========================
+          //- ROLE
+          //- =========================
           .input-group
             label Role
-            select(name='role' required)
-              option(value='' disabled selected) Select role
-              option(value='sales_attendant') Sales Attendant
-              option(value='store_manager') Store Manager
-              option(value='admin') Admin / Accounts
 
-          // PASSWORD WITH TOGGLE
+            select(name='role' required)
+
+              option(value='' disabled selected)
+                | Select role
+
+              option(value='sales_attendant')
+                | Sales Attendant
+
+              option(value='store_manager')
+                | Store Manager
+
+              option(value='admin')
+                | Admin / Accounts
+
+
+          //- =========================
+          //- PASSWORD
+          //- =========================
           .input-group
             label Password
+
             .password-wrapper
-              input(type='password' name='password' id='signupPassword' placeholder='Create password' required)
-              span.toggle-password(onclick='toggleSignupPassword(event)')
+
+              input(
+                type='password'
+                name='password'
+                id='signupPassword'
+                placeholder='Create password'
+                required
+              )
+
+              span.toggle-password(
+                onclick='toggleSignupPassword(event)'
+              )
                 i.fa-solid.fa-eye
 
-          // CONFIRM PASSWORD WITH TOGGLE
+
+          //- =========================
+          //- CONFIRM PASSWORD
+          //- =========================
           .input-group
             label Confirm Password
+
             .password-wrapper
-              input(type='password' name='confirmPassword' id='confirmPassword' placeholder='Confirm password' required)
-              span.toggle-password(onclick='toggleConfirmPassword(event)')
+
+              input(
+                type='password'
+                name='confirmPassword'
+                id='confirmPassword'
+                placeholder='Confirm password'
+                required
+              )
+
+              span.toggle-password(
+                onclick='toggleConfirmPassword(event)'
+              )
                 i.fa-solid.fa-eye
 
-          button.btn.primary(type='submit')
-            i.fa-solid.fa-user-plus
-            | Sign Up
 
+          //- =========================
+          //- SUBMIT BUTTON
+          //- =========================
+          button.btn.primary(type='submit')
+
+            i.fa-solid.fa-user-plus
+
+            |  Sign Up
+
+
+        //- =========================
+        //- LOGIN LINK
+        //- =========================
         .auth-links
+
           p
             | Already have an account?
-            a(href='/login') Login
 
+            a(href='/login')
+              | Login
+
+
+    //- =========================
+    //- FOOTER
+    //- =========================
     footer
+
       p
         | © 2026 NYONDO General Hardware LTD
-      p   
+
+      p
         i.fa-solid.fa-location-dot
-        | Nansana, Uganda
+
+        |  Nansana, Uganda
+
 
     script(src='/js/script.js')

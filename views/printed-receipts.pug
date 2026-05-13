@@ -13,7 +13,7 @@ block content
     input#searchInput(
       type="text"
       placeholder="Search receipts by customer, item, or ID..."
-      style="width:700px; height:50px; "
+      style="width:700px; height:50px;"
     )
 
     button.btn(type="button" onclick="window.print()")
@@ -22,7 +22,6 @@ block content
 
   // ================= TABLE =================
   .table-section
-
     .table-container
       table
         thead
@@ -42,7 +41,6 @@ block content
 
             each sale, i in sales
               tr
-
                 td= i + 1
 
                 td
@@ -51,13 +49,20 @@ block content
                 td
                   | #{new Date(sale.date || sale.createdAt).toLocaleString()}
 
-                td= sale.customerName || 'Walk-in'
+                td= sale.customerName
 
+                // ================= ITEMS =================
                 td
-                  if sale.itemName && sale.itemName.itemName
-                    | #{sale.itemName.itemName}
+                  if sale.items && sale.items.length
+                    each entry in sale.items
+                      if entry.item && entry.item.itemName
+                        | #{entry.item.itemName} (x#{entry.quantity})
+                        br
+                      else
+                        | Item no longer in stock
+                        br
                   else
-                    | Deleted Item
+                    | No items
 
                 td= sale.quantity
 
@@ -70,11 +75,11 @@ block content
                 td.actions
                   a.icon-btn.view(href=`/sales/receipts/${sale._id}`)
                     i.fa-solid.fa-eye
-                        view
+                    |  View
+
           else
             tr
               td(colspan="9") No receipts found
-
 
   // ================= SEARCH SCRIPT =================
   script.

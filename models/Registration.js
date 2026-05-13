@@ -2,17 +2,17 @@ const mongoose = require('mongoose');
 const passportLocalMongoose = require('passport-local-mongoose').default || require('passport-local-mongoose');
 
 const registrationSchema = new mongoose.Schema({
-    username: {
+    fullname: {
         type: String,
         required: true
     },
     email: {
-        type: String,
+        type: String, 
         trim: true,
         required: true
     },
     phonenumber: {
-        type: Number,
+        type: String,
         required: true,
         trim: true
     },

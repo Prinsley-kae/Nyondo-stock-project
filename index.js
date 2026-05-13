@@ -1,11 +1,13 @@
 // =========================
 // DEPENDENCIES
 // =========================
+
 const express = require('express');
 const expressSession = require('express-session');
 const path = require('path');
 const mongoose = require('mongoose');
 const passport = require('passport');
+
 const MongoStore = require('connect-mongo').default;
 const LocalStrategy = require('passport-local').Strategy;
 
@@ -34,8 +36,8 @@ app.set('views', path.join(__dirname, 'views'));
 // MIDDLEWARE
 // =========================
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/public/uploads', express.static(__dirname + 'public/uploads'));
-app.use(express.urlencoded({ extended: false }));
+// app.use('/public/uploads', express.static(__dirname + '/public/uploads'));
+app.use(express.urlencoded({ extended: true }));
 
 app.use(expressSession({
   secret: "Nyondo-secret-key",
@@ -46,7 +48,7 @@ app.use(expressSession({
     collectionName: 'sessions'
   }),
   cookie:{
-    maxAge: 1000*60*60*2 // 2 hours life for a login session
+    maxAge: 1000*60*60*5 // 5 hours life for a login session
   }
 }));
 

@@ -2,94 +2,59 @@ extends admin-layout
 
 block content
 
-  // ================= PAGE HEADER =================
   .page-header
     h2 Credit Sales
     p Register customer purchases on credit
 
-  // ================= FORM =================
   .form-container
 
-    form(method="POST" action="/sales/add-credit")
+    form(method="POST" action="/admin/deposits")
 
       .form-grid
 
-        // ================= CUSTOMER NAME =================
         .form-group
-          label(for="customerName") Customer Name
-          input#customerName(
-            type="text"
-            name="customerName"
-          )
+          label Customer Name
+          input(type="text" name="customerName" required)
 
-          // ================= CUSTOMER ADDRESS =================
         .form-group
-          label(for="customerAddress") Customer Address
-          input#customerAddress(
-            type="text"
-            name="customerAddress"
-          )
+          label Customer Address
+          input(type="text" name="customerAddress" required)
 
-        // ================= PHONE =================
         .form-group
-          label(for="phoneNumber") Customer Contact
-          input#phoneNumber(
-            type="number"
-            name="customerContact"
-          )
+          label Customer Contact
+          input(type="number" name="customerContact" required)
 
-          // ================= NIN =================
         .form-group
-          label(for="nin") NIN Number
-          input#nin(
-            type="text"
-            name="nin"
-          )
+          label NIN Number
+          input(type="text" name="nin")
 
-        // ================= ITEM =================
         .form-group
-          label(for="itemId") Select Item
-
-          select#itemId(name="itemId" required)
+          label Select Item
+          select(name="itemId" required)
             option(value="" disabled selected) -- Select Product --
             each item in items
               option(value=item._id)
-                | #{item.itemName} (Stock: #{item.quantity})
+                | #{item.itemName} (Qty: #{item.quantity} | UGX #{item.sellingPrice})
 
-        // ================= QUANTITY =================
         .form-group
-          label(for="quantity") Quantity
-          input#quantity(
-            type="number"
-            name="quantity"
-          )
+          label Quantity
+          input(type="number" name="quantity" required)
 
-        // ================= PAYMENT TYPE =================
         .form-group
-          label(for="paymentType") Payment Type
-          select#paymentType(name="paymentType" required)
+          label Payment Type
+          select(name="paymentType" required)
             option(value="credit") Credit
             option(value="partial") Partial Payment
 
-        // ================= AMOUNT PAID =================
         .form-group
-          label(for="amountPaid") Amount Paid (UGX)
-          input#amountPaid(
-            type="number"
-            name="amountPaid"
-          )
+          label Amount Paid (UGX)
+          input(type="number" name="amountPaid" value="0")
 
-        // ================= NOTES =================
         .form-group.full
-          label(for="notes") Notes (Optional)
-          textarea#notes(
-            name="notes"
-            rows="3"
-            placeholder="Any extra details..."
-          )
+          label Notes
+          textarea(name="notes" rows="3")
 
-      // ================= BUTTON =================
       .form-actions
         button.btn(type="submit")
           i.fa-solid.fa-credit-card
-          |  Save Credit Sale
+          | Save Credit Sale

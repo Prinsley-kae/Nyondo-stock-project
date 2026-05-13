@@ -135,10 +135,13 @@ router.post("/sales/add-sale", isAttendantOrAdmin, async (req, res) => {
       });
     }
 
-    // ================= EMPTY ITEMS CHECK =================
     if (processedItems.length === 0) {
-      return res.status(400).send("No valid items selected for sale");
-    }
+  console.warn("Sale blocked: no valid items selected");
+  return res.status(400).json({
+    success: false,
+    message: "No valid items selected for sale"
+  });
+}
 
     // ================= TRANSPORT LOGIC =================
     let transportFee = 30000;

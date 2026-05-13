@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const StockSchema = new mongoose.Schema({
-  supplier: {
+  supplierName: {
     type: String,
     trim: true,
     required: true
@@ -11,12 +11,6 @@ const StockSchema = new mongoose.Schema({
     type: String,
     required: true,
     trim: true
-  },
-
-  category: {
-    type: String,
-    trim: true,
-    required: true
   },
 
   buyingPrice: {
@@ -36,6 +30,7 @@ const StockSchema = new mongoose.Schema({
 
   totalValue: {
     type: Number,
+    required:true
   },
 
   supplierContact: {
@@ -48,7 +43,10 @@ const StockSchema = new mongoose.Schema({
     default: Date.now
   },
 
-
+  paymentMethod: {
+  type: String,
+  required: true
+},
 
   itemImage: {
     type: String

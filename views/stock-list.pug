@@ -9,21 +9,19 @@ block content
 
 
   // ================= FILTER + REPORT =================
-  .filter-bar(style="display:flex; gap:10px; margin-bottom:20px;")
+  .filter-bar
 
-    .search-box(style="position:relative; flex:1;")
-
-      i.fa-solid.fa-magnifying-glass(style="position:absolute; left:10px; top:50%; transform:translateY(-50%); color:#888;")
+    .search-box
+      i.fa-solid.fa-magnifying-glass
 
       input#searchInput(
         type="text"
         placeholder="Search stock or credit records..."
-        style="width:100%; padding:8px 8px 8px 30px;"
       )
 
     button.btn(type="button" onclick="window.print()")
       i.fa-solid.fa-print
-      |  Generate Report
+      | Generate Report
 
 
   // =========================================================
@@ -53,39 +51,38 @@ block content
               - const d = new Date(stock.createdAt || stock.deliveryDate)
 
               tr
-
                 td= i + 1
 
                 td
-                  | #{d.toLocaleDateString()}
-                  br
-                  small.text-muted #{d.toLocaleTimeString()}
+                  if d
+                    | #{d.toLocaleDateString()}
+                    br
+                    small.text-muted #{d.toLocaleTimeString()}
 
                 td= stock.itemName || 'N/A'
 
                 td
                   if stock.itemImage
-                    img(src=`/${stock.itemImage}` width="40" height="40")
+                    img(src=`/uploads/${stock.itemImage}` width="80")
                   else
                     span No Image
 
                 td= stock.quantity || 0
 
-                td UGX #{stock.buyingPrice ? stock.buyingPrice.toLocaleString() : 0}
+                td UGX #{Number(stock.buyingPrice || 0).toLocaleString()}
 
-                td UGX #{stock.sellingPrice ? stock.sellingPrice.toLocaleString() : 0}
+                td UGX #{Number(stock.sellingPrice || 0).toLocaleString()}
 
-                td UGX #{stock.totalValue ? stock.totalValue.toLocaleString() : 0}
+                td UGX #{Number(stock.totalValue || 0).toLocaleString()}
 
                 td
-                  if stock.quantity == 0
+                  if Number(stock.quantity) === 0
                     span.badge.out Out of stock
-                  else if stock.quantity <= 10
+                  else if Number(stock.quantity) <= 50
                     span.badge.low Low stock
                   else
                     span.badge.good In stock
 
-                // ================= ACTIONS =================
                 td.actions
                   a.icon-btn.edit(href=`/store/inventory/edit/${stock._id}`)
                     i.fa-solid.fa-pen
@@ -113,7 +110,7 @@ block content
             th Date
             th Supplier Name
             th Supplier Contact
-            th Item Supplied
+            th Item Name
             th Amount Owed
             th Payment Method
             th Status
@@ -122,33 +119,33 @@ block content
         tbody
           if credits && credits.length
             each credit, i in credits
-              - const d = new Date(credit.date)
+              - const d = new Date(credit.deliveryDate || credit.createdAt)
 
               tr
                 td= i + 1
 
                 td
-                  | #{d.toLocaleDateString()}
-                  br
-                  small.text-muted #{d.toLocaleTimeString()}
+                  if d
+                    | #{d.toLocaleDateString()}
+                    br
+                    small.text-muted #{d.toLocaleTimeString()}
 
                 td= credit.supplierName || 'N/A'
 
                 td= credit.supplierContact || 'N/A'
 
-                td= credit.itemSupplied || 'N/A'
+                td= credit.itemName || 'N/A'
 
-                td UGX #{credit.amount ? credit.amount.toLocaleString() : 0}
+                td UGX #{Number(credit.totalValue || 0).toLocaleString()}
 
-                td= credit.paymentMethod
+                td= credit.paymentMethod || 'credit'
 
                 td
-                  if credit.amount > 0
+                  if credit.paymentMethod === 'credit'
                     span.badge.out Unpaid
                   else
                     span.badge.good Paid
 
-                // ================= ACTIONS =================
                 td.actions
                   a.icon-btn.edit(href=`/store/inventory/edit/${credit._id}`)
                     i.fa-solid.fa-pen

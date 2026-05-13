@@ -1,0 +1,71 @@
+extends admin-layout
+
+block content
+
+  // ================= PAGE HEADER =================
+  .page-header
+    h2 Add New User
+    p Create a new system user account
+
+  // ================= FORM =================
+  .form-container
+
+    form(method='POST' action='/admin/users/add')
+
+      // ================= USERNAME =================
+      .input-group
+        label Username
+        .icon-input
+          i.fa-solid.fa-user
+          input(type='text' name='username' placeholder='Enter username' required)
+
+      // ================= EMAIL =================
+      .input-group
+        label Email
+        .icon-input
+          i.fa-solid.fa-envelope
+          input(type='email' name='email' placeholder='Enter email' required)
+
+      // ================= PHONE =================
+      .input-group
+        label Phone Number
+        .icon-input
+          i.fa-solid.fa-phone
+          input(type='text' name='phoneNumber' placeholder='Enter phone number' required)
+
+      // ================= NIN =================
+      .input-group
+        label NIN Number (Optional)
+        .icon-input
+          i.fa-solid.fa-id-card
+          input(type='text' name='nin' placeholder='Enter NIN')
+
+      // ================= ROLE =================
+      .input-group
+        label Role
+        select(name='role' required)
+          option(value='' disabled selected) Select role
+          option(value='sales_attendant') Sales Attendant
+          option(value='store_manager') Store Manager
+          option(value='admin') Admin / Accounts
+
+      // ================= PASSWORD =================
+      .input-group
+        label Password
+        .password-wrapper
+          input(type='password' name='password' id='signupPassword' placeholder='Create password' required)
+          span.toggle-password(onclick='toggleSignupPassword(event)')
+            i.fa-solid.fa-eye
+
+      // ================= CONFIRM PASSWORD =================
+      .input-group
+        label Confirm Password
+        .password-wrapper
+          input(type='password' name='confirmPassword' id='confirmPassword' placeholder='Confirm password' required)
+          span.toggle-password(onclick='toggleConfirmPassword(event)')
+            i.fa-solid.fa-eye
+
+      // ================= BUTTON =================
+      button.btn.primary(type='submit')
+        i.fa-solid.fa-user-plus
+        |  Create User

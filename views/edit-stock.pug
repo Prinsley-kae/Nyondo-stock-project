@@ -8,81 +8,107 @@ block content
     p Update product details, pricing, and quantity
 
   // ================= EDIT FORM =================
-  form(method="POST" action=`/manager/stock/edit/${stock._id}`)
+  .form-container
 
-    // ================= PRODUCT NAME =================
-    .form-group
-      label Product Name
-      input(
-        type="text"
-        name="productName"
-        value=stock.productName
-        required
-      )
+    form(method="POST" action=`/store/inventory/edit/${stock._id}` enctype="multipart/form-data")
 
-    // ================= CATEGORY =================
-    .form-group
-      label Category
-      select(name="category" required)
-        option(value="cement" selected=stock.category=="cement") Cement
-        option(value="iron-bars" selected=stock.category=="iron-bars") Iron Bars
-        option(value="nails" selected=stock.category=="nails") Nails
-        option(value="iron-sheets" selected=stock.category=="iron-sheets") Iron Sheets
-        option(value="wire-mesh" selected=stock.category=="wire-mesh") Wire Mesh
-        option(value="barbed-wire" selected=stock.category=="barbed-wire") Barbed Wire
-        option(value="wheelbarrow" selected=stock.category=="wheelbarrow") Wheelbarrow
-        option(value="other" selected=stock.category=="other") Other
+      .form-grid
 
-    // ================= QUANTITY =================
-    .form-group
-      label Quantity
-      input(
-        type="number"
-        name="quantity"
-        min="0"
-        value=stock.quantity
-        required
-      )
+        // ================= PRODUCT DROPDOWN =================
+        .form-group
+          label Select Existing Item
 
-    // ================= PRICING =================
-    .form-group
-      label Unit Cost (UGX)
-      input(
-        type="number"
-        name="unitCost"
-        min="0"
-        value=stock.unitCost
-        required
-      )
+          select(name="itemName" required)
+            option(value="") -- Select Item --
 
-    .form-group
-      label Unit Selling Price (UGX)
-      input(
-        type="number"
-        name="unitPrice"
-        min="0"
-        value=stock.unitPrice
-        required
-      )
+            each item in items
+              option(
+                value=item.itemName
+                selected=(item.itemName == stock.itemName)
+              )
+                | #{item.itemName} - #{item.quantity} (#{item.sellingPrice} UGX)
 
-    // ================= SUPPLIER =================
-    .form-group
-      label Supplier Name
-      input(
-        type="text"
-        name="supplierName"
-        value=stock.supplierName
-      )
+        // ================= QUANTITY =================
+        .form-group
+          label Quantity
 
-    .form-group
-      label Supplier Phone
-      input(
-        type="text"
-        name="supplierPhone"
-        value=stock.supplierPhone
-      )
+          input(
+            type="number"
+            name="quantity"
+            min="0"
+            value=stock.quantity
+            required
+          )
 
-    // ================= SUBMIT =================
-    button.btn(type="submit")
-      i.fa-solid.fa-floppy-disk
-      |  Update Stock
+        // ================= BUYING PRICE =================
+        .form-group
+          label Buying Price (UGX)
+
+          input(
+            type="number"
+            name="buyingPrice"
+            min="0"
+            value=stock.buyingPrice
+            required
+          )
+
+        // ================= SELLING PRICE =================
+        .form-group
+          label Selling Price (UGX)
+
+          input(
+            type="number"
+            name="sellingPrice"
+            min="0"
+            value=stock.sellingPrice
+            required
+          )
+
+        // ================= SUPPLIER =================
+        .form-group
+          label Supplier Name
+
+          input(
+            type="text"
+            name="supplier"
+            value=stock.supplierName
+          )
+
+        .form-group
+          label Supplier Contact
+
+          .phone-input
+            span.phone-prefix +256
+            input(
+              type="text"
+              name="supplierContact"
+              value=stock.supplierContact
+            )
+
+        // ================= PAYMENT METHOD =================
+        .form-group
+          label(for="paymentMethod") Payment Method
+
+          select#paymentMethod(name="paymentMethod" required)
+            option(value="Credit") Credit
+            option(value="Cash_at_hand") Cash at hand
+
+        // ================= ITEM IMAGE =================
+        .form-group
+          label(for="itemImage") Item Image
+
+          input#itemImage(
+            type="file"
+            name="itemImage"
+          )
+
+        // ================= CURRENT IMAGE PREVIEW =================
+        if stock.itemImage
+          .form-group
+            img(src=`/uploads/${stock.itemImage}` width="100")
+
+      // ================= SUBMIT =================
+      .form-actions
+        button.btn(type="submit")
+          i.fa-solid.fa-floppy-disk
+          | Update Stock

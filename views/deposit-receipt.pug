@@ -1,0 +1,79 @@
+extends admin-layout
+
+block content
+
+  .receipt-container
+
+    .receipt-box
+
+      h2 NYONDO HARDWARE LTD
+      p Nansana, Uganda
+      hr
+
+      h3 Deposit Receipt
+
+      // ================= CUSTOMER =================
+      p
+        strong Customer:
+        |  #{sale.customerName}
+
+      p
+        strong Address:
+        |  #{sale.customerAddress}
+
+      p
+        strong Contact:
+        |  #{sale.customerContact}
+
+      p
+        strong NIN:
+        |  #{sale.nin || 'N/A'}
+
+      hr
+
+      // ================= ITEM =================
+      p
+        strong Item:
+        |  #{sale.item ? sale.item.itemName : 'N/A'}
+
+      p
+        strong Quantity:
+        |  #{sale.quantity}
+
+      p
+        strong Payment Type:
+        |  #{sale.paymentType}
+
+      hr
+
+      // ================= FINANCIAL =================
+      p
+        strong Total Amount:
+        |  UGX #{sale.totalAmount ? sale.totalAmount.toLocaleString() : 0}
+
+      p
+        strong Amount Paid:
+        |  UGX #{sale.amountPaid ? sale.amountPaid.toLocaleString() : 0}
+
+      p
+        strong Remaining Balance:
+        |  UGX #{sale.balance ? sale.balance.toLocaleString() : 0}
+
+      hr
+
+      // ================= DATE =================
+      p
+        strong Date:
+        |  #{new Date(sale.date).toLocaleString()}
+
+      hr
+
+      .actions
+
+        button.btn(onclick="window.print()")
+          i.fa-solid.fa-print
+          | Print Receipt
+
+        a.btn.secondary(href="/admin/deposits")
+          i.fa-solid.fa-arrow-left
+          | Back

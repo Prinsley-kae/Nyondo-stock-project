@@ -41,46 +41,49 @@ block content
           // ========= QUANTITY =========
           .form-group
             label(for="quantity") Quantity Received
-            input#quantity(type="number" name="quantity")
+            input#quantity(type="number" name="quantity" required)
 
           // ========= BUYING PRICE =========
           .form-group
             label(for="buyingPrice") Buying Price (UGX)
-            input#buyingPrice(type="number" name="buyingPrice")
+            input#buyingPrice(type="number" name="buyingPrice" required)
 
           // ========= SELLING PRICE =========
           .form-group
             label(for="sellingPrice") Selling Price (UGX)
-            input#sellingPrice(type="number" name="sellingPrice")
+            input#sellingPrice(type="number" name="sellingPrice" required)
 
           // ========= SUPPLIER =========
           .form-group
             label(for="supplierName") Supplier Name
-            input#supplierName(type="text" name="supplierName" )
+            input#supplierName(type="text" name="supplierName" required )
 
           .form-group
             label(for="supplierContact") Supplier Contact
-            input#supplierContact(type="text" name="supplierContact")
+
+            .phone-input 
+              span.phone-prefix +256
+              input#supplierContact(type="text" name="supplierContact" placeholder="7xxxxxxxx" max-length="9" required)
 
           .form-group
             label(for="factoryName") Factory/Company Name
-            input#factoryName(type="text" name="factoryName")
+            input#factoryName(type="text" name="factoryName" required)
 
 
           // ========= PAYMENT METHOD =========
           .form-group
             label(for="paymentMethod") Payment Method
-            select#paymentMethod(name="paymentMethod" )
+            select#paymentMethod(name="paymentMethod" required )
               option(value="credit") Credit
               option(value="cash_at_hand") Cash at hand
 
           // ========= IMAGE =========
           .form-group
             label(for="itemImage") Item Image
-            input#itemImage(type="file" name="itemImage")
+            input#itemImage(type="file" name="itemImage" )
 
         // ========= ACTIONS =========
         .form-actions
-          button.btn(type="submit")
+          button.btn(type="submit" )
             i.fa-solid.fa-plus
             |  Save Stock

@@ -26,7 +26,7 @@
 
 body {
   min-height: 100vh;
-  background: url('/Images/hardware.png') no-repeat center center/cover;
+  background: url('/images/hardware.png') no-repeat center center/cover;
   position: relative;
   color: var(--text);
 }
@@ -179,78 +179,207 @@ body {
    AUTH PAGES
 ========================= */
 
+/* =========================
+   AUTH FORM CONTAINER
+========================= */
 .auth-container {
-  height: 900px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-
-.auth-box {
-  width: 500px;
-  margin-top: 20px;
-  background: var(--glass);
-  backdrop-filter: blur(18px);
-  border: 1px solid var(--border);
-  padding: 40px;
-  border-radius: 18px;
-  box-shadow: 0 25px 60px rgba(0,0,0,0.5);
-}
-
-.auth-box h2 {
-  text-align: center;
-  font-size: 26px;
-  color: var(--white);
-}
-
-.subtitle {
-  text-align: center;
-  font-size: 14px;
-  color: var(--muted);
-  margin-bottom: 22px;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: url('/images/hardware.png') no-repeat center center/cover;
+    background: rgba(0, 0, 0, 0.1);
+    padding: 20px;
 }
 
 /* =========================
-   INPUT SYSTEM
+   FORM BOX
 ========================= */
+.auth-box {
+    width: 100%;
+    max-width: 420px;
+    background: #ffe6e6;
+    padding: 35px;
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
 
+/* =========================
+   TITLE
+========================= */
+.auth-box h2 {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 6px;
+    color: #222;
+    font-weight: 600;
+}
+
+.subtitle {
+    text-align: center;
+    font-size: 13px;
+    color: #222;
+    margin-bottom: 25px;
+}
+
+/* =========================
+   INPUT GROUP
+========================= */
 .input-group {
-  margin-bottom: 16px;
+    margin-bottom: 16px;
 }
 
 .input-group label {
-  font-size: 13px;
-  color: var(--muted);
-  display: block;
-  margin-bottom: 6px;
+    display: block;
+    font-size: 13px;
+    margin-bottom: 6px;
+    color: #222;
+    font-weight: 500;
 }
 
-.icon-input {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px;
-  border-radius: 12px;
-  background: rgba(255,255,255,0.10);
-  border: 1px solid var(--border);
+/* =========================
+   INPUT STYLE
+========================= */
+.icon-input,
+.password-wrapper,
+select {
+    width: 100%;
+}
+
+.icon-input,select,
+.password-wrapper {
+    display: flex;
+    align-items: center;
+    background: #f9fafc;
+    border: 1px solid #e3e6ea;
+    border-radius: 8px;
+    padding: 10px 12px;
+    transition: 0.2s;
 }
 
 .icon-input i {
-  color: var(--primary);
+    color: #222;
+    margin-right: 8px;
 }
 
+/* INPUT FIELD */
 .icon-input input,
-.icon-input select {
-  width: 100%;
-  border: none;
-  outline: none;
-  background: transparent;
-  font-size: 14px;
+.password-wrapper input,
+select {
+    border: none;
+    outline: none;
+    width: 100%;
+    font-size: 14px;
+    background: transparent;
 }
 
-.icon-input input::placeholder {
-  color: rgba(255,255,255,0.55);
+/* FOCUS EFFECT */
+.icon-input:focus-within,
+.password-wrapper:focus-within,
+select:focus {
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 3px rgba(74,144,226,0.15);
+}
+
+/* =========================
+   PHONE PREFIX STYLE
+========================= */
+.phone-input {
+    display: flex;
+    align-items: center;
+    background: #f9fafc;
+    border: 1px solid #e3e6ea;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.phone-prefix {
+    padding: 10px 12px;
+    background: #f9fafc;
+    font-size: 13px;
+    color: #222;
+    border-right: 1px solid #e3e6ea;
+}
+
+.phone-input input {
+    border: none;
+    outline: none;
+    padding: 10px;
+    width: 100%;
+    background: transparent;
+}
+
+
+/* =========================
+   PASSWORD TOGGLE ICON
+========================= */
+.toggle-password {
+    cursor: pointer;
+    color: #888;
+    margin-left: 8px;
+}
+
+.toggle-password:hover {
+    color: #333;
+}
+
+/* =========================
+   BUTTON
+========================= */
+.btn.primary {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background:#FFA500;
+    color: #222;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-top: 10px;
+}
+
+.btn.primary:hover {
+    background: #3a7bd5;
+}
+
+/* =========================
+   LOGIN LINK
+========================= */
+.auth-links {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 13px;
+}
+
+.auth-links a {
+    color: #4a90e2;
+    text-decoration: none;
+}
+
+.auth-links a:hover {
+    text-decoration: underline;
+}
+
+.auth-links p {
+    color: #222;
+    text-decoration: none;
+}
+
+/* =========================
+   ERROR MESSAGE
+========================= */
+.error-message {
+    background: #ffe6e6;
+    color: #d93025;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 /* =========================

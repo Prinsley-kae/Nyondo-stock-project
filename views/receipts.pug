@@ -91,7 +91,7 @@ block content
 
       p
         strong Subtotal:
-        |  UGX #{sale.subtotal.toLocaleString()}
+        |  |  UGX #{sale.subtotal ? sale.subtotal.toLocaleString() : '0'}
 
       p
         strong Transport:

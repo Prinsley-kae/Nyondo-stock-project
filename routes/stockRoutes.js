@@ -13,13 +13,18 @@ const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, 'public/uploads');
   },
+
   filename: (req, file, cb) => {
-    cb(null, Date.now() + '-' + file.originalname);
+    const safeName = file.originalname
+      .toLowerCase()
+      .replace(/\s+/g, '-')      // remove spaces
+      .replace(/[^a-z0-9.-]/g, ''); // removes special characters
+
+    cb(null, Date.now() + '-' + safeName);
   }
 });
 
 const upload = multer({ storage });
-
 
 /* =========================
    DASHBOARD
@@ -30,27 +35,35 @@ router.get('/store', async (req, res) => {
     const all = await Stock.find();
 
     const inventoryValue = all
-      .filter(s => s.paymentMethod !== 'credit')
-      .reduce((sum, s) => sum + (s.quantity * s.buyingPrice), 0);
+      .filter(s => (s.paymentMethod || '').toLowerCase() !== 'credit')
+      .reduce((sum, s) => sum + (Number(s.quantity) * Number(s.buyingPrice)), 0);
 
-    const creditValue = all
-      .filter(s => s.paymentMethod === 'credit')
-      .reduce((sum, s) => sum + (s.quantity * s.buyingPrice), 0);
+    const totalStockItems = all.reduce(
+      (sum, s) => sum + Number(s.quantity || 0),
+      0
+    );
+
+    const lowStockItems = all.filter(
+      s => Number(s.quantity || 0) <= 50
+    );
+
+    const suppliers = new Set(all.map(s => s.supplierName)).size;
 
     res.render('stock-dashboard', {
       stats: {
         inventoryValue,
-        creditValue
-      }
+        totalStockItems,
+        suppliers,
+        lowStockItems: lowStockItems.length
+      },
+      lowStockItems
     });
 
   } catch (error) {
-    console.log(error.message);
-    res.status(500).send('Dashboard error');
+    console.log(error);
+    res.status(500).send("Dashboard error");
   }
 });
-
-
 /* =========================
    INVENTORY + CREDIT TABLE PAGE
 ========================= */
@@ -59,8 +72,8 @@ router.get('/store/inventory', async (req, res) => {
 
     const allStocks = await Stock.find().sort({ createdAt: -1 });
 
-    const stocks = allStocks.filter(s => s.paymentMethod !== 'credit');
-    const credits = allStocks.filter(s => s.paymentMethod === 'credit');
+    const stocks = allStocks.filter(s => s.paymentMethod !== 'Credit');
+    const credits = allStocks.filter(s => s.paymentMethod === 'Credit');
 
     res.render('stock-list', {
       stocks,
@@ -81,23 +94,26 @@ router.get('/store/inventory', async (req, res) => {
 /* =========================
    ADD STOCK (SAME FORM)
 ========================= */
+router.get('/store/add-stock', isManager, (req, res) => {
+
+  res.render('stock-form');
+
+});
+
+
 router.post('/store/add-stock', isManager, upload.single('itemImage'), async (req, res) => {
   try {
 
     const {
       itemName,
-      category,
       quantity,
       buyingPrice,
       sellingPrice,
-      supplier,
+      supplierName,
       supplierContact,
-      
       deliveryDate,
       paymentMethod
     } = req.body;
-
-    const itemImage = req.file ? req.file.path : null;
 
     const totalValue = Number(quantity) * Number(buyingPrice);
 
@@ -110,15 +126,14 @@ router.post('/store/add-stock', isManager, upload.single('itemImage'), async (re
 
     const stock = new Stock({
       itemName,
-      category,
       quantity,
       buyingPrice,
       sellingPrice,
-      supplier,
+      supplierName,
       supplierContact,
       deliveryDate,
       paymentMethod,
-      itemImage,
+      itemImage: req.file ? req.file.filename : null,
       totalValue
     });
 
@@ -136,10 +151,31 @@ router.post('/store/add-stock', isManager, upload.single('itemImage'), async (re
 /* =========================
    VIEW SINGLE ITEM
 ========================= */
-router.get('/store/inventory/:id', async (req, res) => {
+router.get('/store/inventory/edit/:id', async (req, res) => {
   try {
+
     const stock = await Stock.findById(req.params.id);
-    res.render('stock-details', { stock });
+
+    // FETCH ALL ITEMS
+    const items = await Stock.find();
+
+    res.render('edit-stock', {
+      stock,
+      items
+    });
+
+  } catch (error) {
+    console.log(error);
+    res.redirect('/store/inventory');
+  }
+});
+
+router.post('/store/inventory/edit/:id', async (req, res) => {
+  try {
+
+    await Stock.findByIdAndUpdate(req.params.id, req.body);
+
+    res.redirect('/store/inventory');
 
   } catch (error) {
     console.log(error);

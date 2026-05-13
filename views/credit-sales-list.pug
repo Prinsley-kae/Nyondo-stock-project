@@ -10,39 +10,39 @@ block content
   // ================= TOP ACTION BAR =================
   .action-bar
 
-    // SEARCH BOX
     .search-box
       i.fa-solid.fa-magnifying-glass
       input#searchInput(
         type="text"
-        placeholder="Search customer, phone or receipt..."
+        placeholder="Search customer, phone, receipt..."
       )
 
-    // ACTION BUTTONS
     .action-buttons
       button.btn(type="button" onclick="window.print()")
         i.fa-solid.fa-print
-        |  Generate Report
+        | Generate Report
 
       a.btn.btn-primary(href="/admin/deposits")
         i.fa-solid.fa-plus
-        |  New Deposit
+        | New Deposit
 
-  // ================= DEPOSITS TABLE =================
+  // ================= TABLE =================
   .table-container
     table.deposit-table
 
       thead
         tr
           th No.
+          th Date
           th Receipt ID
           th Customer Name
-          th Phone Number
+          th Phone
+          th NIN
           th Item
-          th Deposit Amount
+          th Deposit
           th Balance
-          th Payment Method
-          th Date
+          th Payment
+          th Admin
           th Status
           th Actions
 
@@ -68,12 +68,15 @@ block content
               td= deposit.customerName || 'Walk-in'
 
               // ================= PHONE =================
-              td= deposit.phoneNumber || 'N/A'
+              td= deposit.customerContact || 'N/A'
+
+              // ================= NIN =================
+              td= deposit.nin || 'N/A'
 
               // ================= ITEM =================
               td
-                if deposit.itemName
-                  | #{deposit.itemName.itemName || deposit.itemName}
+                if deposit.item
+                  | #{deposit.item.itemName || deposit.item}
                 else
                   | N/A
 
@@ -85,8 +88,15 @@ block content
               td
                 | UGX #{deposit.balance ? deposit.balance.toLocaleString() : 0}
 
-              // ================= PAYMENT =================
-              td= deposit.paymentMethod || 'Credit'
+              // ================= PAYMENT TYPE =================
+              td= deposit.paymentType || 'Credit'
+
+              // ================= ADMIN NAME =================
+              td
+                if deposit.admin
+                  | #{deposit.admin.username || deposit.admin.fullname}
+                else
+                  | System
 
               // ================= DATE =================
               td
@@ -123,7 +133,7 @@ block content
                 )
                   button.icon-btn.delete(
                     type="submit"
-                    onclick="return confirm('Delete this deposit record?')"
+                    onclick="return confirm('Are you sure you want to delete this deposit?')"
                     title="Delete Deposit"
                   )
                     i.fa-solid.fa-trash
@@ -131,30 +141,5 @@ block content
         else
 
           tr
-            td.text-center(colspan="11")
+            td.text-center(colspan="13")
               | No customer deposits found
-
-
-  // ================= SEARCH SCRIPT =================
-  script.
-    const searchInput = document.getElementById('searchInput');
-
-    searchInput.addEventListener('keyup', function () {
-
-      const value = this.value.toLowerCase();
-
-      const rows = document.querySelectorAll('tbody tr');
-
-      rows.forEach(row => {
-
-        const text = row.innerText.toLowerCase();
-
-        if (text.includes(value)) {
-          row.style.display = '';
-        } else {
-          row.style.display = 'none';
-        }
-
-      });
-
-    });
