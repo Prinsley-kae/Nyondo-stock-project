@@ -2,120 +2,107 @@ extends sales-layout
 
 block content
 
+  // ================= PAGE HEADER =================
+  .page-header.no-print
+    div
+      h2 Transaction Receipt
+      p View details or print the invoice record for this sale
+
+  // ================= RECEIPT CARD CONTAINER =================
   .receipt-container
 
     // ================= HEADER =================
     .receipt-header
-
       img.logo(src="/Images/logo.png" alt="Company Logo")
-
       h2 NYONDO GENERAL HARDWARE LTD
-      p Nansana Branch
-      p Receipt for Goods Purchased
+      p.branch Nansana Branch
+      p.receipt-type Receipt for Goods Purchased
 
-    hr
+    hr.receipt-divider
 
-    // ================= RECEIPT INFO =================
+    // ================= RECEIPT INFO META GRID =================
     .receipt-info
+      .info-group
+        span.info-label Receipt ID:
+        span.info-value.font-mono #{sale._id.toString().slice(-6).toUpperCase()}
+      
+      .info-group
+        span.info-label Date:
+        span.info-value #{new Date(sale.date || sale.createdAt).toLocaleString()}
+      
+      .info-group
+        span.info-label Customer:
+        span.info-value #{sale.customerName}
+      
+      .info-group
+        span.info-label Phone:
+        span.info-value +256 #{sale.phoneNumber}
+      
+      .info-group
+        span.info-label Address:
+        span.info-value #{sale.customerAddress}
+      
+      .info-group
+        span.info-label Distance:
+        span.info-value #{sale.distance} KM
+      
+      .info-group
+        span.info-label Attendant:
+        span.info-value #{sale.attendant ? sale.attendant.fullname : 'N/A'}
 
-      p
-        strong Receipt ID:
-        |  #{sale._id.toString().slice(-6).toUpperCase()}
+    hr.receipt-divider
 
-      p
-        strong Date:
-        |  #{new Date(sale.date).toLocaleString()}
-
-      p
-        strong Customer:
-        |  #{sale.customerName}
-
-      p
-        strong Phone:
-        |  #{sale.phoneNumber}
-
-      p
-        strong Address:
-        |  #{sale.customerAddress}
-
-      p
-        strong Distance:
-        |  #{sale.distance} KM
-
-      p
-        strong Attendant:
-        |  #{sale.attendant ? sale.attendant.username : 'N/A'}
-
-    hr
-
-    // ================= ITEMS TABLE =================
-    table.receipt-table
-
-      thead
-        tr
-          th Item
-          th Quantity
-          th Unit Price
-          th Total
-
-      tbody
-
-        if sale.items && sale.items.length
-
-          each i in sale.items
-
+    // ================= ITEMS DATA TABLE =================
+    .table-section
+      .table-container
+        table.receipt-table
+          thead
             tr
+              th Item Description
+              th.text-center Quantity
+              th.text-right Unit Price
+              th.text-right Total
+          tbody
+            if sale.items && sale.items.length
+              each i in sale.items
+                tr
+                  td.font-medium #{i.item ? i.item.itemName : 'Deleted Item'}
+                  td.text-center= i.quantity
+                  td.text-right UGX #{i.unitPrice.toLocaleString()}
+                  td.text-right.font-semibold UGX #{i.itemTotal.toLocaleString()}
+            else
+              tr
+                td.text-center(colspan="4") No items found
 
-              td
-                | #{i.item ? i.item.itemName : 'Deleted Item'}
+    hr.receipt-divider
 
-              td
-                | #{i.quantity}
-
-              td
-                | UGX #{i.unitPrice.toLocaleString()}
-
-              td
-                | UGX #{i.itemTotal.toLocaleString()}
-
-        else
-
-          tr
-            td(colspan="4")
-              | No items found
-
-    hr
-
-    // ================= SUMMARY =================
+    // ================= SUMMARY BREAKDOWN =================
     .receipt-summary
+      .summary-row
+        span.summary-label Subtotal:
+        span.summary-value UGX #{sale.subtotal ? sale.subtotal.toLocaleString() : '0'}
+      
+      .summary-row
+        span.summary-label Transport Fee:
+        span.summary-value UGX #{sale.transportFee.toLocaleString()}
+      
+      .summary-row.total-row
+        span.summary-label Grand Total:
+        span.summary-value UGX #{sale.finalTotal.toLocaleString()}
 
-      p
-        strong Subtotal:
-        |  |  UGX #{sale.subtotal ? sale.subtotal.toLocaleString() : '0'}
+    hr.receipt-divider
 
-      p
-        strong Transport:
-        |  UGX #{sale.transportFee.toLocaleString()}
-
-      p.total
-        strong Grand Total:
-        |  UGX #{sale.finalTotal.toLocaleString()}
-
-    hr
-
-    // ================= FOOTER =================
+    // ================= FOOTER TERMS =================
     .receipt-footer
-
       p Thank you for shopping with NYONDO GENERAL HARDWARE LTD
-      p Terms: Goods once sold are not returnable
+      p.terms Notice: Goods once sold are not returnable
 
-    // ================= ACTIONS =================
-    .receipt-actions
+  // ================= ACTIONS CONTROL PANEL =================
+  .receipt-actions.no-print
+    button.btn.btn-print-primary(type="button" onclick="window.print()")
+      i.fa-solid.fa-print
+      |  Print Receipt
 
-      button.btn.primary(onclick="window.print()")
-        i.fa-solid.fa-print
-        |  Print Receipt
-
-      a.btn.secondary(href="/sales/add-sale")
-        i.fa-solid.fa-plus
-        |  New Sale
+    a.btn.btn-return-secondary(href="/sales/add-sale")
+      i.fa-solid.fa-plus
+      |  New Sale

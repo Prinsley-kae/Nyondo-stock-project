@@ -1,71 +1,103 @@
 extends admin-layout
 
 block content
-
   // ================= PAGE HEADER =================
   .page-header
-    h2 System Settings
-    p Manage your profile and basic system preferences
+    h2 Account Settings
+    p Update your administrative profile information and security credentials
 
-  // ================= SETTINGS WRAPPER =================
-  .settings-container
+  // ================= PROFILE MAIN OVERVIEW =================
+  .summary-section
+    h3 Admin Profile Summary
+    .summary-grid
+      .summary-card
+        .summary-card-header
+          i.fa-solid.fa-user
+          h4 Account Name
+        p.font-semibold #{(user && user.name) ? user.name : 'System Administrator'}
+      
+      .summary-card
+        .summary-card-header
+          i.fa-solid.fa-envelope
+          h4 Email Address
+        p.font-semibold #{(user && user.email) ? user.email : 'admin@nyondo.com'}
+      
+      .summary-card
+        .summary-card-header
+          i.fa-solid.fa-shield-halved
+          h4 System Role
+        p.font-semibold.role-text-transform #{(user && user.role) ? user.role : 'Super Admin'}
 
-    // ================= PROFILE SECTION =================
-    .settings-card
-      h3 Admin Profile
-
-      form(method="POST" action="/admin/settings/profile")
-
-        .form-group
+  // ================= UPDATE ACCOUNT FORM =================
+  .form-section
+    h3 Update Profile Information
+    
+    form(method="POST" action="/admin/profile/update")
+      .form-grid
+        
+        // ================= FULL NAME =================
+        .input-group
           label Full Name
-          input(type="text" name="name" value=user.name required)
+          .icon-input-wrapper
+            i.fa-solid.fa-user.input-icon
+            input(
+              type="text"
+              name="name"
+              value=(user && user.name) ? user.name : ""
+              required
+              placeholder="e.g. John Doe"
+            )
 
-        .form-group
-          label Email
-          input(type="email" name="email" value=user.email required)
+        // ================= EMAIL ADDRESS =================
+        .input-group
+          label Email Address
+          .icon-input-wrapper
+            i.fa-solid.fa-envelope.input-icon
+            input(
+              type="email"
+              name="email"
+              value=(user && user.email) ? user.email : ""
+              required
+              placeholder="e.g. admin@nyondo.com"
+            )
 
-        button.btn(type="submit")
+      .form-actions-bar
+        button.btn.primary-action-btn(type="submit")
           i.fa-solid.fa-floppy-disk
-          | Update Profile
+          | Save Profile Changes
 
-    // ================= PASSWORD SECTION =================
-    .settings-card
-      h3 Change Password
-
-      form(method="POST" action="/admin/settings/password")
-
-        .form-group
+  // ================= SECURITY/PASSWORD UPDATE =================
+  .form-section(style="margin-top: 32px;")
+    h3 Change Security Password
+    
+    form(method="POST" action="/admin/profile/update-password")
+      .form-grid
+        
+        // ================= CURRENT PASSWORD =================
+        .input-group
           label Current Password
-          input(type="password" name="currentPassword" required)
+          .icon-input-wrapper
+            i.fa-solid.fa-lock.input-icon
+            input(
+              type="password"
+              name="currentPassword"
+              required
+              placeholder="••••••••"
+            )
 
-        .form-group
+        // ================= NEW PASSWORD =================
+        .input-group
           label New Password
-          input(type="password" name="newPassword" required)
+          .icon-input-wrapper
+            i.fa-solid.fa-key.input-icon
+            input(
+              type="password"
+              name="newPassword"
+              required
+              placeholder="Minimum 8 characters"
+            )
 
-        .form-group
-          label Confirm Password
-          input(type="password" name="confirmPassword" required)
-
-        button.btn.secondary(type="submit")
-          i.fa-solid.fa-lock
-          | Change Password
-
-    // ================= SYSTEM INFO =================
-    .settings-card
-      h3 System Information
-
-      p
-        strong System Name:
-        | NYONDO Stock System
-
-      p
-        strong Version:
-        | 1.0.0
-
-      p
-        strong Location:
-        | Nansana, Uganda
-
-      p
-        strong Role:
-        | Administrator
+      .form-actions-bar
+        button.btn.primary-action-btn(type="submit")
+          i.fa-solid.fa-shield-lock
+          | Update Password

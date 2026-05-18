@@ -2,113 +2,210 @@ extends sales-layout
 
 block content
 
-  main.content
-
-    .page-header
+  // ================= PAGE HEADER =================
+  .page-header
+    div
       h2 Add New Sale
-      p.subtitle Record multiple items in one transaction
+      p View and manage your daily sales records
 
-    .form-section
+  // ================= FORM SECTION =================
+  .recent-section
+    h3 Record Transaction Details
 
-      form#salesForm(method="post" action="/sales/add-sale")
+    form#salesForm.form-section(
+      method="post"
+      action="/sales/add-sale"
+    )
 
-        h3 Select Items
+      // ================= ITEMS CONTAINER =================
+      .items-container#itemsContainer
 
-        .items-container
+        .item-row(data-index="0")
 
-          // ITEM 1
-          .item-row(style="display:flex; gap:10px; margin-bottom:15px;")
-            select(name="items[0][item]" required)
+          .input-group
+            label Item Name
+            select(
+              name="items[item]"
+              required
+              onchange="updateRowData(this)"
+            )
               option(value="") -- Select Item --
               each item in items
-                option(value=item._id)
-                  | #{item.itemName} (#{item.sellingPrice} UGX)
+                option(
+                  value=item._id
+                  data-price=item.sellingPrice
+                )
+                  | #{item.itemName} - #{item.sellingPrice.toLocaleString()} UGX | Stock: #{item.quantity}
 
+          .input-group
+            label Quantity
             input(
               type="number"
-              name="items[0][quantity]"
-              placeholder="Quantity"
+              name="items[quantity]"
+              placeholder="Qty"
               min="1"
               required
             )
 
-          // ITEM 2
-          .item-row(style="display:flex; gap:10px; margin-bottom:15px;")
-            select(name="items[1][item]")
-              option(value="") -- Optional Item --
-              each item in items
-                option(value=item._id)
-                  | #{item.itemName} (#{item.sellingPrice} UGX)
-
-            input(
-              type="number"
-              name="items[1][quantity]"
-              placeholder="Quantity"
-              min="1"
-            )
-
-          // ITEM 3
-          .item-row(style="display:flex; gap:10px; margin-bottom:15px;")
-            select(name="items[2][item]")
-              option(value="") -- Optional Item --
-              each item in items
-                option(value=item._id)
-                  | #{item.itemName} (#{item.sellingPrice} UGX)
-
-            input(
-              type="number"
-              name="items[2][quantity]"
-              placeholder="Quantity"
-              min="1"
-            )
-
-        hr
-
-        .form-grid
-
           .input-group
-            label Customer Name
-            input(
+            label Selling Price
+            input.price-display(
               type="text"
-              name="customerName"
-              placeholder="Walk-in Customer"
-              required
+              readonly
+              value="0 UGX"
             )
 
-          .input-group
-            label Phone Number
+          .action-group
+            button.remove-btn(
+              type="button"
+              onclick="removeRow(this)"
+              title="Remove Item"
+            )
+              i.fa-solid.fa-trash
+
+      // ================= ADD BUTTON =================
+      button.btn.secondary(
+        type="button"
+        onclick="addItemRow()"
+      )
+        i.fa-solid.fa-plus
+        |  Add Another Item
+
+      hr.form-divider
+
+      // ================= CUSTOMER DETAILS =================
+      h3.customer-section-title Customer & Delivery Details
+
+      .form-grid
+
+        .input-group
+          label Customer Name
+          input(
+            type="text"
+            name="customerName"
+            placeholder="Walk-in Customer"
+            required
+          )
+
+        .input-group
+          label Phone Number
+          .phone-input
+            span.phone-prefix +256
             input(
               type="text"
               name="phoneNumber"
-              placeholder="0700000000"
+              placeholder="700000000"
+              maxlength="9"
               required
             )
 
-          .input-group
-            label Customer Address
-            input(
-              type="text"
-              name="customerAddress"
-              placeholder="Customer Address"
-              required
-            )
+        .input-group
+          label Customer Address
+          input(
+            type="text"
+            name="customerAddress"
+            placeholder="E.g., Seeta, Mukono"
+            required
+          )
 
-          .input-group
-            label Distance (KM)
-            input(
-              type="number"
-              name="distance"
-              placeholder="0"
-              min="0"
-              required
-            )
+        .input-group
+          label Distance (KM)
+          input(
+            type="number"
+            name="distance"
+            min="0"
+            required
+          )
 
-        .button-group
+      // ================= BUTTONS =================
+      .button-group
+        button.btn.btn-submit(type="submit")
+          i.fa-solid.fa-cart-plus
+          |  Complete Sale
 
-          button.btn.primary(type="submit")
-            i.fa-solid.fa-cart-plus
-            |  Complete Sale
+        button.btn.btn-reset(
+          type="reset"
+          onclick="setTimeout(resetFormTotals, 10)"
+        )
+          i.fa-solid.fa-rotate-left
+          |  Clear Form
 
-          button.btn.secondary(type="reset")
-            i.fa-solid.fa-rotate-left
-            |  Clear Form
+  // ================= SAFE DATA INJECTION =================
+  script.
+    const availableItems = !{JSON.stringify(items || [])};
+
+  // ================= MAIN JS =================
+  script.
+    function buildOptions() {
+      let options = `<option value="">-- Select Item --</option>`;
+
+      availableItems.forEach(i => {
+        options += `
+          <option value="${i._id}" data-price="${i.sellingPrice}">
+            ${i.itemName} - ${Number(i.sellingPrice).toLocaleString()} UGX | Stock: ${i.quantity}
+          </option>
+        `;
+      });
+
+      return options;
+    }
+
+    function addItemRow() {
+      const container = document.getElementById('itemsContainer');
+      const row = document.createElement('div');
+      row.className = 'item-row';
+
+      row.innerHTML = `
+        <div class="input-group">
+          <label>Item Name</label>
+          <select name="items[item]" required onchange="updateRowData(this)">
+            ${buildOptions()}
+          </select>
+        </div>
+
+        <div class="input-group">
+          <label>Quantity</label>
+          <input type="number" name="items[quantity]" min="1" required />
+        </div>
+
+        <div class="input-group">
+          <label>Selling Price</label>
+          <input type="text" class="price-display" readonly value="0 UGX" />
+        </div>
+
+        <div class="action-group">
+          <button type="button" class="remove-btn" onclick="removeRow(this)">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
+      `;
+
+      container.appendChild(row);
+    }
+
+    function removeRow(button) {
+      const rows = document.querySelectorAll('.item-row');
+      if (rows.length > 1) {
+        button.closest('.item-row').remove();
+      } else {
+        alert('At least one item is required.');
+      }
+    }
+
+    function updateRowData(selectElement) {
+      const option = selectElement.options[selectElement.selectedIndex];
+      const row = selectElement.closest('.item-row');
+      const priceInput = row.querySelector('.price-display');
+
+      if (option && option.value) {
+        priceInput.value = Number(option.dataset.price || 0).toLocaleString() + ' UGX';
+      } else {
+        priceInput.value = '0 UGX';
+      }
+    }
+
+    function resetFormTotals() {
+      document.querySelectorAll('.price-display').forEach(i => {
+        i.value = '0 UGX';
+      });
+    }

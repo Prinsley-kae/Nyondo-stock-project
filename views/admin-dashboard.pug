@@ -11,67 +11,71 @@ block content
   .stats-grid
 
     .card
-      i.fa-solid.fa-coins
+      i.fa-solid.fa-coins.icon-revenue
       .info
         h3 Sales Revenue
-        p UGX #{stats.salesRevenue.toLocaleString()}
+        p UGX #{stats && stats.salesRevenue ? stats.salesRevenue.toLocaleString() : 0}
 
     .card
-      i.fa-solid.fa-boxes-stacked
+      i.fa-solid.fa-boxes-stacked.icon-expenditure
       .info
         h3 Stock Expenditure
-        p UGX #{stats.inventoryValue.toLocaleString()}
+        p UGX #{stats && stats.inventoryValue ? stats.inventoryValue.toLocaleString() : 0}
 
     .card
-      i.fa-solid.fa-truck-field
+      i.fa-solid.fa-truck-field.icon-suppliers
       .info
         h3 Suppliers
         p #{supplierCount || 0}
 
     .card
-      i.fa-solid.fa-money-bill-trend-up
+      i.fa-solid.fa-money-bill-trend-up.icon-credit
       .info
         h3 Outstanding Credit
-        p UGX #{totalCredit || 0}
+        p UGX #{totalCredit ? totalCredit.toLocaleString() : 0}
 
   // ================= SYSTEM SUMMARY =================
   .summary-section
-
     h3 System Overview
 
     .summary-grid
 
       .summary-card
-        h4 Sales Performance
-        p Total transactions processed across all attendants.
+        .summary-card-header
+          i.fa-solid.fa-chart-line
+          h4 Sales Performance
+        p Total transactions processed across all active hardware attendants.
 
       .summary-card
-        h4 Inventory Status
-        p Current stock levels and product availability.
+        .summary-card-header
+          i.fa-solid.fa-warehouse
+          h4 Inventory Status
+        p Current operational material stock levels and item product availability.
 
       .summary-card
-        h4 Supplier Activity
-        p Credit purchases and payment tracking.
+        .summary-card-header
+          i.fa-solid.fa-handshake
+          h4 Supplier Activity
+        p Procurement credit updates, balance purchases, and milestone tracking.
 
   // ================= QUICK NAVIGATION =================
   .quick-actions
-
     h3 Quick Actions
 
     .action-buttons
 
-      a.btn.secondary(href="/admin/users")
+      a.btn.action-btn(href="/admin/users")
         i.fa-solid.fa-users
-        | Manage Users
+        span Manage Users
 
-      a.btn.secondary(href="/admin/sales-report")
+      a.btn.action-btn(href="/admin/sales-report")
         i.fa-solid.fa-chart-line
-        | Sales Report
+        span Sales Report
 
-      a.btn.secondary(href="/admin/stock-report")
+      a.btn.action-btn(href="/admin/stock-report")
         i.fa-solid.fa-boxes-stacked
-        | Stock Report
+        span Stock Report
 
-      a.btn.secondary(href="/admin/credit-report")
+      a.btn.action-btn(href="/admin/credit-report")
         i.fa-solid.fa-money-bill
-        | Credit Report
+        span Credit Report

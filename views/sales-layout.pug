@@ -10,56 +10,56 @@ html(lang="en")
     link(href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet")
 
     //- Main CSS
-    link(rel="stylesheet" href="/css/pages.css")
+    link(rel="stylesheet" href="/css/sales.css")
 
   body
 
-    // ================= WRAPPER =================
+    //- ================= WRAPPER =================
     .dashboard-wrapper
 
-      // ================= SIDEBAR =================
+      //- ================= SIDEBAR =================
       aside.sidebar
 
         .brand
           h2 NYONDO HARDWARE
-          p SALES PANEL
+          p SALES ATTENDAT'S PANEL
 
         ul.nav-links
 
-          // ================= DASHBOARD =================
+          //- ================= DASHBOARD =================
           li
             a(href="/sales")
               i.fa-solid.fa-gauge
               span Dashboard
 
-          // ================= SALES =================
+          //- ================= SALES =================
           li
             a(href="/sales/sales-list")
               i.fa-solid.fa-cart-plus
               span View Sales
 
-          // ================= RECEIPTS LIST (FIXED) =================
+          //- ================= RECEIPTS LIST =================
           li
             a(href="/sales/printed-receipts")
               i.fa-solid.fa-receipt
               span Printed receipts
 
-          // ================= STOCK VIEW =================
+          //- ================= STOCK VIEW =================
           li
             a(href="/sales/view-stock")
               i.fa-solid.fa-boxes-stacked
               span View Stock
 
-          // ================= LOGOUT =================
+          //- ================= LOGOUT =================
           li
             a(href="/logout")
               i.fa-solid.fa-right-from-bracket
               span Logout
 
-      // ================= MAIN AREA =================
+      //- ================= MAIN AREA =================
       main.main-content
 
-        // ================= TOPBAR =================
+        //- ================= TOPBAR =================
         header.topbar
           .left
             h3 Sales Attendant Panel
@@ -69,6 +69,7 @@ html(lang="en")
               i.fa-solid.fa-user
               span Sales Attendant
 
-        // ================= PAGE CONTENT =================
+        //- ================= PAGE CONTENT =================
         section.content
+
           block content

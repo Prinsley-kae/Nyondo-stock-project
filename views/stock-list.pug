@@ -7,167 +7,177 @@ block content
     h2 Inventory & Supplier Credits
     p Manage stock and supplier credit in one place
 
+  // ================= FILTER + REPORT BAR =================
+  .quick-actions
+    .filter-wrapper
+      
+      // Modern Filter Search Box
+      .input-group.search-group
+        input#searchInput(
+          type="text"
+          placeholder="Search stock or credit records..."
+        )
+        i.fa-solid.fa-magnifying-glass.search-icon
 
-  // ================= FILTER + REPORT =================
-  .filter-bar
-
-    .search-box
-      i.fa-solid.fa-magnifying-glass
-
-      input#searchInput(
-        type="text"
-        placeholder="Search stock or credit records..."
-      )
-
-    button.btn(type="button" onclick="window.print()")
-      i.fa-solid.fa-print
-      | Generate Report
-
+      // Action Controls
+      button.btn.primary-btn.report-btn(type="button" onclick="window.print()")
+        i.fa-solid.fa-print
+        |  Generate Report
 
   // =========================================================
-  // ================= STOCK TABLE =================
+  // ==================== STOCK INVENTORY ====================
   // =========================================================
-  .table-section
+  .recent-section
     h3 Stock Inventory
 
-    .table-container
+    .table-responsive
       table
         thead
           tr
             th No.
-            th Date
+            th Date Received
             th Item Name
-            th Image
+            th Product Preview
             th Quantity
             th Buying Price
             th Selling Price
             th Total Value
-            th Status
+            th Alert Status
             th Actions
 
         tbody
           if stocks && stocks.length
             each stock, i in stocks
-              - const d = new Date(stock.createdAt || stock.deliveryDate)
+              - const d = stock.createdAt || stock.deliveryDate ? new Date(stock.createdAt || stock.deliveryDate) : null
 
               tr
                 td= i + 1
-
                 td
                   if d
-                    | #{d.toLocaleDateString()}
+                    span.font-semibold #{d.toLocaleDateString()}
                     br
-                    small.text-muted #{d.toLocaleTimeString()}
-
-                td= stock.itemName || 'N/A'
-
+                    small.timestamp-muted #{d.toLocaleTimeString()}
+                  else
+                    | N/A
+                
+                td.font-semibold= stock.itemName || 'N/A'
+                
                 td
                   if stock.itemImage
-                    img(src=`/uploads/${stock.itemImage}` width="80")
+                    img.product-preview-img(
+                      src=`/uploads/${stock.itemImage}` 
+                      alt=stock.itemName 
+                    )
                   else
-                    span No Image
+                    span.no-image-fallback No Image
 
                 td= stock.quantity || 0
-
                 td UGX #{Number(stock.buyingPrice || 0).toLocaleString()}
-
                 td UGX #{Number(stock.sellingPrice || 0).toLocaleString()}
-
-                td UGX #{Number(stock.totalValue || 0).toLocaleString()}
-
+                td.font-semibold UGX #{Number(stock.totalValue || 0).toLocaleString()}
+                
                 td
                   if Number(stock.quantity) === 0
                     span.badge.out Out of stock
                   else if Number(stock.quantity) <= 50
-                    span.badge.low Low stock
+                    span.badge.critical Low stock
                   else
-                    span.badge.good In stock
-
-                td.actions
-                  a.icon-btn.edit(href=`/store/inventory/edit/${stock._id}`)
-                    i.fa-solid.fa-pen
-
-                  form(action=`/store/inventory/delete/${stock._id}` method="POST" style="display:inline")
-                    button.icon-btn.delete(type="submit" onclick="return confirm('Delete this stock?')")
-                      i.fa-solid.fa-trash
-
+                    span.badge.low In stock
+                
+                td
+                  .button-group.table-actions
+                    a.btn.secondary-btn.action-sub-btn(
+                      href=`/store/inventory/edit/${stock._id}` 
+                      title="Edit Item"
+                    )
+                      i.fa-solid.fa-pen
+                    
+                    form(action=`/store/inventory/delete/${stock._id}` method="POST" style="display:inline")
+                      button.btn.secondary-btn.action-sub-btn.delete-action-btn(
+                        type="submit" 
+                        onclick="return confirm('Delete this stock item permanently?')"
+                        title="Delete Record"
+                      )
+                        i.fa-solid.fa-trash
           else
             tr
-              td(colspan="10") No stock available
-
+              td.table-fallback-row(colspan="10") No stock items available in the system repository.
 
   // =========================================================
-  // ================= SUPPLIER CREDIT TABLE =================
+  // ================= SUPPLIER CREDIT MATRIX =================
   // =========================================================
-  .table-section(style="margin-top:40px;")
+  .recent-section.credit-section-margin
     h3 Supplier Credit Records
 
-    .table-container
+    .table-responsive
       table
         thead
           tr
             th No.
-            th Date
-            th Supplier Name
-            th Supplier Contact
-            th Item Name
+            th Issuance Date
+            th Supplier Details
+            th Contact
+            th Item Procured
             th Amount Owed
-            th Payment Method
+            th Mode
             th Status
             th Actions
 
         tbody
           if credits && credits.length
             each credit, i in credits
-              - const d = new Date(credit.deliveryDate || credit.createdAt)
+              - const d = credit.deliveryDate || credit.createdAt ? new Date(credit.deliveryDate || credit.createdAt) : null
 
               tr
                 td= i + 1
-
                 td
                   if d
-                    | #{d.toLocaleDateString()}
+                    span.font-semibold #{d.toLocaleDateString()}
                     br
-                    small.text-muted #{d.toLocaleTimeString()}
-
-                td= credit.supplierName || 'N/A'
-
+                    small.timestamp-muted #{d.toLocaleTimeString()}
+                  else
+                    | N/A
+                
+                td.font-semibold= credit.supplierName || 'N/A'
                 td= credit.supplierContact || 'N/A'
-
                 td= credit.itemName || 'N/A'
-
-                td UGX #{Number(credit.totalValue || 0).toLocaleString()}
-
-                td= credit.paymentMethod || 'credit'
-
+                td.font-semibold.debt-text UGX #{Number(credit.totalValue || 0).toLocaleString()}
+                td.capitalize-text= credit.paymentMethod || 'credit'
+                
                 td
                   if credit.paymentMethod === 'credit'
                     span.badge.out Unpaid
                   else
-                    span.badge.good Paid
-
-                td.actions
-                  a.icon-btn.edit(href=`/store/inventory/edit/${credit._id}`)
-                    i.fa-solid.fa-pen
-
-                  form(action=`/store/inventory/delete/${credit._id}` method="POST" style="display:inline")
-                    button.icon-btn.delete(type="submit" onclick="return confirm('Delete this record?')")
-                      i.fa-solid.fa-trash
-
+                    span.badge.low Paid
+                
+                td
+                  .button-group.table-actions
+                    a.btn.secondary-btn.action-sub-btn(
+                      href=`/store/inventory/edit/${credit._id}` 
+                      title="Edit Credit"
+                    )
+                      i.fa-solid.fa-pen
+                    
+                    form(action=`/store/inventory/delete/${credit._id}` method="POST" style="display:inline")
+                      button.btn.secondary-btn.action-sub-btn.delete-action-btn(
+                        type="submit" 
+                        onclick="return confirm('Delete this supplier record?')"
+                        title="Delete Record"
+                      )
+                        i.fa-solid.fa-trash
           else
             tr
-              td(colspan="9") No credit records found
+              td.table-fallback-row(colspan="9") No outstanding credit obligations logged.
 
-
-  // ================= SEARCH SCRIPT =================
+  // ================= REAL-TIME FILTER ENGINE =================
   script.
-    const searchInput = document.getElementById('searchInput');
-
-    searchInput.addEventListener('keyup', function () {
+    document.getElementById('searchInput').addEventListener('keyup', function () {
       const value = this.value.toLowerCase();
-      const rows = document.querySelectorAll("table tbody tr");
-
-      rows.forEach(row => {
-        row.style.display = row.innerText.toLowerCase().includes(value) ? "" : "none";
+      
+      document.querySelectorAll("table tbody tr").forEach(row => {
+        if(row.cells.length > 1) {
+          const textContent = row.innerText.toLowerCase();
+          row.style.display = textContent.includes(value) ? "" : "none";
+        }
       });
     });

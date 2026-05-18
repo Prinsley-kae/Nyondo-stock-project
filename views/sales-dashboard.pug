@@ -2,12 +2,12 @@ extends sales-layout
 
 block content
 
-  // ================= PAGE HEADER =================
+  //- ================= PAGE HEADER =================
   .page-header
     h2 Sales Dashboard
     p Welcome back. Here is your sales summary.
 
-  // ================= STATS CARDS =================
+  //- ================= STATS CARDS =================
   .stats-grid
 
     .card
@@ -34,7 +34,7 @@ block content
         h3 Stock Items
         p 0
 
-  // ================= QUICK ACTIONS =================
+  //- ================= QUICK ACTIONS =================
   .quick-actions
     h3 Quick Actions
 
@@ -51,19 +51,20 @@ block content
         i.fa-solid.fa-boxes-stacked
         |  Check Stock
 
-  // ================= RECENT SALES =================
+  //- ================= RECENT SALES =================
   .recent-section
     h3 Recent Sales
 
-    table
-      thead
-        tr
-          th Customer
-          th Product
-          th Quantity
-          th Total
-          th Transport
+    .table-responsive
+      table
+        thead
+          tr
+            th Customer
+            th Product
+            th Quantity
+            th Total
+            th Transport
 
-      tbody
-        tr
-          td(colspan="5") No sales recorded yet
+        tbody
+          tr
+            td(colspan="5") No sales recorded yet.

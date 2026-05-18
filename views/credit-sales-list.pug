@@ -8,138 +8,117 @@ block content
     p View and manage all customer deposit transactions
 
   // ================= TOP ACTION BAR =================
-  .action-bar
+  .quick-actions
+    .action-bar-split
+      .search-box-wrapper
+        i.fa-solid.fa-magnifying-glass.search-icon
+        input#searchInput(
+          type="text"
+          placeholder="Search customer, phone, receipt or item..."
+          onkeyup="executeTableFilter()"
+        )
 
-    .search-box
-      i.fa-solid.fa-magnifying-glass
-      input#searchInput(
-        type="text"
-        placeholder="Search customer, phone, receipt..."
-      )
+      .action-buttons
+        button.btn.action-btn(type="button" onclick="window.print()")
+          i.fa-solid.fa-print
+          span Generate Report
+        a.btn.action-btn.primary-action-btn(href="/admin/deposits")
+          i.fa-solid.fa-plus
+          span New Deposit
 
-    .action-buttons
-      button.btn(type="button" onclick="window.print()")
-        i.fa-solid.fa-print
-        | Generate Report
+  // ================= DEPOSITS TABLE =================
+  .recent-section
+    h3 Registered System Deposits
 
-      a.btn.btn-primary(href="/admin/deposits")
-        i.fa-solid.fa-plus
-        | New Deposit
-
-  // ================= TABLE =================
-  .table-container
-    table.deposit-table
-
-      thead
-        tr
-          th No.
-          th Date
-          th Receipt ID
-          th Customer Name
-          th Phone
-          th NIN
-          th Item
-          th Deposit
-          th Balance
-          th Payment
-          th Admin
-          th Status
-          th Actions
-
-      tbody
-
-        if deposits && deposits.length
-
-          each deposit, i in deposits
-
-            - const d = new Date(deposit.createdAt || deposit.date)
-
-            tr
-
-              // ================= NUMBER =================
-              td= i + 1
-
-              // ================= RECEIPT =================
-              td
-                span.receipt-id
-                  | ##{deposit._id.toString().slice(-6)}
-
-              // ================= CUSTOMER =================
-              td= deposit.customerName || 'Walk-in'
-
-              // ================= PHONE =================
-              td= deposit.customerContact || 'N/A'
-
-              // ================= NIN =================
-              td= deposit.nin || 'N/A'
-
-              // ================= ITEM =================
-              td
-                if deposit.item
-                  | #{deposit.item.itemName || deposit.item}
-                else
-                  | N/A
-
-              // ================= DEPOSIT =================
-              td
-                | UGX #{deposit.amountPaid ? deposit.amountPaid.toLocaleString() : 0}
-
-              // ================= BALANCE =================
-              td
-                | UGX #{deposit.balance ? deposit.balance.toLocaleString() : 0}
-
-              // ================= PAYMENT TYPE =================
-              td= deposit.paymentType || 'Credit'
-
-              // ================= ADMIN NAME =================
-              td
-                if deposit.admin
-                  | #{deposit.admin.username || deposit.admin.fullname}
-                else
-                  | System
-
-              // ================= DATE =================
-              td
-                | #{d.toLocaleDateString()}
-                br
-                small.text-muted #{d.toLocaleTimeString()}
-
-              // ================= STATUS =================
-              td
-                if deposit.balance > 0
-                  span.badge.out Pending
-                else
-                  span.badge.good Cleared
-
-              // ================= ACTIONS =================
-              td.actions
-
-                a.icon-btn.view(
-                  href=`/admin/deposits/${deposit._id}`
-                  title="View Deposit"
-                )
-                  i.fa-solid.fa-eye
-
-                a.icon-btn.edit(
-                  href=`/admin/deposits/edit/${deposit._id}`
-                  title="Edit Deposit"
-                )
-                  i.fa-solid.fa-pen
-
-                form(
-                  action=`/admin/deposits/delete/${deposit._id}`
-                  method="POST"
-                  style="display:inline;"
-                )
-                  button.icon-btn.delete(
-                    type="submit"
-                    onclick="return confirm('Are you sure you want to delete this deposit?')"
-                    title="Delete Deposit"
-                  )
-                    i.fa-solid.fa-trash
-
-        else
-
+    .table-responsive
+      table#depositsTable
+        thead
           tr
-            td.text-center(colspan="13")
-              | No customer deposits found
+            th No.
+            th Receipt ID
+            th Customer Name
+            th Contact
+            th NIN Number
+            th Item Name
+            th Deposit (UGX)
+            th Balance (UGX)
+            th Profile
+            th Handled By
+            th Logged Date
+            th Status
+            th.center-text Actions
+
+        tbody
+          if deposits && deposits.length
+            each deposit, i in deposits
+              - const d = new Date(deposit.createdAt || deposit.date)
+              tr
+                td= i + 1
+                
+                td
+                  span.receipt-hash-tag ##{deposit._id.toString().slice(-6).toUpperCase()}
+                
+                td.font-semibold= deposit.customerName || 'Walk-in'
+                
+                td= deposit.customerContact || 'N/A'
+                
+                td= deposit.nin || 'N/A'
+                
+                td
+                  if deposit.item
+                    | #{deposit.item.itemName || deposit.item}
+                  else
+                    span.text-muted-italic N/A
+                
+                td.font-semibold.text-revenue
+                  | #{deposit.amountPaid ? deposit.amountPaid.toLocaleString() : 0}
+                
+                td(class=(deposit.balance > 0 ? "text-danger font-semibold" : ""))
+                  | #{deposit.balance ? deposit.balance.toLocaleString() : 0}
+                
+                td.role-text-transform= deposit.paymentType || 'Credit'
+                
+                td
+                  if deposit.admin
+                    | #{deposit.admin.username || deposit.admin.fullname}
+                  else
+                    span.text-muted System
+                
+                td
+                  span= d.toLocaleDateString()
+                  br
+                  small.timestamp-sub-text #{d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                
+                td
+                  if deposit.balance > 0
+                    span.badge.status-disabled Pending
+                  else
+                    span.badge.status-active Cleared
+
+                td
+                  .table-actions-flex-wrapper
+                    a.btn.action-btn.action-sub-btn(
+                      href=`/admin/deposits/${deposit._id}`
+                      title="View Deposit"
+                    )
+                      i.fa-solid.fa-eye
+
+                    a.btn.action-btn.action-sub-btn(
+                      href=`/admin/deposits/edit/${deposit._id}`
+                      title="Edit Deposit"
+                    )
+                      i.fa-solid.fa-pen
+
+                    form.inline-form(
+                      action=`/admin/deposits/delete/${deposit._id}`
+                      method="POST"
+                      onsubmit="return confirm('Are you sure you want to delete this deposit?')"
+                    )
+                      button.btn.action-btn.action-sub-btn.delete-action-btn(
+                        type="submit"
+                        title="Delete Deposit"
+                      )
+                        i.fa-solid.fa-trash
+          else
+            tr
+              td.table-fallback-row(colspan="13") No registered customer deposits found.

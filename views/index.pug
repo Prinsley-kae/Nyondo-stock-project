@@ -9,7 +9,7 @@ html
     link(rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css')
 
     // Google Font
-    link(href='https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap' rel='stylesheet')
+    link(href='https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap' rel='stylesheet')
 
     // CSS
     link(rel='stylesheet' href='/css/style.css')
@@ -18,49 +18,73 @@ html
 
     // HERO SECTION
     .hero
+      .hero-overlay
       .hero-content
 
-        // LOGO SECTION
         .logo-container
-          img.logo(src='/Images/logo.png' alt='NYONDO Logo')
+          img.logo(src='/Images/logo.png' alt='NYONDO Stock System Logo')
 
         h1 NYONDO STOCK SYSTEM
-        p Smart Hardware Inventory, Sales, Credit & Deposit Management System
+        h2 Smart Inventory • Sales • Credit • Deposit Management
+
+        p.tagline The complete digital solution for managing wholesale and retail hardware businesses with confidence and control.
+
+        p.description Track stock in real time, manage customer credit, monitor supplier deposits, and streamline sales operations all in one powerful system.
 
         .hero-buttons
           a.btn.primary(href='/login')
             i.fa-solid.fa-right-to-bracket
-            |  Login
+            |  Get Started
 
           a.btn.secondary(href='/signup')
             i.fa-solid.fa-user-plus
-            |  Create Account
+            |  Create Free Account
 
-    // FEATURES SECTION
-    .features
+          a.btn.ghost(href='#features')
+            i.fa-solid.fa-circle-info
+            |  Explore Features
+
+
+    // FEATURES SECTION (FIXED FOR FLEX ROW)
+    section#features.features
+
+      h2.section-title Why Choose NYONDO?
+
       .feature-card
-        i.fa-solid.fa-box
-        h3 Stock Tracking
-        p Monitor and manage hardware inventory in real time
+        i.fa-solid.fa-boxes-stacked
+        h3 Real-Time Stock Tracking
+        p Stay updated with accurate inventory levels across all products instantly.
 
       .feature-card
         i.fa-solid.fa-cart-shopping
-        h3 Sales Management
-        p Record sales and automatically generate receipts
+        h3 Smart Sales Management
+        p Record transactions quickly and generate professional receipts automatically.
 
       .feature-card
         i.fa-solid.fa-hand-holding-dollar
-        h3 Credit & Deposits
-        p Track supplier credit and customer deposit schemes
+        h3 Credit & Deposit Control
+        p Manage customer credit, supplier balances, and deposits with full transparency.
 
       .feature-card
-        i.fa-solid.fa-truck
-        h3 Transport Management
-        p Calculate delivery charges automatically
+        i.fa-solid.fa-truck-fast
+        h3 Delivery & Transport
+        p Automatically calculate and manage delivery charges with ease.
+
+
+    // CTA SECTION
+    section.cta
+      h2 Ready to Transform Your Hardware Business?
+      p Join NYONDO STOCK SYSTEM today and take full control of your operations.
+
+      a.btn.primary.large(href='/signup')
+        i.fa-solid.fa-rocket
+        |  Start Now
+
 
     // FOOTER
     footer
       p © 2026 NYONDO General Hardware LTD. All rights reserved.
-      p 
+
+      p
         i.fa-solid.fa-location-dot
         |  Nansana, Uganda

@@ -2,28 +2,39 @@ extends sales-layout
 
 block content
 
-  // ================= PAGE HEADER =================
-  .page-header
-    h2 Printed Receipts
-    p.subtitle List of all generated receipts
+  //- ================= PAGE HEADER =================
+  .page-header.flex-between
 
-  // ================= SEARCH BAR =================
-  .filter-bar(style="display:flex; gap:10px; margin-bottom:20px;")
+    div
+      h2 Printed Receipts
+      p View and manage your generated transaction receipts
 
-    input#searchInput(
-      type="text"
-      placeholder="Search receipts by customer, item, or ID..."
-      style="width:700px; height:50px;"
+
+  //- ================= FILTER / SEARCH BAR =================
+  .filter-bar
+
+    .search-wrapper
+      i.fa-solid.fa-magnifying-glass.search-icon
+      input#searchInput(
+        type="text"
+        placeholder="Search receipts by customer, item, or ID..."
+      )
+
+    button.btn.secondary(
+      type="button"
+      onclick="window.print()"
     )
-
-    button.btn(type="button" onclick="window.print()")
       i.fa-solid.fa-print
       |  Print Page
 
-  // ================= TABLE =================
-  .table-section
-    .table-container
+
+  //- ================= TABLE SECTION =================
+  .recent-section
+
+    .table-responsive
+
       table
+
         thead
           tr
             th No.
@@ -34,62 +45,104 @@ block content
             th Quantity
             th Total (UGX)
             th Attendant
-            th Action
+            th Actions
 
         tbody
+
           if sales && sales.length
 
             each sale, i in sales
+
               tr
+
+                //- ================= NUMBER =================
                 td= i + 1
 
-                td
-                  | #{sale._id.toString().slice(-6)}
+                //- ================= RECEIPT ID =================
+                td.font-mono
+                  | #{sale._id.toString().slice(-6).toUpperCase()}
 
+                //- ================= DATE =================
                 td
                   | #{new Date(sale.date || sale.createdAt).toLocaleString()}
 
+                //- ================= CUSTOMER =================
                 td= sale.customerName
 
-                // ================= ITEMS =================
+                //- ================= ITEMS COLUMN =================
                 td
                   if sale.items && sale.items.length
                     each entry in sale.items
                       if entry.item && entry.item.itemName
-                        | #{entry.item.itemName} (x#{entry.quantity})
+                        span.table-item-tag
+                          | #{entry.item.itemName}
                         br
                       else
-                        | Item no longer in stock
+                        span.text-muted
+                          | Item no longer in stock
                         br
                   else
-                    | No items
+                    span.text-muted
+                      | No items
 
-                td= sale.quantity
-
+                //- ================= QUANTITY COLUMN (FIXED) =================
                 td
+                  if sale.items && sale.items.length
+                    each entry in sale.items
+                      span(style="font-weight: 600; color: #475569;")
+                        | #{entry.quantity}
+                      br
+                  else
+                    span.text-muted
+                      | -
+
+                //- ================= TOTAL =================
+                td.font-semibold
                   | #{sale.finalTotal ? sale.finalTotal.toLocaleString() : 0}
 
+                //- ================= ATTENDANT =================
                 td
                   | #{sale.attendant ? sale.attendant.fullname : 'N/A'}
 
-                td.actions
-                  a.icon-btn.view(href=`/sales/receipts/${sale._id}`)
-                    i.fa-solid.fa-eye
-                    |  View
+                //- ================= ACTIONS =================
+                td
+                  .action-btns
+
+                    //- ================= VIEW BUTTON =================
+                    a(
+                      href=`/sales/receipts/${sale._id}`
+                      title="View Receipt"
+                    )
+                      i.fa-solid.fa-eye
+
+                    //- ================= DELETE BUTTON =================
+                    a(
+                      href=`/sales/receipts/delete/${sale._id}`
+                      title="Delete Receipt"
+                      onclick="return confirm('Are you sure you want to delete this receipt?')"
+                    )
+                      i.fa-solid.fa-trash
 
           else
+
             tr
-              td(colspan="9") No receipts found
+              td(colspan="9")
+                | No receipts found
 
-  // ================= SEARCH SCRIPT =================
+
+  //- ================= CLIENT FILTER LOGIC =================
   script.
-    const searchInput = document.getElementById('searchInput');
+    document
+      .getElementById('searchInput')
+      .addEventListener('keyup', function () {
 
-    searchInput.addEventListener('keyup', function () {
-      const value = this.value.toLowerCase();
-      const rows = document.querySelectorAll("table tbody tr");
+        const value = this.value.toLowerCase();
+        const rows = document.querySelectorAll("table tbody tr");
 
-      rows.forEach(row => {
-        row.style.display = row.innerText.toLowerCase().includes(value) ? "" : "none";
+        rows.forEach(row => {
+          if (row.cells.length === 1) return;
+
+          const match = row.innerText.toLowerCase().includes(value);
+          row.style.display = match ? "" : "none";
+        });
       });
-    });

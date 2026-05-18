@@ -2,59 +2,118 @@ extends admin-layout
 
 block content
 
+  // ================= PAGE HEADER =================
   .page-header
     h2 Credit Sales
-    p Register customer purchases on credit
+    p Register customer purchases on credit and log down payments
 
-  .form-container
+  // ================= FORM CONTAINER =================
+  .form-section
+    h3 Credit Agreement & Customer Information
 
     form(method="POST" action="/admin/deposits")
 
       .form-grid
 
-        .form-group
+        // ================= CUSTOMER NAME =================
+        .input-group
           label Customer Name
-          input(type="text" name="customerName" required)
+          .icon-input-wrapper
+            i.fa-solid.fa-user.input-icon
+            input(type="text" name="customerName" placeholder="Enter full name" required)
 
-        .form-group
+        // ================= CUSTOMER ADDRESS =================
+        .input-group
           label Customer Address
-          input(type="text" name="customerAddress" required)
+          .icon-input-wrapper
+            i.fa-solid.fa-location-dot.input-icon
+            input(type="text" name="customerAddress" placeholder="Town / Village / Location" required)
 
-        .form-group
+        // ================= CUSTOMER CONTACT =================
+        .input-group
           label Customer Contact
-          input(type="number" name="customerContact" required)
+          .icon-input-wrapper
+            i.fa-solid.fa-phone.input-icon
+            //- Changed to text type to preserve leading zero (e.g., 0772...) or country codes
+            input(type="text" name="customerContact" placeholder="e.g., 07... or +256..." required)
 
-        .form-group
-          label NIN Number
-          input(type="text" name="nin")
+        // ================= NIN NUMBER =================
+        .input-group
+          label NIN Number (National ID)
+          .icon-input-wrapper
+            i.fa-solid.fa-id-card.input-icon
+            input(type="text" name="nin" placeholder="Enter National ID Number")
 
-        .form-group
-          label Select Item
-          select(name="itemId" required)
-            option(value="" disabled selected) -- Select Product --
-            each item in items
-              option(value=item._id)
-                | #{item.itemName} (Qty: #{item.quantity} | UGX #{item.sellingPrice})
+        // ================= SELECT ITEM =================
+        .input-group
+          label Select Product / Material
+          .icon-input-wrapper
+            i.fa-solid.fa-layer-group.input-icon
+            select(name="itemId" required)
+              option(value="" disabled selected) Choose stock inventory item...
+              if items && items.length
+                each item in items
+                  option(value=item._id)
+                    | #{item.itemName} (Available: #{item.quantity} | UGX #{item.sellingPrice.toLocaleString()})
+              else
+                option(value="" disabled) No inventory available
 
-        .form-group
-          label Quantity
-          input(type="number" name="quantity" required)
+        // ================= QUANTITY =================
+        .input-group
+          label Quantity Needed
+          .icon-input-wrapper
+            i.fa-solid.fa-arrow-up-9-1.input-icon
+            input(type="number" name="quantity" min="1" placeholder="Enter amount" required)
 
-        .form-group
-          label Payment Type
-          select(name="paymentType" required)
-            option(value="credit") Credit
-            option(value="partial") Partial Payment
+        // ================= PAYMENT TYPE =================
+        .input-group
+          label Credit Settlement Profile
+          .icon-input-wrapper
+            i.fa-solid.fa-handshake.input-icon
+            select(name="paymentType" id="paymentTypeSelect" required onchange="handlePaymentTypeChange()")
+              option(value="credit" selected) Full Credit (Zero Deposit)
+              option(value="partial") Partial Payment (Initial Deposit)
 
-        .form-group
-          label Amount Paid (UGX)
-          input(type="number" name="amountPaid" value="0")
+        // ================= AMOUNT PAID =================
+        .input-group
+          label Amount Advanced / Paid (UGX)
+          .icon-input-wrapper
+            i.fa-solid.fa-money-bill-wave.input-icon
+            input(type="number" name="amountPaid" id="amountPaidInput" value="0" min="0" placeholder="0")
 
-        .form-group.full
-          label Notes
-          textarea(name="notes" rows="3")
+        // ================= NOTES =================
+        //- Spans full grid width cleanly
+        .input-group(style="grid-column: 1 / -1;")
+          label Terms & Operational Notes
+          .icon-input-wrapper
+            i.fa-solid.fa-comment-dots.input-icon(style="top: 16px; transform: none;")
+            textarea(name="notes" rows="3" placeholder="Add specific collateral details, installment timelines, or guarantees..." style="width: 100%; padding: 12px 16px 12px 44px; border: 1px solid var(--border-light); border-radius: 8px; background-color: var(--admin-bg); font-family: inherit; font-size: 14px; color: var(--text-primary); outline: none; resize: vertical;")
 
-      .form-actions
-        button.btn(type="submit")
+      // ================= FORM SUBMIT SUB-BAR =================
+      .form-actions-bar
+        a.btn.action-btn(href="/admin") Cancel
+        button.btn.action-btn.primary-action-btn(type="submit")
           i.fa-solid.fa-credit-card
-          | Save Credit Sale
+          span Save Credit Sale
+
+  // ================= UTILITY UI INTERACTION SCRIPTS =================
+  script.
+    function handlePaymentTypeChange() {
+      const paymentType = document.getElementById('paymentTypeSelect').value;
+      const amountInput = document.getElementById('amountPaidInput');
+      
+      if (paymentType === 'credit') {
+        amountInput.value = "0";
+        amountInput.setAttribute('readonly', true);
+        amountInput.style.opacity = "0.6";
+      } else {
+        amountInput.removeAttribute('readonly');
+        amountInput.style.opacity = "1";
+        amountInput.focus();
+      }
+    }
+    
+    // Run validation immediately on document load initialization
+    document.addEventListener("DOMContentLoaded", function() {
+      handlePaymentTypeChange();
+    });

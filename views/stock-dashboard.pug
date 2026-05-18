@@ -14,25 +14,25 @@ block content
       i.fa-solid.fa-boxes-stacked
       .info
         h3 Total Stock Quantity
-        p #{stats.totalStockItems}
+        p #{stats && stats.totalStockItems ? stats.totalStockItems : 0}
 
     .card
       i.fa-solid.fa-triangle-exclamation
       .info
         h3 Low Stock Alerts
-        p #{stats.lowStockItems}
+        p #{stats && stats.lowStockItems ? stats.lowStockItems : 0}
 
     .card
       i.fa-solid.fa-coins
       .info
         h3 Inventory Value
-        p UGX #{stats.inventoryValue.toLocaleString()}
+        p UGX #{stats && stats.inventoryValue ? stats.inventoryValue.toLocaleString() : 0}
 
     .card
       i.fa-solid.fa-truck-field
       .info
         h3 Suppliers
-        p #{stats.suppliers}
+        p #{stats && stats.suppliers ? stats.suppliers : 0}
 
   // ================= QUICK ACTIONS =================
   .quick-actions
@@ -40,43 +40,43 @@ block content
 
     .action-buttons
 
-      a.btn(href="/store/add-stock")
+      a.btn.primary-btn(href="/store/add-stock")
         i.fa-solid.fa-plus
-        | Add Stock
+        |  Add Stock
 
-      a.btn.secondary(href="/store/inventory")
+      a.btn.secondary-btn(href="/store/inventory")
         i.fa-solid.fa-boxes-stacked
-        | View Stock
+        |  View Stock
 
-      a.btn.secondary(href="/store/inventory")
+      a.btn.secondary-btn(href="/store/inventory")
         i.fa-solid.fa-tags
-        | View Credits
+        |  View Credits
 
   // ================= LOW STOCK SECTION =================
   .recent-section
     h3 Low Stock Items
 
-    table
-      thead
-        tr
-          th Product
-          th Remaining Stock
-          th Status
-
-      tbody
-        if lowStockItems && lowStockItems.length
-          each item in lowStockItems
-            tr
-              td= item.itemName
-              td= item.quantity
-
-              td
-                if item.quantity == 0
-                  span.badge.out Out of Stock
-                else if item.quantity <= 5
-                  span.badge.low Critical
-                else
-                  span.badge.low Low Stock
-        else
+    .table-responsive
+      table
+        thead
           tr
-            td(colspan="3") No low stock alerts
+            th Product Name
+            th Remaining Stock
+            th Alert Status
+
+        tbody
+          if lowStockItems && lowStockItems.length
+            each item in lowStockItems
+              tr
+                td.font-semibold= item.itemName
+                td= item.quantity
+                td
+                  if item.quantity == 0
+                    span.badge.out Out of Stock
+                  else if item.quantity <= 5
+                    span.badge.critical Critical
+                  else
+                    span.badge.low Low Stock
+          else
+            tr
+              td(colspan="3" style="text-align: center; color: #888; padding: 20px;") No low stock alerts. All inventory levels normal.

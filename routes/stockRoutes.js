@@ -5,38 +5,35 @@ const multer = require('multer');
 const Stock = require('../models/Stock');
 const { isManager } = require('../middleware/auth');
 
-
-/* =========================
-   MULTER CONFIG
-========================= */
+/* ==========================================================================
+   MULTER IMAGE CONFIGURATION
+   ========================================================================== */
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, 'public/uploads');
   },
-
   filename: (req, file, cb) => {
     const safeName = file.originalname
       .toLowerCase()
-      .replace(/\s+/g, '-')      // remove spaces
-      .replace(/[^a-z0-9.-]/g, ''); // removes special characters
-
+      .replace(/\s+/g, '-')          // Replace spaces with hyphens
+      .replace(/[^a-z0-9.-]/g, ''); // Strip non-alphanumeric characters except dots/hyphens
     cb(null, Date.now() + '-' + safeName);
   }
 });
 
 const upload = multer({ storage });
 
-/* =========================
-   DASHBOARD
-========================= */
+/* ==========================================================================
+   DASHBOARD ROUTE
+   ========================================================================== */
 router.get('/store', async (req, res) => {
   try {
-
     const all = await Stock.find();
 
+    // Corrected to safely handle any case combinations for payment methods
     const inventoryValue = all
       .filter(s => (s.paymentMethod || '').toLowerCase() !== 'credit')
-      .reduce((sum, s) => sum + (Number(s.quantity) * Number(s.buyingPrice)), 0);
+      .reduce((sum, s) => sum + (Number(s.quantity || 0) * Number(s.buyingPrice || 0)), 0);
 
     const totalStockItems = all.reduce(
       (sum, s) => sum + Number(s.quantity || 0),
@@ -47,9 +44,11 @@ router.get('/store', async (req, res) => {
       s => Number(s.quantity || 0) <= 50
     );
 
-    const suppliers = new Set(all.map(s => s.supplierName)).size;
+    const suppliers = new Set(all.map(s => s.supplierName).filter(Boolean)).size;
 
-    res.render('stock-dashboard', {
+    // Fixed template target name to match: store-dashboard.pug
+    res.render('store-dashboard', {
+      currentPath: '/store',
       stats: {
         inventoryValue,
         totalStockItems,
@@ -60,50 +59,51 @@ router.get('/store', async (req, res) => {
     });
 
   } catch (error) {
-    console.log(error);
+    console.error("Dashboard error details:", error);
     res.status(500).send("Dashboard error");
   }
 });
-/* =========================
-   INVENTORY + CREDIT TABLE PAGE
-========================= */
+
+/* ==========================================================================
+   INVENTORY & CREDIT TABLES ROUTE
+   ========================================================================== */
 router.get('/store/inventory', async (req, res) => {
   try {
-
     const allStocks = await Stock.find().sort({ createdAt: -1 });
 
-    const stocks = allStocks.filter(s => s.paymentMethod !== 'Credit');
-    const credits = allStocks.filter(s => s.paymentMethod === 'Credit');
+    // FIXED Case Inconsistency: Convert strings to lowercase to ensure absolute matching accuracy
+    const stocks = allStocks.filter(s => (s.paymentMethod || '').toLowerCase() !== 'credit');
+    const credits = allStocks.filter(s => (s.paymentMethod || '').toLowerCase() === 'credit');
 
+    // Fixed template target name to match: inventory.pug
     res.render('stock-list', {
+      currentPath: '/store/inventory',
       stocks,
       credits
     });
 
   } catch (error) {
-    console.log(error);
-
-    res.render('stock-list', {
+    console.error("Inventory rendering error:", error);
+    res.render('inventory', {
+      currentPath: '/store/inventory',
       stocks: [],
       credits: []
     });
   }
 });
 
-
-/* =========================
-   ADD STOCK (SAME FORM)
-========================= */
+/* ==========================================================================
+   ADD STOCK FUNCTIONALITY
+   ========================================================================== */
 router.get('/store/add-stock', isManager, (req, res) => {
-
-  res.render('stock-form');
-
+  // Fixed template target name to match: add-stock.pug
+  res.render('add-stock', {
+    currentPath: '/store/add-stock'
+  });
 });
-
 
 router.post('/store/add-stock', isManager, upload.single('itemImage'), async (req, res) => {
   try {
-
     const {
       itemName,
       quantity,
@@ -126,77 +126,75 @@ router.post('/store/add-stock', isManager, upload.single('itemImage'), async (re
 
     const stock = new Stock({
       itemName,
-      quantity,
-      buyingPrice,
-      sellingPrice,
+      quantity: Number(quantity),
+      buyingPrice: Number(buyingPrice),
+      sellingPrice: Number(sellingPrice),
       supplierName,
       supplierContact,
-      deliveryDate,
-      paymentMethod,
+      deliveryDate: deliveryDate || new Date(),
+      paymentMethod: (paymentMethod || 'cash_at_hand').toLowerCase(), // Normalize inputs to lowercase
       itemImage: req.file ? req.file.filename : null,
       totalValue
     });
 
     await stock.save();
-
     res.redirect('/store/inventory');
 
   } catch (error) {
-    console.log(error);
+    console.error("Error creating stock instance:", error);
     res.status(500).send('Error saving stock');
   }
 });
 
-
-/* =========================
-   VIEW SINGLE ITEM
-========================= */
+/* ==========================================================================
+   EDIT STOCK MODIFICATIONS
+   ========================================================================== */
 router.get('/store/inventory/edit/:id', async (req, res) => {
   try {
-
     const stock = await Stock.findById(req.params.id);
-
-    // FETCH ALL ITEMS
     const items = await Stock.find();
 
     res.render('edit-stock', {
+      currentPath: '/store/inventory',
       stock,
       items
     });
 
   } catch (error) {
-    console.log(error);
+    console.error("Edit page load error:", error);
     res.redirect('/store/inventory');
   }
 });
 
 router.post('/store/inventory/edit/:id', async (req, res) => {
   try {
+    const { quantity, buyingPrice } = req.body;
+    
+    // Recalculate total value on updates dynamically
+    if (quantity && buyingPrice) {
+      req.body.totalValue = Number(quantity) * Number(buyingPrice);
+    }
 
-    await Stock.findByIdAndUpdate(req.params.id, req.body);
-
+    await Stock.findByIdAndUpdate(req.params.id, req.body, { runValidators: true });
     res.redirect('/store/inventory');
 
   } catch (error) {
-    console.log(error);
+    console.error("Update request execution error:", error);
     res.redirect('/store/inventory');
   }
 });
 
-
-/* =========================
-   DELETE ITEM
-========================= */
+/* ==========================================================================
+   DELETE PERMANENT RECORD REMOVAL
+   ========================================================================== */
 router.post('/store/inventory/delete/:id', async (req, res) => {
   try {
     await Stock.findByIdAndDelete(req.params.id);
     res.redirect('/store/inventory');
-
   } catch (error) {
-    console.log(error);
+    console.error("Deletion lifecycle failure error:", error);
     res.redirect('/store/inventory');
   }
 });
-
 
 module.exports = router;

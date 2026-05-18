@@ -2,88 +2,134 @@ extends stock-layout
 
 block content
 
-  main.content
+  // ================= PAGE HEADER =================
+  .page-header
+    h2 Add New Stock
+    p.subtitle Record newly received stock items
 
-    // ================= PAGE HEADER =================
-    .page-header
-      h2 Add New Stock
-      p.subtitle Record newly received stock items
+  // ================= FORM SECTION =================
+  .recent-section
+    h3 Enter Product & Supplier Details
 
-    // ================= FORM =================
-    .form-container
-      form(method="POST" action="/store/add-stock" enctype="multipart/form-data")
+    form#stockForm.form-section(
+      method="POST" 
+      action="/store/add-stock" 
+      enctype="multipart/form-data"
+    )
 
-        .form-grid
+      .form-grid
 
-          // ========= ITEM NAME =========
-          .form-group
-            label(for="itemName") Item Name
+        // ========= ITEM NAME =========
+        .input-group
+          label(for="itemName") Item Name
+          select#itemName(name="itemName" required)
+            option(value="" disabled selected) -- Select Item --
+            option(value="Cement iiN") Cement iiN
+            option(value="Cement iiiN") Cement iiiN
+            option(value="Iron Sheets") Iron Sheets
+            option(value="Nails inc 1") Nails inc 1
+            option(value="Nails inc 3") Nails inc 3
+            option(value="Nails inc 4") Nails inc 4
+            option(value="Nails inc 5") Nails inc 5
+            option(value="Iron bars 10mm") Iron bars 10mm
+            option(value="Iron bars 12mm") Iron bars 12mm
+            option(value="Iron bars 16mm") Iron bars 16mm
+            option(value="Gauges") Gauges
+            option(value="Wire mesh") Wire mesh
+            option(value="Wheel barrows") Wheel barrows
+            option(value="High tensile barbed wire") High tensile barbed wire
+            option(value="Low tensile barbed wire") Low tensile barbed wire
 
-            select#itemName(name="itemName" required)
-              option(value="" disabled selected) -- Select Item --
+        // ========= QUANTITY =========
+        .input-group
+          label(for="quantity") Quantity Received
+          input#quantity(
+            type="number" 
+            name="quantity" 
+            placeholder="E.g., 50" 
+            min="1" 
+            required
+          )
 
-              option(value="Cement iiN") Cement iiN
-              option(value="Cement iiiN") Cement iiiN
-              option(value="Iron Sheets") Iron Sheets
-              option(value="Nails inc 1") Nails inc 1
-              option(value="Nails inc 3") Nails inc 3
-              option(value="Nails inc 4") Nails inc 4
-              option(value="Nails inc 5") Nails inc 5
-              option(value="Iron bars 10mm") Iron bars 10mm
-              option(value="Iron bars 12mm") Iron bars 12mm
-              option(value="Iron bars 16mm") Iron bars 16mm
-              option(value="Gauges") Gauges
-              option(value="Wire mesh") Wire mesh
-              option(value="Wheel barrows") Wheel barrows
-              option(value="High tensile barbed wire") High tensile barbed wire
-              option(value="Low tensile barbed wire") Low tensile barbed wire
+        // ========= BUYING PRICE =========
+        .input-group
+          label(for="buyingPrice") Buying Price (UGX)
+          input#buyingPrice(
+            type="number" 
+            name="buyingPrice" 
+            placeholder="E.g., 28000" 
+            min="1" 
+            required
+          )
 
-          // ========= QUANTITY =========
-          .form-group
-            label(for="quantity") Quantity Received
-            input#quantity(type="number" name="quantity" required)
+        // ========= SELLING PRICE =========
+        .input-group
+          label(for="sellingPrice") Selling Price (UGX)
+          input#sellingPrice(
+            type="number" 
+            name="sellingPrice" 
+            placeholder="E.g., 33000" 
+            min="1" 
+            required
+          )
 
-          // ========= BUYING PRICE =========
-          .form-group
-            label(for="buyingPrice") Buying Price (UGX)
-            input#buyingPrice(type="number" name="buyingPrice" required)
+        // ========= SUPPLIER NAME =========
+        .input-group
+          label(for="supplierName") Supplier Name
+          input#supplierName(
+            type="text" 
+            name="supplierName" 
+            placeholder="E.g., John Doe" 
+            required
+          )
 
-          // ========= SELLING PRICE =========
-          .form-group
-            label(for="sellingPrice") Selling Price (UGX)
-            input#sellingPrice(type="number" name="sellingPrice" required)
+        // ========= SUPPLIER CONTACT =========
+        .input-group
+          label(for="supplierContact") Supplier Contact
+          .phone-input
+            span.phone-prefix +256
+            input#supplierContact(
+              type="text" 
+              name="supplierContact" 
+              placeholder="7xxxxxxxx" 
+              maxlength="9" 
+              required
+            )
 
-          // ========= SUPPLIER =========
-          .form-group
-            label(for="supplierName") Supplier Name
-            input#supplierName(type="text" name="supplierName" required )
+        // ========= FACTORY NAME =========
+        .input-group
+          label(for="factoryName") Factory/Company Name
+          input#factoryName(
+            type="text" 
+            name="factoryName" 
+            placeholder="E.g., Tororo Cement" 
+            required
+          )
 
-          .form-group
-            label(for="supplierContact") Supplier Contact
+        // ========= PAYMENT METHOD =========
+        .input-group
+          label(for="paymentMethod") Payment Method
+          select#paymentMethod(name="paymentMethod" required)
+            option(value="cash_at_hand") Cash at hand
+            option(value="credit") Credit
 
-            .phone-input 
-              span.phone-prefix +256
-              input#supplierContact(type="text" name="supplierContact" placeholder="7xxxxxxxx" max-length="9" required)
+        // ========= IMAGE =========
+        .input-group
+          label(for="itemImage") Item Image
+          input#itemImage(
+            type="file" 
+            name="itemImage" 
+            accept="image/*"
+          )
 
-          .form-group
-            label(for="factoryName") Factory/Company Name
-            input#factoryName(type="text" name="factoryName" required)
+      hr.form-divider
 
+      // ================= BUTTONS =================
+      .button-group
+        button.btn.primary-btn(type="submit")
+          i.fa-solid.fa-plus
+          |  Save Stock
 
-          // ========= PAYMENT METHOD =========
-          .form-group
-            label(for="paymentMethod") Payment Method
-            select#paymentMethod(name="paymentMethod" required )
-              option(value="credit") Credit
-              option(value="cash_at_hand") Cash at hand
-
-          // ========= IMAGE =========
-          .form-group
-            label(for="itemImage") Item Image
-            input#itemImage(type="file" name="itemImage" )
-
-        // ========= ACTIONS =========
-        .form-actions
-          button.btn(type="submit" )
-            i.fa-solid.fa-plus
-            |  Save Stock
+        button.btn.secondary-btn(type="reset")
+          i.fa-solid.fa-rotate-left
+          |  Clear Form

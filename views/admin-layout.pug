@@ -9,8 +9,8 @@ html(lang="en")
     link(rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css")
     link(href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet")
 
-    //- Main CSS
-    link(rel="stylesheet" href="/css/pages.css")
+    //- Main CSS Module
+    link(rel="stylesheet" href="/css/admin.css")
 
   body
 
@@ -26,39 +26,44 @@ html(lang="en")
 
         ul.nav-links
 
-          li
+          // ================= DASHBOARD =================
+          li(class=(currentPath === '/admin' ? 'active' : ''))
             a(href="/admin")
               i.fa-solid.fa-gauge
               span Dashboard
 
           // ================= USER MANAGEMENT =================
-          li
+          li(class=(currentPath === '/admin/users' ? 'active' : ''))
             a(href="/admin/users")
               i.fa-solid.fa-users
               span Users
 
           // ================= REPORTS =================
-          li
+          li(class=(currentPath === '/admin/reports' ? 'active' : ''))
             a(href="/admin/reports")
               i.fa-solid.fa-chart-pie
               span Reports
 
-          li
+          // ================= CUSTOMER DEPOSITS =================
+          li(class=(currentPath === '/admin/deposits' ? 'active' : ''))
             a(href="/admin/deposits")
-              i.fa-solid.fa-chart-pie
-              span Customer deposits
+              i.fa-solid.fa-wallet
+              span Customer Deposits
 
-          li
+          // ================= DEPOSIT DETAILS =================
+          li(class=(currentPath === '/admin/deposit-details' ? 'active' : ''))
             a(href="/admin/deposit-details")
-              i.fa-solid.fa-chart-pie
-              span Deposit details
+              i.fa-solid.fa-receipt
+              span Deposit Details
 
-          li
+          // ================= TRANSPORT RULES =================
+          li(class=(currentPath === '/admin/transport-rules' ? 'active' : ''))
             a(href="/admin/transport-rules")
               i.fa-solid.fa-truck
               span Transport Rules
             
-          li
+          // ================= SETTINGS =================
+          li(class=(currentPath === '/admin/settings' ? 'active' : ''))
             a(href="/admin/settings")
               i.fa-solid.fa-gear
               span Settings
@@ -85,5 +90,4 @@ html(lang="en")
 
         // ================= PAGE CONTENT =================
         section.content
-
           block content

@@ -9,8 +9,8 @@ html(lang="en")
     link(rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css")
     link(href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet")
 
-    //- Main CSS
-    link(rel="stylesheet" href="/css/pages.css")
+    //- Main Module CSS
+    link(rel="stylesheet" href="/css/stock.css")
 
   body
 
@@ -21,18 +21,19 @@ html(lang="en")
       aside.sidebar
 
         .brand
-          h2 NYONDO MANAGER
+          h2 NYONDO HARDWARE 
+          p STORE MANAGER'S PANEL
 
         ul.nav-links
 
           // ================= DASHBOARD =================
-          li
+          li(class=(currentPath === '/store' ? 'active' : ''))
             a(href="/store")
               i.fa-solid.fa-gauge
               span Dashboard
 
           // ================= STOCK MODULE =================
-          li
+          li(class=(currentPath === '/store/inventory' ? 'active' : ''))
             a(href="/store/inventory")
               i.fa-solid.fa-boxes-stacked
               span Stock List
@@ -59,5 +60,4 @@ html(lang="en")
 
         // ================= PAGE CONTENT =================
         section.content
-
           block content

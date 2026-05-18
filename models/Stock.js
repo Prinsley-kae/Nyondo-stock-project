@@ -45,7 +45,8 @@ const StockSchema = new mongoose.Schema({
 
   paymentMethod: {
   type: String,
-  required: true
+  enum: ["Cash_at_hand", "Credit"],
+  default: "Cash_at_hand"
 },
 
   itemImage: {
