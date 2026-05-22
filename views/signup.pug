@@ -14,12 +14,25 @@ html
 
     //- GOOGLE FONTS
     link(
-      href='https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap'
+      href='https://fonts.googleapis.com/css2?family=Poppins:wght=300;400;500;600&display=swap'
       rel='stylesheet'
     )
 
     //- MAIN CSS
     link(rel='stylesheet' href='/css/style.css')
+
+    style.
+      /* Small helper style for inline errors if not defined in your style.css */
+      .inline-error-msg {
+        color: #d9534f;
+        font-size: 0.825rem;
+        margin-top: 5px;
+        margin-left: 2px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
 
   body
 
@@ -31,13 +44,16 @@ html
 
         p.subtitle Register to access NYONDO system
 
-
-        //- FLASH / ERROR MESSAGE
-        if error
-          .error-message
+        //- System-wide/Database level errors show up here if needed
+        if errors && errors.system
+          .alert-banner.alert-danger
             i.fa-solid.fa-circle-exclamation
-            | #{error}
+            span= errors.system
 
+        if success_msg && success_msg.length > 0
+          .alert-banner.alert-success
+            i.fa-solid.fa-circle-check
+            span= success_msg
 
         form(method='post' action='/signup')
 
@@ -54,8 +70,13 @@ html
                 type='text'
                 name='fullname'
                 placeholder='Enter full name'
+                value=fullname
                 required
               )
+            if errors && errors.fullname
+              p.inline-error-msg
+                i.fa-solid.fa-circle-exclamation
+                span= errors.fullname
 
 
           //- =========================
@@ -71,8 +92,13 @@ html
                 type='email'
                 name='email'
                 placeholder='Enter email address'
+                value=email
                 required
               )
+            if errors && errors.email
+              p.inline-error-msg
+                i.fa-solid.fa-circle-exclamation
+                span= errors.email
 
 
           //- =========================
@@ -89,9 +115,14 @@ html
                 type='text'
                 name='phonenumber'
                 placeholder='7XXXXXXXX'
-                maxlength='9'
+                maxlength='10'
+                value=phonenumber
                 required
               )
+            if errors && errors.phonenumber
+              p.inline-error-msg
+                i.fa-solid.fa-circle-exclamation
+                span= errors.phonenumber
 
 
           //- =========================
@@ -107,8 +138,13 @@ html
                 type='text'
                 name='nin'
                 placeholder='Enter NIN number'
+                value=nin
                 required
               )
+            if errors && errors.nin
+              p.inline-error-msg
+                i.fa-solid.fa-circle-exclamation
+                span= errors.nin
 
 
           //- =========================
@@ -118,17 +154,16 @@ html
             label Role
 
             select(name='role' required)
-
-              option(value='' disabled selected)
+              option(value='' disabled selected=(!role))
                 | Select role
 
-              option(value='sales_attendant')
+              option(value='sales_attendant' selected=(role === 'sales_attendant'))
                 | Sales Attendant
 
-              option(value='store_manager')
+              option(value='store_manager' selected=(role === 'store_manager'))
                 | Store Manager
 
-              option(value='admin')
+              option(value='admin' selected=(role === 'admin'))
                 | Admin / Accounts
 
 
@@ -152,6 +187,10 @@ html
                 onclick='toggleSignupPassword(event)'
               )
                 i.fa-solid.fa-eye
+            if errors && errors.password
+              p.inline-error-msg
+                i.fa-solid.fa-circle-exclamation
+                span= errors.password
 
 
           //- =========================
@@ -174,6 +213,10 @@ html
                 onclick='toggleConfirmPassword(event)'
               )
                 i.fa-solid.fa-eye
+            if errors && errors.confirmPassword
+              p.inline-error-msg
+                i.fa-solid.fa-circle-exclamation
+                span= errors.confirmPassword
 
 
           //- =========================
@@ -195,7 +238,7 @@ html
             | Already have an account?
 
             a(href='/login')
-              | Login
+              |  Login
 
 
     //- =========================
@@ -207,9 +250,9 @@ html
         | © 2026 NYONDO General Hardware LTD
 
       p
-        i.fa-solid.fa-location-dot
+        | i.fa-solid.fa-location-dot
 
-        |  Nansana, Uganda
+        |   Nansana, Uganda
 
 
     script(src='/js/script.js')

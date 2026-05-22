@@ -1,6 +1,14 @@
 extends stock-layout
 
 block content
+  //- Add this style block to ensure the grid handles 5 cards nicely
+  style.
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 25px;
+    }
 
   // ================= PAGE HEADER =================
   .page-header
@@ -9,17 +17,16 @@ block content
 
   // ================= SUMMARY CARDS =================
   .stats-grid
-
     .card
       i.fa-solid.fa-boxes-stacked
       .info
-        h3 Total Stock Quantity
-        p #{stats && stats.totalStockItems ? stats.totalStockItems : 0}
+        h3 Total Stock
+        p #{stats && stats.totalCurrentQuantity ? stats.totalCurrentQuantity.toLocaleString() : 0}
 
     .card
       i.fa-solid.fa-triangle-exclamation
       .info
-        h3 Low Stock Alerts
+        h3 Low Stock
         p #{stats && stats.lowStockItems ? stats.lowStockItems : 0}
 
     .card
@@ -27,6 +34,12 @@ block content
       .info
         h3 Inventory Value
         p UGX #{stats && stats.inventoryValue ? stats.inventoryValue.toLocaleString() : 0}
+
+    .card(style="border-left: 4px solid #28a745;")
+      i.fa-solid.fa-chart-line
+      .info
+        h3 Projected Profit
+        p UGX #{stats && stats.projectedProfit ? stats.projectedProfit.toLocaleString() : 0}
 
     .card
       i.fa-solid.fa-truck-field
@@ -36,26 +49,33 @@ block content
 
   // ================= QUICK ACTIONS =================
   .quick-actions
-    h3 Quick Actions
+    h3 Quick Actions & Reporting
 
-    .action-buttons
-
+    .action-buttons(style="margin-bottom: 15px;")
       a.btn.primary-btn(href="/store/add-stock")
         i.fa-solid.fa-plus
         |  Add Stock
-
       a.btn.secondary-btn(href="/store/inventory")
         i.fa-solid.fa-boxes-stacked
         |  View Stock
-
-      a.btn.secondary-btn(href="/store/inventory")
+      a.btn.secondary-btn(href="/store/credits")
         i.fa-solid.fa-tags
         |  View Credits
+
+    .action-buttons(style="border-top: 1px solid #ddd; padding-top: 15px; margin-top: 5px;")
+      a.btn.secondary-btn(href="/admin/stock-report" style="background-color: #28a745; color: white; border-color: #28a745; margin-right: 10px;")
+        i.fa-solid.fa-file-csv
+        |  Inventory Report
+      a.btn.secondary-btn(href="/admin/credit-report" style="background-color: #e67e22; color: white; border-color: #e67e22; margin-right: 10px;")
+        i.fa-solid.fa-file-invoice-dollar
+        |  Credit Liability
+      a.btn.secondary-btn(href="/store/payment-history" style="background-color: #6c757d; color: white; border-color: #6c757d;")
+        i.fa-solid.fa-history
+        |  Payment History
 
   // ================= LOW STOCK SECTION =================
   .recent-section
     h3 Low Stock Items
-
     .table-responsive
       table
         thead
@@ -63,20 +83,20 @@ block content
             th Product Name
             th Remaining Stock
             th Alert Status
-
         tbody
           if lowStockItems && lowStockItems.length
             each item in lowStockItems
               tr
-                td.font-semibold= item.itemName
-                td= item.quantity
+                td.font-semibold= item.itemName || 'N/A'
+                td.font-bold= item.currentQuantity || 0
                 td
-                  if item.quantity == 0
+                  if Number(item.currentQuantity) === 0
                     span.badge.out Out of Stock
-                  else if item.quantity <= 5
+                  else if Number(item.currentQuantity) <= 50
                     span.badge.critical Critical
                   else
                     span.badge.low Low Stock
           else
             tr
-              td(colspan="3" style="text-align: center; color: #888; padding: 20px;") No low stock alerts. All inventory levels normal.
+              td(colspan="3" style="text-align: center; color: #888; padding: 20px;")
+                | No low stock alerts. All inventory levels normal.

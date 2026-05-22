@@ -4,101 +4,101 @@ block content
 
   // ================= PAGE HEADER =================
   .page-header
-    h2 Edit User
-    p Update user details
+    h2 Edit User Profile
+    p.page-subtitle Modify account parameters, authorization scopes, and status profiles.
 
   // ================= FORM =================
   .form-container
-
-    form(method='POST' action=`/admin/users/edit/${user._id}`)
+    form(method='POST' action=`/admin/users/edit/${user._id}` class="admin-edit-form")
 
       // ================= USERNAME =================
       .input-group
-        label Username
+        label.form-label Username
         .icon-input
-          i.fa-solid.fa-user
+          i.fa-solid.fa-user.input-icon
           input(
             type='text'
             name='username'
             value=user.username
             required
+            class="form-control"
           )
 
       // ================= EMAIL =================
       .input-group
-        label Email
+        label.form-label Email Address
         .icon-input
-          i.fa-solid.fa-envelope
+          i.fa-solid.fa-envelope.input-icon
           input(
             type='email'
             name='email'
             value=user.email
             required
+            class="form-control"
           )
 
       // ================= PHONE =================
       .input-group
-        label Phone Number
+        label.form-label Phone Number
         .icon-input
-          i.fa-solid.fa-phone
+          i.fa-solid.fa-phone.input-icon
           input(
             type='text'
             name='phoneNumber'
             value=user.phoneNumber || ''
             required
+            class="form-control"
           )
 
       // ================= NIN =================
       .input-group
-        label NIN Number (Optional)
+        label.form-label NIN Number (Optional)
         .icon-input
-          i.fa-solid.fa-id-card
+          i.fa-solid.fa-id-card.input-icon
           input(
             type='text'
             name='nin'
             value=user.nin || ''
+            class="form-control"
           )
 
       // ================= ROLE =================
       .input-group
-        label Role
-        select(name='role' required)
-
-          option(
-            value='sales_attendant'
-            selected=user.role === 'sales_attendant'
-          ) Sales Attendant
-
-          option(
-            value='store_manager'
-            selected=user.role === 'store_manager'
-          ) Store Manager
-
-          option(
-            value='admin'
-            selected=user.role === 'admin'
-          ) Admin / Accounts
+        label.form-label System Authorization Role
+        .select-wrapper
+          select(name='role' required class="form-select")
+            option(
+              value='sales_attendant'
+              selected=user.role === 'sales_attendant'
+            ) Sales Attendant
+            option(
+              value='store_manager'
+              selected=user.role === 'store_manager'
+            ) Store Manager
+            option(
+              value='admin'
+              selected=user.role === 'admin'
+            ) Admin / Accounts
 
       // ================= STATUS =================
       .input-group
-        label Account Status
-        select(name='isActive')
+        label.form-label Operational Status
+        .select-wrapper
+          select(name='isActive' class="form-select")
+            option(
+              value='true'
+              selected=user.isActive === true
+            ) Active
+            option(
+              value='false'
+              selected=user.isActive === false
+            ) Disabled
 
-          option(
-            value='true'
-            selected=user.isActive === true
-          ) Active
-
-          option(
-            value='false'
-            selected=user.isActive === false
-          ) Disabled
-
-      // ================= BUTTON =================
-      button.btn.primary(type='submit')
-        i.fa-solid.fa-floppy-disk
-        |  Update User
-
-      a.btn.secondary(href='/admin/users')
-        i.fa-solid.fa-arrow-left
-        |  Back
+      // ================= BUTTON ACTIONS =================
+      .form-actions
+        button.btn.btn-primary(type='submit')
+          i.fa-solid.fa-floppy-disk
+          |  Update User
+        a.btn.btn-secondary(href='/admin/users')
+          i.fa-solid.fa-arrow-left
+          |  Cancel & Back

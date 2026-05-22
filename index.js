@@ -7,6 +7,7 @@ const expressSession = require('express-session');
 const path = require('path');
 const mongoose = require('mongoose');
 const passport = require('passport');
+const flash = require('connect-flash'); // Added Flash dependency
 
 const MongoStore = require('connect-mongo').default;
 const LocalStrategy = require('passport-local').Strategy;
@@ -52,6 +53,8 @@ app.use(expressSession({
   }
 }));
 
+app.use(flash()); // Registered connect-flash middleware immediately following the session setup
+
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -67,10 +70,13 @@ passport.serializeUser(Registration.serializeUser());
 passport.deserializeUser(Registration.deserializeUser());
 
 // =========================
-// GLOBAL USER (for Pug)
+// GLOBAL CONTEXT VARIATION PASSWORDS (for Pug)
 // =========================
 app.use((req, res, next) => {
   res.locals.user = req.user || null;
+  // Added global access values for your notification banners
+  res.locals.success_msg = req.flash('success_msg');
+  res.locals.error_msg = req.flash('error_msg');
   next();
 });
 

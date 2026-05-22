@@ -1,0 +1,21 @@
+extends sales-layout
+
+block content
+  .page-header
+    h2 Generate Sales Report
+    p Use the filters below to select the reporting period.
+
+  .report-card
+    form(action="/sales/generate-report" method="GET")
+      
+      .form-group
+        label(for="startDate") Start Date:
+        input.form-control(type="date" name="startDate" required)
+      
+      .form-group
+        label(for="endDate") End Date:
+        input.form-control(type="date" name="endDate" required)
+      
+      button.btn-report(type="submit")
+        i.fa-solid.fa-file-invoice
+        |  Generate Report

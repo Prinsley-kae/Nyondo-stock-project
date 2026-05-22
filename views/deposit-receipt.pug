@@ -1,79 +1,120 @@
 extends admin-layout
 
 block content
-
+  
   .receipt-container
-
     .receipt-box
 
-      h2 NYONDO HARDWARE LTD
-      p Nansana, Uganda
-      hr
+      // ================= BRANDING HEADER WITH LOGO =================
+      .receipt-header
+        .receipt-logo-wrapper
+          img(src="/images/logo.png" alt="Nyondo Hardware Logo" class="receipt-logo-img")
+          
+        h2 NYONDO HARDWARE LTD
+        p.location Nansana, Uganda
+        .receipt-title Deposit Credit Receipt
+        if sale._id
+          p.receipt-id-tag(style="font-family: monospace; color: #666; margin-top: 4px; font-size: 14px;") Ref No: ##{sale._id.toString().slice(-6).toUpperCase()}
 
-      h3 Deposit Receipt
+      // ================= CUSTOMER INFO =================
+      .receipt-section
+        h3.section-heading Customer Profiles
+        .info-row
+          strong Customer:
+          span #{sale.customerName}
+        .info-row
+          strong Address:
+          span #{sale.customerAddress}
+        .info-row
+          strong Contact:
+          span #{sale.customerContact}
+        .info-row
+          strong National ID (NIN):
+          span #{sale.nin || 'N/A'}
 
-      // ================= CUSTOMER =================
-      p
-        strong Customer:
-        |  #{sale.customerName}
+      hr.divider
 
-      p
-        strong Address:
-        |  #{sale.customerAddress}
+      // ================= TRANSACTION DETAILS (EXPANDED FINANCIAL TABLE) =================
+      .receipt-section
+        h3.section-heading Order Details
+        
+        table.receipt-table(style="width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 10px;")
+          thead
+            tr(style="border-bottom: 2px solid #333; text-align: left; font-weight: bold; font-size: 14px;")
+              th(style="padding: 6px 0; width: 45%;") Material / Item
+              th(style="padding: 6px 0; text-align: right; width: 20%;") Unit Price
+              th(style="padding: 6px 0; text-align: right; width: 15%;") Qty
+              th(style="padding: 6px 0; text-align: right; width: 20%;") Subtotal
+          tbody
+            if sale.items && sale.items.length > 0
+              each entry in sale.items
+                - const unitPrice = entry.item ? (entry.item.sellingPrice || 0) : 0
+                - const subtotal = unitPrice * entry.quantity
+                tr(style="border-bottom: 1px dashed #ddd; font-size: 14px;")
+                  td(style="padding: 8px 0; max-width: 180px; word-wrap: break-word;") #{entry.item ? entry.item.itemName : 'Unknown Item'}
+                  td(style="padding: 8px 0; text-align: right;") UGX #{unitPrice.toLocaleString()}
+                  td(style="padding: 8px 0; text-align: right;") #{entry.quantity}
+                  td(style="padding: 8px 0; text-align: right; font-weight: 500;") UGX #{subtotal.toLocaleString()}
+            else
+              tr
+                td(style="padding: 8px 0; color: #888;" colspan="4") No items attached to this record.
 
-      p
-        strong Contact:
-        |  #{sale.customerContact}
+        .info-row(style="margin-top: 16px;")
+          strong Profile Type:
+          span.payment-profile-type(style="text-transform: capitalize;") #{sale.paymentType}
 
-      p
-        strong NIN:
-        |  #{sale.nin || 'N/A'}
+      hr.divider
 
-      hr
+      // ================= LOGISTICS & ROUTING DATA =================
+      .receipt-section
+        h3.section-heading Delivery & Logistics
+        .info-row
+          strong Transit Distance:
+          span #{sale.distance || 0} Km
+        .info-row
+          strong Transport Fee:
+          // FIXED: Cascades down common backend schema naming options if sale.transportFee isn't set directly
+          - const deliveryCost = sale.transportFee || 0
+          span.transit-fee-amt UGX #{sale.transportFee.toLocaleString()}
 
-      // ================= ITEM =================
-      p
-        strong Item:
-        |  #{sale.item ? sale.item.itemName : 'N/A'}
+      hr.divider
 
-      p
-        strong Quantity:
-        |  #{sale.quantity}
+      // ================= FINANCIAL METRICS =================
+      .receipt-section.financials-block
+        .info-row
+          strong Total Value:
+          span.total-amount UGX #{sale.totalAmount ? sale.totalAmount.toLocaleString() : 0}
+        .info-row
+          strong Amount Advanced:
+          span.amount-paid UGX #{sale.amountPaid ? sale.amountPaid.toLocaleString() : 0}
+        .info-row
+          strong Outstanding Balance:
+          // FIXED: Added a fallback lookups for balance calculation variables
+          - const remainingDebt = sale.balance !== undefined ? sale.balance : (sale.outstandingBalance || 0)
+          span.remaining-balance UGX #{remainingDebt.toLocaleString()}
 
-      p
-        strong Payment Type:
-        |  #{sale.paymentType}
+      hr.divider
 
-      hr
+      // ================= TRANSACTION TIMESTAMP & AUDIT =================
+      .receipt-footer-meta
+        .info-row.meta-row
+          strong Issued By:
+          // FIXED: Clear logical fallbacks to match whatever variable structure your auth/database is returning
+          span #{(sale.admin && sale.admin.fullname) || 'N/A'}
 
-      // ================= FINANCIAL =================
-      p
-        strong Total Amount:
-        |  UGX #{sale.totalAmount ? sale.totalAmount.toLocaleString() : 0}
 
-      p
-        strong Amount Paid:
-        |  UGX #{sale.amountPaid ? sale.amountPaid.toLocaleString() : 0}
+        .info-row.meta-row
+          strong Date Issued:
+          span #{new Date(sale.date || sale.createdAt || Date.now()).toLocaleString()}
+        
+        p.thank-you Thank you for doing business with us!
 
-      p
-        strong Remaining Balance:
-        |  UGX #{sale.balance ? sale.balance.toLocaleString() : 0}
+    // ================= ACTION CONTROLS =================
+    .receipt-actions-wrapper
+      button.btn.btn-print(onclick="window.print()")
+        i.fa-solid.fa-print
+        span Print Receipt
 
-      hr
-
-      // ================= DATE =================
-      p
-        strong Date:
-        |  #{new Date(sale.date).toLocaleString()}
-
-      hr
-
-      .actions
-
-        button.btn(onclick="window.print()")
-          i.fa-solid.fa-print
-          | Print Receipt
-
-        a.btn.secondary(href="/admin/deposits")
-          i.fa-solid.fa-arrow-left
-          | Back
+      a.btn.btn-back(href="/admin/deposits")
+        i.fa-solid.fa-arrow-left
+        span Back to Ledger

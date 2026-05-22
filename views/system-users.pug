@@ -2,17 +2,17 @@ extends admin-layout
 
 block content
 
-  // ================= PAGE HEADER =================
-  .page-header
-    h2 User Management
-    p Create and manage system users and their roles
+  // ================= TOP CONTROLS SECTION =================
+  .page-header-container
+    .page-header
+      h2 User Management
+      p Create and manage system users and their roles
 
-  // ================= ACTION BAR =================
-  .quick-actions
-    .action-buttons
-      a.btn.action-btn.primary-action-btn(href="/admin/add-user")
-        i.fa-solid.fa-user-plus
-        span Add New User
+    .quick-actions
+      .action-buttons
+        a.btn.action-btn.primary-action-btn(href="/admin/add-user")
+          i.fa-solid.fa-user-plus
+          span Add New User
 
   // ================= USERS TABLE =================
   .recent-section

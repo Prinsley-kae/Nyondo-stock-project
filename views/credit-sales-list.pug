@@ -2,14 +2,22 @@ extends admin-layout
 
 block content
 
-  // ================= PAGE HEADER =================
-  .page-header
-    h2 Customer Deposits
-    p View and manage all customer deposit transactions
+  // ================= MAIN CONTAINER =================
+  .sales-dashboard
 
-  // ================= TOP ACTION BAR =================
-  .quick-actions
-    .action-bar-split
+    // ================= TOP BAR: HEADER & PRIMARY ACTION =================
+    .page-header-container
+      .page-header
+        h2 Customer Deposits & Credit Ledger
+        p View, track, and manage all customer deposit transactions and settled credit profiles
+      
+      .primary-actions
+        a.btn.action-btn.primary-action-btn(href="/admin/deposits")
+          i.fa-solid.fa-plus
+          span New Deposit
+
+    // ================= CONTROLS ROW: SEARCH & UTILITY REPORTING =================
+    .filter-action-bar
       .search-box-wrapper
         i.fa-solid.fa-magnifying-glass.search-icon
         input#searchInput(
@@ -17,108 +25,166 @@ block content
           placeholder="Search customer, phone, receipt or item..."
           onkeyup="executeTableFilter()"
         )
-
-      .action-buttons
-        button.btn.action-btn(type="button" onclick="window.print()")
+      
+      .utility-actions
+        button.btn.action-btn.secondary-action-btn(type="button" onclick="window.print()")
           i.fa-solid.fa-print
           span Generate Report
-        a.btn.action-btn.primary-action-btn(href="/admin/deposits")
-          i.fa-solid.fa-plus
-          span New Deposit
 
-  // ================= DEPOSITS TABLE =================
-  .recent-section
-    h3 Registered System Deposits
-
-    .table-responsive
-      table#depositsTable
-        thead
-          tr
-            th No.
-            th Receipt ID
-            th Customer Name
-            th Contact
-            th NIN Number
-            th Item Name
-            th Deposit (UGX)
-            th Balance (UGX)
-            th Profile
-            th Handled By
-            th Logged Date
-            th Status
-            th.center-text Actions
-
-        tbody
-          if deposits && deposits.length
-            each deposit, i in deposits
-              - const d = new Date(deposit.createdAt || deposit.date)
-              tr
-                td= i + 1
-                
-                td
-                  span.receipt-hash-tag ##{deposit._id.toString().slice(-6).toUpperCase()}
-                
-                td.font-semibold= deposit.customerName || 'Walk-in'
-                
-                td= deposit.customerContact || 'N/A'
-                
-                td= deposit.nin || 'N/A'
-                
-                td
-                  if deposit.item
-                    | #{deposit.item.itemName || deposit.item}
-                  else
-                    span.text-muted-italic N/A
-                
-                td.font-semibold.text-revenue
-                  | #{deposit.amountPaid ? deposit.amountPaid.toLocaleString() : 0}
-                
-                td(class=(deposit.balance > 0 ? "text-danger font-semibold" : ""))
-                  | #{deposit.balance ? deposit.balance.toLocaleString() : 0}
-                
-                td.role-text-transform= deposit.paymentType || 'Credit'
-                
-                td
-                  if deposit.admin
-                    | #{deposit.admin.username || deposit.admin.fullname}
-                  else
-                    span.text-muted System
-                
-                td
-                  span= d.toLocaleDateString()
-                  br
-                  small.timestamp-sub-text #{d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                
-                td
-                  if deposit.balance > 0
-                    span.badge.status-disabled Pending
-                  else
-                    span.badge.status-active Cleared
-
-                td
-                  .table-actions-flex-wrapper
-                    a.btn.action-btn.action-sub-btn(
-                      href=`/admin/deposits/${deposit._id}`
-                      title="View Deposit"
-                    )
-                      i.fa-solid.fa-eye
-
-                    a.btn.action-btn.action-sub-btn(
-                      href=`/admin/deposits/edit/${deposit._id}`
-                      title="Edit Deposit"
-                    )
-                      i.fa-solid.fa-pen
-
-                    form.inline-form(
-                      action=`/admin/deposits/delete/${deposit._id}`
-                      method="POST"
-                      onsubmit="return confirm('Are you sure you want to delete this deposit?')"
-                    )
-                      button.btn.action-btn.action-sub-btn.delete-action-btn(
-                        type="submit"
-                        title="Delete Deposit"
-                      )
-                        i.fa-solid.fa-trash
-          else
+    // ================= DEPOSITS TABLE =================
+    .recent-section
+      .table-responsive
+        table#depositsTable.receipts-table
+          thead
             tr
-              td.table-fallback-row(colspan="13") No registered customer deposits found.
+              th No.
+              th Receipt ID
+              th Customer Name
+              th Contact
+              th NIN Number
+              th Item Name
+              th Quantity
+              th Deposit
+              th Balance
+              th Transport Fee
+              th Total Profile
+              th Handled By
+              th Logged Date
+              th Status
+              th.center-text Actions
+
+          tbody
+            if deposits && deposits.length
+              each deposit, i in deposits
+                - const d = new Date(deposit.createdAt || deposit.date || Date.now())
+                tr
+                  td #{i + 1}
+                  
+                  // RECEIPT ID
+                  td
+                    span.receipt-id ##{deposit._id ? deposit._id.toString().slice(-6).toUpperCase() : 'N/A'}
+                  
+                  // CUSTOMER NAME
+                  td.font-semibold #{deposit.customerName || 'Walk-in'}
+                  
+                  // CONTACT
+                  td #{deposit.customerContact || 'N/A'}
+                  
+                  // NIN NUMBER
+                  td #{deposit.nin || 'N/A'}
+                  
+                  // ITEM NAME (Stacked Line-by-Line Column)
+                  td
+                    if deposit.items && deposit.items.length
+                      .stacked-items-cell(style="display: flex; flex-direction: column; gap: 4px;")
+                        each itemEntry in deposit.items
+                          if itemEntry.item
+                            span(style="white-space: nowrap;") #{itemEntry.item.itemName}
+                          else
+                            span.badge.status-disabled Unknown Material
+                    else
+                      span.badge.status-disabled No Items
+                  
+                  // QUANTITY (Stacked Line-by-Line Column matching Item Index)
+                  td.center-text
+                    if deposit.items && deposit.items.length
+                      .stacked-qty-cell(style="display: flex; flex-direction: column; gap: 4px; font-weight: 600;")
+                        each itemEntry in deposit.items
+                          span #{itemEntry.quantity || 0}
+                    else
+                      | 0
+
+                  // DEPOSIT
+                  td.currency-amt UGX #{deposit.amountPaid ? deposit.amountPaid.toLocaleString() : 0}
+                  
+                  // BALANCE
+                  - const currentBalance = deposit.balance && deposit.balance > 0 ? deposit.balance : 0
+                  td(class=(currentBalance > 0 ? "text-danger font-semibold currency-amt" : "final-total-cell currency-amt"))
+                    | UGX #{currentBalance.toLocaleString()}
+                  
+                  // TRANSPORT FEE
+                  td.currency-amt UGX #{deposit.transportFee ? deposit.transportFee.toLocaleString() : 0}
+
+                  // TOTAL PROFILE
+                  td.currency-amt UGX #{deposit.totalAmount ? deposit.totalAmount.toLocaleString() : 0}
+                  
+                  // HANDLED BY
+                  td
+                    if deposit.admin
+                      span #{deposit.admin.fullname || deposit.admin.fullname}
+                    else if deposit.adminName
+                      span #{deposit.adminName}
+                    else
+                      span.text-muted System
+                  
+                  // LOGGED DATE
+                  td
+                    span #{d.toLocaleDateString()}
+                    br
+                    small.timestamp-sub-text #{d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                  
+                  // STATUS
+                  td
+                    if currentBalance <= 0 || deposit.status === 'cleared'
+                      span.badge.status-active Cleared
+                    else if deposit.status === 'partial' || (currentBalance > 0 && deposit.amountPaid > 0)
+                      span.badge.status-warning Partial
+                    else
+                      span.badge.status-disabled Pending
+
+                  // ACTIONS
+                  td
+                    .table-actions-flex-wrapper
+                      a.btn-action.btn-view(
+                        href=`/admin/depositreceipt/${deposit._id}`
+                        title="View Deposit Receipt"
+                      )
+                        i.fa-solid.fa-eye
+
+                      a.btn-action.btn-edit(
+                        href=`/admin/deposits/edit/${deposit._id}`
+                        title="Edit Record"
+                      )
+                        i.fa-solid.fa-pen
+
+                      form.inline-form(
+                        action=`/admin/deposits/delete/${deposit._id}`
+                        method="POST"
+                        onsubmit="return confirm('Are you sure you want to completely drop this ledger document record?')"
+                      )
+                        button.btn-action.btn-delete(
+                          type="submit"
+                          title="Delete Permanently"
+                        )
+                          i.fa-solid.fa-trash
+            else
+              tr
+                td.table-fallback-row(colspan="15") No customer ledger deposits or credit agreements found in system repository data.
+
+  // ================= CLIENT SIDE REAL-TIME SEARCH FILTER ENGINE =================
+  script.
+    function executeTableFilter() {
+      const input = document.getElementById("searchInput");
+      const filter = input.value.toUpperCase();
+      const table = document.getElementById("depositsTable");
+      const tr = table.getElementsByTagName("tr");
+
+      for (let i = 1; i < tr.length; i++) {
+        if(tr[i].getElementsByClassName("table-fallback-row").length > 0) continue;
+
+        let rowMatched = false;
+        const textTargetCells = [1, 2, 3, 5]; 
+        
+        for (let targetIndex of textTargetCells) {
+          const td = tr[i].getElementsByTagName("td")[targetIndex];
+          if (td) {
+            const txtValue = td.textContent || td.innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+              rowMatched = true;
+              break;
+            }
+          }
+        }
+        tr[i].style.display = rowMatched ? "" : "none";
+      }
+    }

@@ -1,0 +1,68 @@
+extends stock-layout
+
+block content
+  // Include the external print stylesheet
+  link(rel="stylesheet", href="/css/grn-receipt.css")
+
+  //- Control bar wrapper hidden automatically during printing execution
+  .quick-actions.no-print
+    button.btn.primary-btn(type="button" onclick="window.print()")
+      i.fa-solid.fa-print
+      |  Execute Print
+
+  .receipt-wrapper.intake-border
+    .receipt-header
+      .receipt-title-area
+        h1.intake-title Goods Received Note
+        p Warehouse Intake Registry Proof
+      .receipt-logo-area
+        h2 INTAKE LOG
+        small ID: #{item._id.toString().substring(18).toUpperCase()}
+
+    .receipt-meta-grid
+      .receipt-meta-block
+        strong Source Supplier Details:
+        p.supplier-name= item.supplierName || 'N/A'
+        p.company-name= item.companyName || 'N/A'
+        p.supplier-tel 
+          | Tel: 
+          = item.supplierContact && item.supplierContact !== 'N/A' ? item.supplierContact.replace(/(\+\d{3})(\d{2})(\d{3})(\d{4})/, '$1 $2 $3 $4') : 'N/A'
+      
+      .receipt-meta-block.meta-right
+        strong Intake Timeline:
+        p Date: #{new Date(item.deliveryDate || item.createdAt).toLocaleDateString('en-GB')}
+        p Settlement: #[span.settlement-badge #{item.paymentMethod}]
+
+    table.receipt-table
+      thead
+        tr
+          th Item Description
+          th.text-center Original Qty Logged
+          th.text-right Unit Cost (Buying)
+          th.text-right Subtotal Value
+      tbody
+        tr
+          td.item-desc= item.itemName
+          td.text-center= item.originalQuantity || item.quantity || 0
+          td.text-right UGX #{Number(item.buyingPrice || 0).toLocaleString()}
+          td.text-bold-right UGX #{Number((item.buyingPrice || 0) * (item.originalQuantity || item.quantity || 0)).toLocaleString()}
+        
+        tr.receipt-total-row
+          td(colspan="2")
+          td.total-valuation-label Total Valuation:
+          td.total-valuation-value UGX #{Number((item.buyingPrice || 0) * (item.originalQuantity || item.quantity || 0)).toLocaleString()}
+
+    // ================= DYNAMIC SIGNATURE SECTION =================
+    .receipt-signatures
+      
+      //- Left Column: Store Manager Profile
+      .sig-block
+        span.sig-role-title Prepared By:
+        span.sig-author-name= (user && user.fullname) || (user && user.name) ||  'Authorized Store Manager'
+        .receipt-sig-line Store Manager Signature
+
+      //- Right Column: Supplier Representative Profile
+      .sig-block-right
+        span.sig-role-title Verified & Escorted By:
+        span.sig-author-name= item.supplierName || 'Unknown Delivery Escort'
+        .receipt-sig-line Supplier / Carrier Signature

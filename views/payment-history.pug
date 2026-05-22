@@ -1,0 +1,67 @@
+extends stock-layout
+
+block content
+  .page-header
+    h2 Payment History
+    p A record of all cleared supplier debts.
+
+  .recent-section
+    .table-responsive
+      table
+        thead
+          tr
+            th No.
+            th Voucher ID
+            th Product Name
+            th Supplier
+            th Amount Paid
+            th Date Paid
+            th Status
+            th Actions
+
+        tbody
+          if paidItems && paidItems.length
+            each item, index in paidItems
+              tr
+                td= index + 1
+                td: span.batch-badge= item.voucherId || 'N/A'
+                td.font-semibold= item.itemName || 'N/A'
+                td= item.supplierName || 'N/A'
+                td UGX #{Number(item.buyingPrice * item.currentQuantity).toLocaleString()}
+                td= item.paymentDate ? item.paymentDate.toLocaleDateString('en-GB') : 'N/A'
+                td
+                  span.badge.success Paid
+                
+                td
+                  .button-group.table-actions
+                    //- View Voucher Link
+                    a.btn.secondary-btn(href=`/store/voucher/${item._id}` title="View Voucher")
+                      i.fa-solid.fa-eye
+                    
+                    //- Delete Form
+                    form(action=`/store/delete-payment/${item._id}` method="POST" style="display:inline")
+                      button.btn.secondary-btn(type="submit" title="Delete Record" onclick="return confirm('Are you sure you want to delete this record?')" style="color: #dc2626;")
+                        i.fa-solid.fa-trash
+          else
+            tr
+              td(colspan="8" style="text-align: center; color: #888; padding: 20px;") No payment records found.
+
+  // ================= CSS OVERRIDES FOR CONSISTENCY =================
+  style.
+    .table-actions { 
+      display: flex; 
+      gap: 5px; 
+      align-items: center; 
+    }
+    .secondary-btn { 
+      padding: 6px 10px; 
+      font-size: 0.85rem; 
+    }
+    .badge.success {
+      background-color: #d1fae5;
+      color: #065f46;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }

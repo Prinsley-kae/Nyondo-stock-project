@@ -23,16 +23,18 @@ const CreditSaleSchema = new mongoose.Schema({
     default: null
   },
 
-  item: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Stock',
-    required: true
-  },
-
-  quantity: {
-    type: Number,
-    required: true
-  },
+  // FIXED: Changed from single object properties to an array to accept multiple items
+  items: [{
+    item: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Stock',
+      required: true
+    },
+    quantity: {
+      type: Number,
+      required: true
+    }
+  }],
 
   paymentType: {
     type: String,
@@ -65,11 +67,27 @@ const CreditSaleSchema = new mongoose.Schema({
     default: 'pending'
   },
 
+  // FIXED: Added missing logistics metrics so MongoDB doesn't drop them on save
+  distance: {
+    type: Number,
+    default: 0
+  },
+
+  transportFee: {
+    type: Number,
+    default: 0
+  },
+
   date: {
     type: Date,
     default: Date.now
-  }
+  },
 
+  admin: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Registration'
+  }
+  
 });
 
 module.exports = mongoose.model('CreditSale', CreditSaleSchema);

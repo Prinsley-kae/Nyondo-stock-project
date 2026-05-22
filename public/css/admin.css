@@ -1,20 +1,31 @@
 /* ==========================================================================
-   GLOBAL THEME DEFINITIONS & SYSTEM RESETS
+   1. VARIABLES & CSS RESET
    ========================================================================== */
 :root {
-  --admin-bg: #f8fafc;
-  --sidebar-dark: #0f172a;
-  --sidebar-item-hover: #1e293b;
-  --text-primary: #1e293b;
-  --text-muted: #64748b;
-  --pure-white: #ffffff;
-  --border-light: #e2e8f0;
-
-  /* Admin Visual Intent Variables */
-  --color-revenue: #059669;
-  --color-expenditure: #2563eb;
-  --color-suppliers: #7c3aed;
-  --color-credit: #dc2626;
+  --sidebar-width: 260px;
+  --topbar-height: 70px;
+  
+  /* Color Palette */
+  --bg-primary: #f8f9fa;
+  --bg-sidebar: #1e2640;
+  --bg-sidebar-hover: #263154;
+  --bg-sidebar-active: #303f6b;
+  --text-main: #2b303a;
+  --text-muted: #6c757d;
+  --text-light: #ffffff;
+  
+  /* Accent Colors */
+  --primary: #3b82f6;
+  --primary-hover: #2563eb;
+  --border-color: #e5e7eb;
+  --danger: #ef4444;
+  
+  /* Shadows & Radius */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+  --radius-md: 8px;
+  --radius-sm: 4px;
+  --transition: all 0.25s ease-in-out;
 }
 
 * {
@@ -24,164 +35,282 @@
 }
 
 body {
-  font-family: "Poppins", sans-serif;
-  background-color: var(--admin-bg);
-  color: var(--text-primary);
-  line-height: 1.6;
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-main);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
 /* ==========================================================================
-   2. MASTER DASHBOARD LAYOUT
+   2. DASHBOARD WRAPPER LAYOUT
    ========================================================================== */
 .dashboard-wrapper {
   display: flex;
-  width: 100%;
-  max-width: 100%;
   min-height: 100vh;
-  overflow-x: hidden;
-}
-
-/* --- SIDEBAR (Fixed Left Frame) --- */
-.sidebar {
-  width: 260px;
-  flex-shrink: 0;
-  background-color: #0f172a;
-  color: #ffffff;
-  display: flex;
-  flex-direction: column;
-  position: fixed;
-  height: 100vh;
-  left: 0;
-  top: 0;
-  z-index: 100;
-  box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
-}
-
-.sidebar .brand {
-  padding: 24px;
-  background-color: #0f172a;
-  border-bottom: 1px solid #334155;
-}
-
-.sidebar .brand h2 {
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: #ffa500;
-}
-
-.sidebar .brand p {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  color: #94a3b8;
-  margin-top: 4px;
-  letter-spacing: 1px;
-}
-
-.sidebar .nav-links {
-  padding: 20px 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  height: calc(100vh - 85px);
-}
-
-.sidebar .nav-links li a {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 14px 24px;
-  font-size: 0.95rem;
-  color: #cbd5e1;
-  transition: all 0.3s ease;
-  text-decoration: none;
-  border-left: 4px solid transparent;
-}
-
-.sidebar .nav-links li a i {
-  font-size: 1.1rem;
-  width: 20px;
-  text-align: center;
-}
-
-.sidebar .nav-links li a:hover {
-  background-color: #ffa500;
-  color: #ffffff;
-  border-left-color: #38bdf8;
-}
-
-/* Push logout option to bottom cleanly */
-.sidebar .nav-links li:last-child {
-  margin-top: auto;
-}
-.sidebar .nav-links li:last-child a:hover {
-  background-color: #ef4444;
-  border-left-color: #fca5a5;
-}
-
-/* View Content Canvas Wrapper Frame */
-.main-content {
-  flex: 1;
-  margin-left: 270px;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  max-width: 100%;
-}
-
-.topbar {
-  background-color: var(--pure-white);
-  height: 70px;
-  padding: 0 32px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid var(--border-light);
-}
-
-.topbar .left h3 {
-  font-size: 16px;
-  font-weight: 600;
-}
-
-.topbar .right .user-info {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--admin-bg);
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.topbar .right .user-info i {
-  color: #ffa500;
-}
-
-.content {
-  padding: 32px;
-  width: 100%;
-  max-width: 100%;
+  width: 100vw;
 }
 
 /* ==========================================================================
-   MODULE INTERFACE HOOKS (KPI CARDS, GRID SUMMARIES, AND BUTTONS)
+   3. SIDEBAR NAVIGATION
    ========================================================================== */
+aside.sidebar {
+  width: var(--sidebar-width);
+  background-color: var(--bg-sidebar);
+  color: var(--text-light);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 100;
+  box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+}
+
+aside.sidebar .brand {
+  padding: 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  text-align: center;
+}
+
+aside.sidebar .brand h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: #ffa500;
+}
+
+aside.sidebar .brand p {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: #94a3b8;
+  letter-spacing: 2px;
+  margin-top: 4px;
+  font-weight: 600;
+}
+
+aside.sidebar .nav-links {
+  list-style: none;
+  padding: 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+aside.sidebar .nav-links li {
+  padding: 0 16px;
+}
+
+aside.sidebar .nav-links a {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 400;
+  border-radius: var(--radius-md);
+  transition: var(--transition);
+}
+
+aside.sidebar .nav-links a i {
+  font-size: 1.1rem;
+  width: 24px; /* Fixes icon alignment spacing */
+  text-align: center;
+}
+
+/* Hover State */
+aside.sidebar .nav-links li:not(.active) a:hover {
+  background-color: #ffa500;
+  color: var(--text-light);
+}
+
+/* Active State */
+aside.sidebar .nav-links li.active a {
+  background-color: var(--primary);
+  color: var(--text-light);
+  font-weight: 600;
+}
+
+/* Push Logout to the very bottom naturally */
+aside.sidebar .nav-links li:last-child {
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+aside.sidebar .nav-links li:last-child a:hover {
+  background-color: var(--danger);
+  color: var(--text-light);
+}
+
+/* ==========================================================================
+   4. MAIN CONTENT AREA
+   ========================================================================== */
+main.main-content {
+  flex: 1;
+  margin-left: var(--sidebar-width); /* Prevents overlapping with fixed sidebar */
+  display: flex;
+  flex-direction: column;
+  min-width: 0; /* Prevents flexbox overflow bugs */
+}
+
+/* ==========================================================================
+   5. TOPBAR HEADER
+   ========================================================================== */
+header.topbar {
+  height: var(--topbar-height);
+  background-color: var(--text-light);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 32px;
+  position: sticky;
+  top: 0;
+  z-index: 90;
+}
+
+header.topbar .left h3 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+header.topbar .right .user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: var(--bg-primary);
+  padding: 8px 16px;
+  border-radius: 50px;
+  border: 1px solid var(--border-color);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+header.topbar .right .user-info i {
+  color: #ffa500;
+  font-size: 1rem;
+}
+
+/* ==========================================================================
+   6. INNER PAGE VIEWPORT (Where the blocks injection renders)
+   ========================================================================== */
+section.content {
+  padding: 32px;
+  flex: 1;
+}
+
+/* ==========================================================================
+   7. BONUS HELPER CLASSES FOR YOUR BLOCK PAGES
+   ========================================================================== */
+/* These classes are standard UI components for admin cards/tables */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.stat-card {
+  background: var(--text-light);
+  padding: 24px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+}
+
+.data-table-container {
+  background: var(--text-light);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  overflow-x: auto;
+  margin-top: 20px;
+}
+
+table.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+table.admin-table th {
+  background-color: #f9fafb;
+  padding: 14px 20px;
+  font-weight: 600;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border-color);
+}
+
+table.admin-table td {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* ==========================================================================
+   8. RESPONSIVE DESIGN (MOBILE BREAKPOINTS)
+   ========================================================================== */
+@media (max-width: 992px) {
+  aside.sidebar {
+    width: 70px;
+  }
+  aside.sidebar .brand h2, 
+  aside.sidebar .brand p, 
+  aside.sidebar .nav-links span {
+    display: none; /* Collapses sidebar labels on smaller devices */
+  }
+  aside.sidebar .brand {
+    padding: 20px 0;
+  }
+  aside.sidebar .nav-links a {
+    justify-content: center;
+    padding: 12px;
+  }
+  main.main-content {
+    margin-left: 70px;
+  }
+}
+
+@media (max-width: 576px) {
+  header.topbar {
+    padding: 0 16px;
+  }
+  section.content {
+    padding: 16px;
+  }
+}
+
+/* ADMIN DASHBOARD */
+/* ==========================================================================
+   9. DASHBOARD SPECIFIC COMPONENTS (block content)
+   ========================================================================== */
+
+/* Page Header */
 .page-header {
-  margin-bottom: 28px;
+  margin-bottom: 32px;
 }
 
 .page-header h2 {
-  font-size: 24px;
+  font-size: 1.75rem;
   font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 4px;
 }
 
 .page-header p {
   color: var(--text-muted);
-  font-size: 14px;
+  font-size: 0.95rem;
 }
 
-/* Fluid KPI Status Cards Structure Grid */
+/* KPI Stats Grid */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -191,291 +320,433 @@ body {
 }
 
 .stats-grid .card {
-  background-color: #ffffff;
-  padding: 20px;
-  width: 230px;
-  border-radius: 12px;
+  background: var(--text-light);
+  padding: 24px;
+  height: 200px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  border-left: 5px solid #64748b;
   display: flex;
   align-items: center;
-  gap: 16px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-  border: 1px solid #e2e8f0;
-  border-left: 5px solid #64748b;
-  min-width: 0;
+  gap: 20px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+.stats-grid .card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* KPI Icons & Color-coding */
 .stats-grid .card i {
-  font-size: 24px;
+  font-size: 2rem;
   padding: 16px;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
 }
 
-/* Targeted Contextual Color Variations */
-.icon-revenue {
-  color: var(--color-revenue);
-  background-color: #ecfdf5;
+.stats-grid .card i.icon-revenue {
+  background-color: #ef444415;
+  color: var(--danger);
 }
-.icon-expenditure {
-  color: var(--color-expenditure);
-  background-color: #eff6ff;
+
+.stats-grid .card i.icon-expenditure {
+  background-color: #3b82f615;
+  color: var(--primary);
 }
-.icon-suppliers {
-  color: var(--color-suppliers);
-  background-color: #f5f3ff;
+
+.stats-grid .card i.icon-suppliers {
+  background-color: #10b98115;
+  color: #10b981;
 }
-.icon-credit {
-  color: var(--color-credit);
-  background-color: #fef2f2;
+
+.stats-grid .card i.icon-credit {
+  background-color: #f59e0b15;
+  color: #f59e0b;
 }
 
 .stats-grid .card:nth-child(1) {
-  border-left-color: #16a34a;
-}
-.stats-grid .card:nth-child(2) {
-  border-left-color: #0284c7;
-}
-.stats-grid .card:nth-child(3) {
-  border-left-color: #9333ea;
-}
-.stats-grid .card:nth-child(4) {
   border-left-color: #ef4444;
 }
+.stats-grid .card:nth-child(2) {
+  border-left-color: #3b82f6;
+}
+.stats-grid .card:nth-child(3) {
+  border-left-color: #10b981;
+}
+.stats-grid .card:nth-child(4) {
+  border-left-color: #ffa500;
+}
 
-
+/* KPI Info Text */
 .stats-grid .card .info h3 {
-  font-size: 13px;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
   color: var(--text-muted);
-  font-weight: 400;
-  margin-bottom: 2px;
+  margin-bottom: 6px;
+  font-weight: 600;
 }
 
 .stats-grid .card .info p {
-  font-size: 18px;
+  font-size: 1.3rem;
   font-weight: 600;
+  color: var(--text-main);
+  word-break: break-word;
 }
 
-/* Executive Platform Overview Breakdown Section */
+/* System Summary Section */
 .summary-section {
-  background-color: var(--pure-white);
-  padding: 24px;
-  border-radius: 12px;
-  margin-bottom: 32px;
-  border: 1px solid var(--border-light);
+  margin-bottom: 40px;
 }
 
-.summary-section h3,
+.summary-section h3, 
 .quick-actions h3 {
-  font-size: 15px;
+  font-size: 1.2rem;
   font-weight: 600;
+  color: var(--text-main);
   margin-bottom: 20px;
-  color: var(--text-primary);
 }
 
 .summary-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
 }
 
 .summary-card {
-  background-color: var(--admin-bg);
-  padding: 20px;
-  border-radius: 8px;
-  border: 1px solid var(--border-light);
+  background: var(--text-light);
+  padding: 24px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
 }
 
 .summary-card-header {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
-  color: var(--sidebar-dark);
+  gap: 12px;
+  margin-bottom: 12px;
 }
 
 .summary-card-header i {
-  font-size: 14px;
   color: #ffa500;
+  font-size: 1.2rem;
 }
 
-.summary-card h4 {
-  font-size: 14px;
+.summary-card-header h4 {
+  font-size: 1rem;
   font-weight: 600;
+  color: var(--text-main);
 }
 
 .summary-card p {
-  font-size: 15px;
-  color: var(--sidebar-dark);
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.6;
 }
 
-/* Quick Administrative Execution Controls Matrix */
-.quick-actions {
-  background-color: var(--pure-white);
-  padding: 24px;
-  border-radius: 12px;
-  border: 1px solid var(--border-light);
-}
-
+/* Quick Actions Button Row */
 .action-buttons {
   display: flex;
-  gap: 12px;
   flex-wrap: wrap;
-}
-
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 400;
-  text-decoration: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  gap: 16px;
 }
 
 .action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   background-color: #ffa500;
-  color: var(--text-primary);
-  border: 1px solid var(--border-light);
+  border: 1px solid var(--border-color);
+  padding: 14px 24px;
+  border-radius: var(--radius-md);
+  color: var(--text-main);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+}
+
+.action-btn i {
+  color: var(--bg-sidebar);
+  font-size: 1rem;
 }
 
 .action-btn:hover {
-  background-color: var(--sidebar-dark);
-  color: var(--pure-white);
-  border-color: var(--sidebar-dark);
+  background-color: var(--primary);
+  border-color: var(--primary);
+  color: var(--text-light);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.action-btn:hover i {
+  color: var(--text-light);
+}
+
+/* Responsive adjustments for Dashboard Content */
+@media (max-width: 768px) {
+  .page-header h2 {
+    font-size: 1.5rem;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+  }
+  
+  .action-btn {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 /* ==========================================================================
-   USER MANAGEMENT & CONTROL DATA-TABLE ADDITIONS
+   10. USER MANAGEMENT & DATA TABLES (block content)
    ========================================================================== */
 
-/* Primary Action Button Custom Accent Override */
+/* Container to pull header and actions to the same horizontal line */
+.page-header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 32px;
+  width: 100%;
+}
+
+/* Eliminate bottom margins inside the flex container to keep alignments clean */
+.page-header-container .page-header,
+.page-header-container .quick-actions {
+  margin-bottom: 0;
+}
+
+/* Smoothly drop into a vertical layout stack on mobile displays */
+@media (max-width: 768px) {
+  .page-header-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .page-header-container .quick-actions {
+    width: 100%;
+  }
+}
+
+/* Primary Action Button Modification */
 .primary-action-btn {
-  background-color: var(--sidebar-dark) !important;
-  color: var(--pure-white) !important;
-  border-color: var(--sidebar-dark) !important;
+  background-color: #ffa500;
+  border-color: #ffa500;
+  color: var(--text-light);
+}
+
+.primary-action-btn i {
+  color: var(--text-light);
 }
 
 .primary-action-btn:hover {
-  opacity: 0.9;
+  background-color: var(--primary-hover);
+  border-color: var(--primary-hover);
 }
 
-/* Data Table System Extensions */
+/* Table Section Structure */
+.recent-section {
+  margin-top: 32px;
+}
+
+.recent-section h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 16px;
+}
+
+/* Core Responsive Wrapper (Prevents whole page body from shifting) */
 .table-responsive {
   width: 100%;
   overflow-x: auto;
+  background: var(--text-light);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  /* Elegant custom scrollbar styling for slick browsers */
+  position: relative;
 }
 
-table {
+.table-responsive::-webkit-scrollbar {
+  height: 6px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+/* Table Semantic Elements */
+.table-responsive table {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
-  font-size: 14px;
-  margin-top: 8px;
+  font-size: 0.9rem;
+  white-space: nowrap; /* Ensures columns stretch naturally without squeezing words */
 }
 
-table th {
-  background-color:#0f172a ;
-  padding: 12px 16px;
+.table-responsive th {
+  background-color: var(--bg-sidebar);
+  padding: 16px 20px;
   font-weight: 600;
-  color: var(--pure-white);
-  border-bottom: 1px solid var(--border-light);
+  color: var(--text-light);
+  border-bottom: 1px solid var(--border-color);
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
 }
 
-table td {
-  padding: 14px 16px;
-  border-bottom: 1px solid var(--border-light);
+.table-responsive td {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-main);
+  vertical-align: middle;
 }
 
+.table-responsive tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.table-responsive tbody tr:hover td {
+  background-color: #f8fafc;
+}
+
+/* Helpers from Pug Elements */
 .font-semibold {
   font-weight: 600;
 }
 
 .role-text-transform {
   text-transform: capitalize;
-  font-weight: 500;
 }
 
-/* User Account Badges Matrix */
+.center-text {
+  text-align: center !important;
+}
+
+/* Custom Component Badges */
 .badge {
-  display: inline-block;
-  padding: 4px 12px;
-  border-radius: 12px;
-  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 50px;
+  font-size: 0.75rem;
   font-weight: 600;
-  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .badge.status-active {
-  background-color: #ecfdf5;
-  color: var(--color-revenue);
+  background-color: #10b98115;
+  color: #10b981;
 }
 
 .badge.status-disabled {
-  background-color: #fef2f2;
-  color: var(--color-credit);
+  background-color: #ef444415;
+  color: var(--danger);
 }
 
-/* Operational Action Layout Connectors */
-.center-text {
-  text-align: center;
-}
-
-.table-actions-center {
-  gap: 6px;
+/* Table Inline Controls Block */
+.button-group.table-actions-center {
+  display: flex;
+  align-items: center;
   justify-content: center;
+  gap: 8px;
 }
 
 .action-sub-btn {
-  padding: 6px 12px !important;
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-primary);
+  box-shadow: none;
 }
 
-.delete-action-btn {
-  color: var(--color-credit) !important;
-  border-color: #fee2e2 !important;
+.action-sub-btn i {
+  color: #3b82f6;
+}
+
+.delete-action-btn i {
+  color: #ef4444;
+}
+
+.action-sub-btn:hover {
+  background-color: #e2e8f0;
+  color: var(--text-main);
+}
+
+.action-sub-btn:hover i {
+  color: var(--text-main);
 }
 
 .delete-action-btn:hover {
-  background-color: #fef2f2 !important;
+  background-color: var(--danger) !important;
+  border-color: var(--danger) !important;
 }
 
+.delete-action-btn:hover i {
+  color: var(--danger) !important;
+}
+
+/* Empty State Styling */
 .table-fallback-row {
-  text-align: center;
+  text-align: center !important;
+  padding: 40px !important;
   color: var(--text-muted);
-  padding: 24px !important;
   font-style: italic;
+  background-color: var(--text-light) !important;
 }
 
+/* ADD USER FORM */
 /* ==========================================================================
-   ADMIN CONTROL PANEL INPUT FORMS & LAYOUT STYLING
+   12. FORM LAYOUT & COMPONENT STYLING (Add User Page)
    ========================================================================== */
 
+/* Form Card Container Structure */
 .form-section {
-  background-color: var(--pure-white);
+  background: var(--text-light);
   padding: 32px;
-  border-radius: 12px;
-  border: 1px solid var(--border-light);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  margin-top: 24px;
 }
 
 .form-section h3 {
-  font-size: 15px;
+  font-size: 1.1rem;
   font-weight: 600;
+  color: var(--text-main);
   margin-bottom: 24px;
-  color: var(--text-primary);
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-color);
   padding-bottom: 12px;
 }
 
-/* Smart Grid For Scalable Multi-Column Inputs */
+/* Two-Column Responsive Form Grid */
 .form-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px 32px;
   margin-bottom: 32px;
 }
 
+/* Core Input Elements Packaging */
 .input-group {
   display: flex;
   flex-direction: column;
@@ -483,173 +754,983 @@ table td {
 }
 
 .input-group label {
-  font-size: 13px;
+  font-size: 0.85rem;
   font-weight: 600;
-  color: var(--text-muted);
+  color: var(--text-main);
 }
 
-/* Vector Placement Inline Wrapper */
+/* Relative Wrapper to anchor internal UI Icons and Toggle Actions */
 .icon-input-wrapper {
   position: relative;
   display: flex;
   align-items: center;
+  width: 100%;
 }
 
+/* Inner Left Static Input Icons */
 .icon-input-wrapper .input-icon {
   position: absolute;
   left: 16px;
-  color: var(--text-muted);
-  font-size: 14px;
-  pointer-events: none;
+  color: #a0aec0;
+  font-size: 0.95rem;
+  pointer-events: none; /* Keeps input element completely clickable underneath */
+  transition: var(--transition);
 }
 
-/* Uniform Form Inputs and Controls Architecture */
+/* Global Form Fields (Inputs and Select Boxes) */
 .icon-input-wrapper input,
 .icon-input-wrapper select {
   width: 100%;
-  padding: 12px 16px 12px 44px;
-  border: 1px solid var(--border-light);
-  border-radius: 8px;
-  background-color: var(--admin-bg);
-  font-family: inherit;
-  font-size: 14px;
-  color: var(--text-primary);
+  padding: 12px 16px 12px 44px; /* Left padding expanded to prevent overlapping text onto icons */
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.9rem;
+  color: var(--text-main);
+  background-color: var(--text-light);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
   outline: none;
+  transition: var(--transition);
+  appearance: none; /* Remaster native operating system arrows off drops */
+}
+
+/* Specific Select Arrow Restyling fallback wrapper */
+.icon-input-wrapper select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%234a5568'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  background-size: 16px;
+  padding-right: 40px;
+}
+
+/* Form Interactivity Focus Triggers */
+.icon-input-wrapper input:focus,
+.icon-input-wrapper select:focus {
+  border-color: var(--primary);
+  background-color: var(--text-light);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+}
+
+.icon-input-wrapper input:focus + .input-icon,
+.icon-input-wrapper select:focus + .input-icon {
+  color: var(--primary);
+}
+
+/* Textarea Box Custom Styles */
+.input-group.input-group-full .form-textarea {
+  width: 100%;
+  min-height: 110px; /* Base structural profile target */
+  padding: 12px 16px 12px 42px; /* Extra left padding to keep text clear of the icon */
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: #1e293b;
+  background-color: #f8fafc; /* Sleek light background tint */
+  border: 1px solid #cbd5e1; /* Subtle border */
+  border-radius: 6px;
+  outline: none;
+  resize: vertical; /* Permits height sizing adjustment while locking the width scale */
   transition: all 0.2s ease-in-out;
 }
 
-.icon-input-wrapper input:focus,
-.icon-input-wrapper select:focus {
-  border-color: var(--sidebar-dark);
-  background-color: var(--pure-white);
-  box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.05);
+/* Top-Pinned Textarea Left Icon Alignment */
+.input-group.input-group-full .textarea-icon {
+  position: absolute;
+  left: 16px;
+  top: 14px; /* Hard-pinned near top line entry text */
+  color: #94a3b8; /* Muted slate icon hue */
+  font-size: 0.95rem;
+  pointer-events: none; /* Mouse actions fall through to textarea below */
+  transition: color 0.2s ease-in-out;
 }
 
-/* Interactive Eye Control Positioning */
+/* Focus and Highlight State Control Elements */
+.input-group.input-group-full .form-textarea:focus {
+  background-color: #ffffff; /* Turns clean white on type focus state click */
+  border-color: #2563eb; /* Primary theme color tint match */
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); /* Soft perimeter outer glow drop */
+}
+
+/* Subtle accent highlight on icon when typing active */
+.input-group.input-group-full .form-textarea:focus + .textarea-icon,
+.input-group.input-group-full .icon-input-wrapper:focus-within .textarea-icon {
+  color: #2563eb;
+}
+
+/* Placeholder Copy Adjustment */
+.input-group.input-group-full .form-textarea::placeholder {
+  color: #94a3b8;
+  font-style: normal;
+}
+
+/* Eye Password Interactive Toggler Engine Anchor */
 .toggle-password-icon {
   position: absolute;
   right: 16px;
   color: var(--text-muted);
   cursor: pointer;
   padding: 4px;
-  transition: color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+  z-index: 5;
 }
 
 .toggle-password-icon:hover {
-  color: var(--sidebar-dark);
+  color: var(--text-main);
 }
 
-/* Execution Layout Buttons Alignment Sub-Bar */
+/* Specific padding patch for password items so text hidden underneath eyes won't hit it */
+.icon-input-wrapper input[type="password"],
+.icon-input-wrapper input[type="text"] {
+  padding-right: 44px;
+}
+
+/* Bottom Actions Control Footer Bar */
+.form-actions-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  border-top: 1px solid var(--border-color);
+  padding-top: 24px;
+  margin-top: 32px;
+}
+
+.form-actions-bar .btn {
+  min-width: 120px;
+  justify-content: center;
+}
+
+/* Primary Action Button Refinement */
+.form-actions-bar .primary-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px; /* Space between the delivery truck icon and your text */
+  padding: 12px 24px;
+  font-family: 'Poppins', 'Inter', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #ffffff;
+  background-color: #ffa500; /* Clean, bold primary blue */
+  border: 1px solid #ffa500;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.15);
+  transition: all 0.2s ease-in-out;
+}
+
+/* Hover State */
+.form-actions-bar .primary-action-btn:hover {
+  background-color: #1d4ed8; /* Darkens slightly on hover */
+  border-color: #1d4ed8;
+  box-shadow: 0 4px 8px rgba(29, 78, 216, 0.25);
+  transform: translateY(-1px); /* Gentle upward pop effect */
+}
+
+/* Active State (When Clicked) */
+.form-actions-bar .primary-action-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(29, 78, 216, 0.15);
+}
+
+/* Icon specific sizing adjustment */
+.form-actions-bar .primary-action-btn i {
+  font-size: 1rem;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 480px) {
+  .form-actions-bar {
+    padding: 16px;
+  }
+  .form-actions-bar .primary-action-btn {
+    width: 100%; /* Makes button full-width on mobile screen sizes */
+  }
+}
+
+/* ==========================================================================
+   13. FORM RESPONSIVE MOBILE OVERRIDES
+   ========================================================================== */
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr; /* Drops into single column structure on small mobile sizes */
+    gap: 20px;
+  }
+  
+  .form-section {
+    padding: 20px;
+  }
+  
+  .form-actions-bar {
+    flex-direction: column-reverse; /* Puts primary submit button on top when stacked vertically */
+    gap: 12px;
+  }
+  
+  .form-actions-bar .btn {
+    width: 100%;
+  }
+}
+
+/* ==========================================================================
+   14. CUSTOMER DEPOSITS & CREDIT LEDGER STYLES
+   ========================================================================== */
+   /* Layout rule for Header and New Deposit Button alignment */
+/* 
+/* Layout rule grouping the Search Box and Generate Report Button */
+.filter-action-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  background: var(--text-light);
+  padding: 16px 24px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 24px;
+}
+
+/* Ensure search component takes up expandable remaining spacing nicely */
+.filter-action-bar .search-box-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+  max-width: 480px;
+}
+
+/* Responsive adjustment for compact viewports */
+@media (max-width: 768px) {
+  .page-header-container,
+  .filter-action-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+  
+  .filter-action-bar .search-box-wrapper {
+    max-width: 100%;
+  }
+}
+
+.filter-action-bar .search-icon {
+  position: absolute;
+  left: 16px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.filter-action-bar input {
+  width: 100%;
+  padding: 10px 16px 10px 42px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.88rem;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  outline: none;
+  transition: var(--transition);
+}
+
+.filter-action-bar input:focus {
+  border-color: var(--primary);
+  background-color: var(--text-light);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Secondary Printing Button Style Mod */
+.secondary-action-btn {
+  background-color: #ffa500;
+  border-color: var(--border-color);
+  color: var(--text-main);
+}
+.secondary-action-btn:hover {
+  background-color: var(--bg-primary);
+  color: var(--primary);
+}
+
+/* Specific Table Cell Elements Styling */
+.receipt-id {
+  font-family: monospace;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #475569;
+  background: #f1f5f9;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+}
+
+.currency-amt {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  color: var(--text-main);
+}
+
+.text-danger {
+  color: var(--danger) !important;
+}
+
+.final-total-cell {
+  color: #10b981;
+  font-weight: 600;
+}
+
+.timestamp-sub-text {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+/* Add specialized yellow state style to global badges core */
+.badge.status-warning {
+  background-color: #fef3c7;
+  color: #b45309;
+}
+
+/* Flexible Action Box Matrix Inside Rows */
+.table-actions-flex-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--text-light);
+  text-decoration: none;
+  cursor: pointer;
+  transition: var(--transition);
+  font-size: 0.85rem;
+}
+
+.btn-view { background-color: var(--primary); }
+.btn-view:hover { background-color: var(--primary-hover); }
+
+.btn-edit { background-color: #64748b; }
+.btn-edit:hover { background-color: #475569; }
+
+.btn-delete { background-color: var(--danger); }
+.btn-delete:hover { background-color: #dc2626; }
+
+.inline-form {
+  display: inline-block;
+  margin: 0;
+}
+
+/* Print Layout Cleanup Adjustments */
+@media print {
+  aside.sidebar,
+  header.topbar,
+  .filter-action-bar,
+  .quick-actions,
+  th.center-text,
+  td:last-child {
+    display: none !important;
+  }
+  main.main-content {
+    margin-left: 0 !important;
+    padding: 0 !important;
+  }
+  .table-responsive {
+    border: none;
+    box-shadow: none;
+    overflow: visible;
+  }
+  table.receipts-table {
+    white-space: normal;
+    font-size: 0.75rem;
+  }
+}
+
+/* ==========================================================================
+   NYONDO HARDWARE VOUCHER & DEPOSIT RECEIPT STYLES 
+   ========================================================================== */
+   /* LOGO SECTION */
+.receipt-logo-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+
+/* Img Asset Class Optimization (When you swap to an uploaded image file) */
+.receipt-logo-img {
+  max-width: 140px;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
+/* Print Specific Adjustment to preserve details */
+@media print {
+  .receipt-logo-icon {
+    border: 1px solid #334155 !important;
+    -webkit-print-color-adjust: exact; /* Instructs inkjets to print background shading colors */
+    print-color-adjust: exact;
+  }
+}
+
+/* Main Page Container Center Box */
+.receipt-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 16px;
+  background-color: #f1f5f9; /* Soft background to pop the receipt card */
+  min-height: calc(100vh - 80px);
+}
+
+/* Base Physical Voucher Card Layout */
+.receipt-box {
+  background-color: #ffffff;
+  width: 100%;
+  max-width: 460px; /* Traditional terminal narrow width styling layout */
+  padding: 32px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+  border: 1px solid #e2e8f0;
+}
+
+/* Header & Store Branding Grid */
+.receipt-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.receipt-header h2 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: 0.5px;
+  margin: 0 0 4px 0;
+}
+
+.receipt-header .location {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  color: #64748b;
+  margin: 0 0 16px 0;
+}
+
+.receipt-title {
+  display: inline-block;
+  background-color: #f1f5f9;
+  color: #334155;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 6px 16px;
+  border-radius: 50px;
+}
+
+/* Section Blocks Layout */
+.receipt-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 16px 0;
+}
+
+.receipt-section .section-heading {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #94a3b8;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+/* Classic Key-Value Row Flex Alignment */
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.info-row strong {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.info-row span {
+  color: #0f172a;
+  font-weight: 600;
+  text-align: right;
+  max-width: 60%;
+}
+
+/* Custom Text Transformation Hooks */
+.payment-profile-type {
+  text-transform: capitalize;
+  color: #2563eb !important;
+}
+
+.transit-fee-amt {
+  color: #475569 !important;
+}
+
+/* Crisp Divider Rules */
+hr.divider {
+  border: none;
+  border-top: 1px dashed #cbd5e1; /* Dot-matrix terminal styled breakline effect */
+  margin: 16px 0;
+}
+
+/* Financial Matrix Highlights Context */
+.financials-block .total-amount {
+  color: #0f172a;
+  font-size: 1rem;
+}
+
+.financials-block .amount-paid {
+  color: #10b981; /* Green color for upfront credit deposit entry payments */
+}
+
+.financials-block .remaining-balance {
+  color: #ef4444; /* Standard Red theme balance alert */
+  font-size: 1.05rem;
+  font-weight: 700 !important;
+}
+
+/* Voucher Base / Bottom Block elements */
+.receipt-footer-meta {
+  text-align: center;
+  margin-top: 24px;
+}
+
+.timestamp-row {
+  font-size: 0.8rem !important;
+  margin-bottom: 16px;
+}
+
+.timestamp-row span {
+  font-weight: 400 !important;
+  color: #64748b !important;
+}
+
+.thank-you {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.85rem;
+  font-style: italic;
+  color: #94a3b8;
+  margin: 8px 0 0 0;
+}
+
+/* System Action Row Wrapper Details */
+.receipt-actions-wrapper {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+  width: 100%;
+  max-width: 460px;
+}
+
+.receipt-actions-wrapper .btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.btn-print {
+  background-color: #ffa500;
+  color: #ffffff;
+  border: 1px solid #ffa500;
+}
+
+.btn-print:hover {
+  background-color: #1e293b;
+}
+
+.btn-back {
+  background-color: #ffffff;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+}
+
+.btn-back:hover {
+  background-color: #f8fafc;
+  border-color: #94a3b8;
+}
+
+/* ==========================================================================
+   PRINT STYLESHEET OVERRIDES (CLEANSES COPIES FOR INKJET / LASER PRINTERS)
+   ========================================================================== */
+@media print {
+  /* Completely hide standard admin layout controls, navigation sidebars, top headers and custom buttons */
+  aside.sidebar, 
+  header.topbar, 
+  .receipt-actions-wrapper,
+  .main-header-block {
+    display: none !important;
+  }
+  
+  body, .receipt-container {
+    background-color: #ffffff !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    min-height: auto !important;
+  }
+
+  main.main-content {
+    margin-left: 0 !important;
+    padding: 0 !important;
+  }
+
+  .receipt-box {
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+}
+
+/* CREDIT SALES FORM */
+/* Global Page Structure Optimization */
+.ledger-container {
+  max-width: 1160px;
+  margin: 24px auto 48px auto;
+  padding: 0 20px;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Page Header Component Block */
+.ledger-header {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  background: #ffffff;
+  padding: 24px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  margin-bottom: 28px;
+}
+.header-badge-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  background-color: #eff6ff;
+  color: #ffa500;
+  border-radius: 10px;
+  font-size: 1.6rem;
+}
+.header-titles h2 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 4px 0;
+  letter-spacing: -0.02em;
+}
+.header-titles p {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin: 0;
+}
+
+/* Base Architecture Workspace Card */
+.ledger-card {
+  background: #ffffff;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 10px -1px rgba(15, 23, 42, 0.03), 0 2px 4px -1px rgba(15, 23, 42, 0.02);
+  padding: 36px;
+}
+.ledger-card h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 28px 0;
+  letter-spacing: -0.01em;
+}
+
+/* Form Section Structural Title Headers */
+.section-title-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.98rem;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 22px;
+  padding-left: 12px;
+  border-left: 4px solid #ffa500;
+}
+.section-title-wrapper i {
+  color: #94a3b8;
+}
+
+/* Responsive Grid Management Engine */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 24px;
+  margin-bottom: 12px;
+}
+.input-group-full {
+  grid-column: 1 / -1;
+}
+
+/* Labels & Native Input Blocks */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.input-group label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Icon Input Group Base Frames */
+.icon-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+.input-icon {
+  position: absolute;
+  left: 14px;
+  color: #94a3b8;
+  font-size: 0.95rem;
+  pointer-events: none;
+}
+
+/* Uniform Height Variables Configuration ($42px) */
+.icon-input-wrapper input,
+.icon-input-wrapper select,
+.item-select,
+.item-quantity,
+.form-control-static {
+  width: 100%;
+  height: 42px; 
+  padding: 10px 14px 10px 38px;
+  font-size: 0.92rem;
+  color: #334155;
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  outline: none;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-sizing: border-box;
+}
+.icon-input-wrapper input:focus,
+.icon-input-wrapper select:focus,
+.item-select:focus,
+.item-quantity:focus {
+  border-color: #ffa500;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+  background-color: #ffffff;
+}
+
+/* Divider Accent Element Lines */
+hr.form-divider {
+  border: none;
+  border-top: 1px dashed #e2e8f0;
+  margin: 32px 0;
+}
+
+/* Dynamic Row Data Matrix Table Component Styling */
+.items-management-section {
+  margin: 12px 0;
+}
+.items-table-container {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background-color: #f8fafc;
+  margin-bottom: 20px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.01);
+}
+#itemsTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+#itemsTable th {
+  background-color: #f1f5f9;
+  color: #475569;
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 14px 16px;
+  border-bottom: 1px solid #e2e8f0;
+  text-align: left;
+}
+#itemsTable td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #e2e8f0;
+  vertical-align: middle;
+  background-color: #ffffff;
+}
+#itemsTable tr:last-child td {
+  border-bottom: none;
+}
+
+/* Static Non-editable Calculation Outputs Layout Setup */
+.form-control-static {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+  padding: 10px 14px;
+  font-weight: 600;
+  text-align: right;
+  cursor: not-allowed;
+}
+
+/* Total individual element price column accent highlight */
+.total-price-display {
+  background-color: #f0fdf4;
+  border-color: #bbf7d0;
+  color: #166534;
+}
+
+/* Append Row Interaction Trigger Style Adjustments */
+.btn-secondary-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #ffffff;
+  color: #ffa500;
+  border: 1px solid #bfdbfe;
+  padding: 10px 20px;
+  height: 42px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+.btn-secondary-action:hover {
+  background-color: #eff6ff;
+  border-color: #ffa500;
+}
+
+/* Danger Trash Trigger Elements */
+.btn-remove-row {
+  background: none;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  font-size: 1.05rem;
+  padding: 8px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.btn-remove-row:hover {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+/* Operational Textareas Modifications */
+.textarea-icon {
+  top: 14px;
+}
+.form-textarea {
+  width: 100%;
+  min-height: 90px;
+  padding: 12px 14px 12px 38px;
+  font-size: 0.92rem;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  outline: none;
+  resize: vertical;
+  font-family: inherit;
+  transition: border-color 0.2s ease;
+  box-sizing: border-box;
+}
+.form-textarea:focus {
+  border-color: #ffa500;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+/* Disabled Input Fields Selection Fallbacks */
+.disabled-input {
+  background-color: #f1f5f9 !important;
+  color: #94a3b8 !important;
+  border-color: #e2e8f0 !important;
+}
+
+/* Footer Action Options Control Bar */
 .form-actions-bar {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  gap: 12px;
-  border-top: 1px solid var(--border-light);
-  padding-top: 24px;
+  gap: 14px;
+  margin-top: 16px;
+  padding-top: 28px;
+  border-top: 1px solid #e2e8f0;
 }
-
-/* ==========================================================================
-   CUSTOMER DEPOSITS PLATFORM EXTENSIONS & INTERACTION STYLES
-   ========================================================================== */
-
-/* Split Architecture Action Layout bar */
-.action-bar-split {
-  display: flex;
-  justify-content: space-between;
+.action-btn {
+  display: inline-flex;
   align-items: center;
-  gap: 20px;
-  flex-wrap: wrap;
-  width: 100%;
-}
-
-/* Dynamic Interactive Search Box Container */
-.search-box-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-  min-width: 320px;
-  flex: 1;
-  max-width: 480px;
-}
-
-.search-box-wrapper .search-icon {
-  position: absolute;
-  left: 16px;
-  color: var(--text-muted);
-  font-size: 14px;
-}
-
-.search-box-wrapper input {
-  width: 100%;
-  padding: 12px 16px 12px 44px;
-  border: 1px solid var(--border-light);
-  border-radius: 8px;
-  background-color: var(--admin-bg);
-  font-family: inherit;
-  font-size: 14px;
-  color: var(--text-primary);
-  outline: none;
-  transition: all 0.2s ease;
-}
-
-.search-box-wrapper input:focus {
-  border-color: var(--sidebar-dark);
-  background-color: var(--pure-white);
-  box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.05);
-}
-
-/* Custom Table Content Utilities */
-.receipt-hash-tag {
-  font-family: monospace;
-  background-color: var(--admin-bg);
-  padding: 4px 8px;
-  border-radius: 4px;
+  gap: 8px;
+  height: 44px;
+  padding: 0 24px;
+  font-size: 0.92rem;
   font-weight: 600;
-  color: var(--sidebar-dark);
-  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
 }
-
-.timestamp-sub-text {
-  font-size: 11px;
-  color: var(--text-muted);
-  display: inline-block;
-  margin-top: 2px;
+.cancel-btn {
+  color: #64748b;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
 }
-
-.text-revenue {
-  color: var(--color-revenue);
+.cancel-btn:hover {
+  background-color: #f8fafc;
+  color: #334155;
+  border-color: #94a3b8;
 }
-
-.text-danger {
-  color: var(--color-credit);
+.primary-action-btn {
+  background-color: #ffa500;
+  color: #ffffff;
+  border: 1px solid #ffa500;
 }
-
-.text-muted-italic {
-  color: var(--text-muted);
-  font-style: italic;
-  font-size: 13px;
+.primary-action-btn:hover {
+  background-color: #ffa500;
+  border-color: #ffa500;
 }
-
-/* Print Overrides Management (Removes sidebar/topbar interface clutter when printing) */
-@media print {
-  .sidebar, .topbar, .quick-actions, .table-actions-center, .table-actions-center, th:last-child, td:last-child {
-    display: none !important;
-  }
-  .main-content {
-    margin-left: 0 !important;
-  }
-  .content {
-    padding: 0 !important;
-  }
-  .recent-section {
-    border: none !important;
-    box-shadow: none !important;
-    padding: 0 !important;
-  }
-  body {
-    background-color: #fff !important;
-    color: #000 !important;
-  }
-}
-

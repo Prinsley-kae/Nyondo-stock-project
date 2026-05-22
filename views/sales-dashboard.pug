@@ -9,62 +9,104 @@ block content
 
   //- ================= STATS CARDS =================
   .stats-grid
-
     .card
       i.fa-solid.fa-cart-shopping
       .info
         h3 Today's Sales
-        p 0
+        p #{stats && stats.todaySalesCount ? stats.todaySalesCount.toLocaleString() : 0}
 
     .card
       i.fa-solid.fa-money-bill-wave
       .info
         h3 Total Revenue
-        p UGX 0
+        p UGX #{stats && stats.totalRevenue ? stats.totalRevenue.toLocaleString() : 0}
 
     .card
       i.fa-solid.fa-receipt
       .info
         h3 Transactions
-        p 0
+        p #{stats && stats.totalTransactions ? stats.totalTransactions.toLocaleString() : 0}
 
     .card
       i.fa-solid.fa-boxes-stacked
       .info
-        h3 Stock Items
-        p 0
+        h3 Active Products
+        p #{stats && stats.totalStockItems ? stats.totalStockItems.toLocaleString() : 0}
 
   //- ================= QUICK ACTIONS =================
   .quick-actions
     h3 Quick Actions
-
     .action-buttons
       a.btn.secondary(href="/sales/add-sale")
         i.fa-solid.fa-plus
         |  Add Sale
-
-      a.btn.secondary(href="/sales/receipts")
+      a.btn.secondary(href="/sales/sales-list")
         i.fa-solid.fa-receipt
-        |  View Receipts
-
-      a.btn.secondary(href="/store/inventory")
-        i.fa-solid.fa-boxes-stacked
-        |  Check Stock
+        |  View Sales List
+      a.btn.info(href="/sales/analytics" style="background-color: #17a2b8; color: white; margin-left: 10px;")
+        i.fa-solid.fa-chart-line
+        |  View Analytics
+      a.btn.primary(href="/sales/report-form" style="background-color: #28a745; color: white; margin-left: 10px;")
+        i.fa-solid.fa-file-invoice
+        |  Generate Sales Report
+      a.btn.secondary(href="/sales/report-archive" style="background-color: #6c757d; color: white; margin-left: 10px;")
+        i.fa-solid.fa-folder-open
+        |  View Report Archive
 
   //- ================= RECENT SALES =================
   .recent-section
-    h3 Recent Sales
-
+    h3 Recent Sales (Top 5)
     .table-responsive
       table
         thead
           tr
+            th No
+            th Date
             th Customer
-            th Product
+            th Products Sold
             th Quantity
-            th Total
+            th Total Amount
             th Transport
-
+            th Status
         tbody
+          if recentSales && recentSales.length > 0
+            each sale, index in recentSales
+              tr
+                td.font-semibold= index + 1
+                td= sale.date ? new Date(sale.date).toLocaleDateString('en-GB') : 'N/A'
+                td
+                  span.font-semibold= sale.customerName || 'Walk-in'
+                  if sale.phoneNumber
+                    br
+                    small.timestamp-muted= sale.phoneNumber
+                td
+                  each entry in sale.items
+                    div= entry.item ? entry.item.itemName : 'Deleted'
+                td
+                  each entry in sale.items
+                    div x#{entry.quantity}
+                td.font-semibold UGX #{Number(sale.finalTotal || 0).toLocaleString()}
+                td= sale.transportFee > 0 ? 'UGX ' + sale.transportFee.toLocaleString() : 'Free'
+                td: span.badge.low Cleared
+          else
+            tr: td(colspan="8" style="text-align: center; padding: 20px;") No sales recorded yet.
+
+  //- ================= WEEKLY SUMMARY TABLE =================
+  .recent-section(style="margin-top: 40px;")
+    h3 Weekly Sales Performance (Last 7 Days)
+    .table-responsive
+      table
+        thead
           tr
-            td(colspan="5") No sales recorded yet.
+            th Period
+            th Total Transactions
+            th Total Revenue
+        tbody
+          if weeklyReport && weeklyReport.length > 0
+            tr
+              td Past 7 Days
+              td= weeklyReport.length
+              td.font-semibold UGX #{weeklyReport.reduce((sum, s) => sum + (s.finalTotal || 0), 0).toLocaleString()}
+          else
+            tr
+              td(colspan="3" style="text-align: center; padding: 20px; color: #888;") No sales recorded in the last 7 days.

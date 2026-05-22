@@ -1,0 +1,178 @@
+extends stock-layout
+
+block content
+  // ================= PAGE HEADER =================
+  .page-header
+    h2 Supplier Credit Obligations
+    p Track active balances, stock performance, and outstanding debts to suppliers.
+
+  // ================= FILTER BAR =================
+  .quick-actions
+    .filter-wrapper
+      .input-group.search-group
+        input#searchInput(
+          type="text"
+          placeholder="Search supplier, company, items or status details..."
+        )
+        i.fa-solid.fa-magnifying-glass.search-icon
+
+      button.btn.primary-btn.report-btn(type="button" onclick="window.print()")
+        i.fa-solid.fa-print
+        |  Print Debt Report
+
+  // =========================================================
+  // ================= 1. SUPPLIER FINANCIAL LEDGER ==========
+  // =========================================================
+  .recent-section
+    h3 Active Accounts Payable & Balances
+    p.section-subtitle Financial debt summaries, procurement sources, and supplier contact profiles.
+
+    .table-responsive
+      table
+        thead
+          tr
+            th No.
+            th Issuance Date
+            th Supplier Name
+            th Company Name
+            th Contact
+            th Item Procured
+            th Original Intake Qty
+            th Amount Owed
+            th Mode
+            th Payment Status
+            th Actions
+
+        tbody#ledgerTableBody
+          if credits && credits.length
+            each credit, i in credits
+              - const d = credit.deliveryDate || credit.createdAt ? new Date(credit.deliveryDate || credit.createdAt) : null
+
+              tr
+                td= i + 1
+                td
+                  if d
+                    span.font-semibold #{d.toLocaleDateString('en-GB')}
+                    br
+                    small.timestamp-muted #{d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                  else
+                    | N/A
+                
+                td.font-semibold= credit.supplierName || 'N/A'
+                td= credit.companyName || 'N/A'
+                td= credit.supplierContact || 'N/A'
+                td= credit.itemName || 'N/A'
+                
+                td.font-semibold(style="color: #4b5563;")= credit.originalQuantity || 0
+                
+                td.font-semibold.debt-text UGX #{Number((credit.buyingPrice || 0) * (credit.originalQuantity || 0)).toLocaleString()}
+                td.capitalize-text= credit.paymentMethod || 'credit'
+                
+                td
+                  if (credit.paymentMethod || '').toLowerCase() === 'credit'
+                    span.badge.out Unpaid
+                  else
+                    span.badge.low Paid
+                
+                td
+                  .button-group.table-actions
+                    //- FIXED: Removed onsubmit. Form now handles payment; server redirect handles receipts.
+                    form(action=`/store/credits/pay/${credit._id}` method="POST" style="display:inline")
+                      button.btn.secondary-btn.action-sub-btn(
+                        type="submit" 
+                        onclick="return confirm('Confirm clearing this credit obligation? This will process your payment and open your receipts.')"
+                        title="Pay & clear the debt"
+                        style="color: #10b981;"
+                      )
+                        i.fa-solid.fa-money-bill-wave
+                    
+                    a.btn.secondary-btn.action-sub-btn(
+                      href=`/store/receipts/intake/${credit._id}` 
+                      target="_blank"
+                      title="Reprint Intake Receipt Only"
+                      style="color: #4b5563;"
+                    )
+                      i.fa-solid.fa-receipt
+                    
+                    a.btn.secondary-btn.action-sub-btn(
+                      href=`/store/inventory/edit/${credit._id}` 
+                      title="Edit Credit Details"
+                    )
+                      i.fa-solid.fa-pen
+                    
+                    form(action=`/store/inventory/delete/${credit._id}` method="POST" style="display:inline")
+                      button.btn.secondary-btn.action-sub-btn.delete-action-btn(
+                        type="submit" 
+                        onclick="return confirm('Delete this supplier record permanently?')"
+                        title="Delete Record"
+                      )
+                        i.fa-solid.fa-trash
+          else
+            tr
+              td.table-fallback-row(colspan="11" style="text-align: center; color: #888; padding: 20px;") No outstanding credit obligations logged.
+
+  // =========================================================
+  // ================= 2. CREDIT ITEM STOCK VARIANCE =========
+  // =========================================================
+  .recent-section.credit-section-margin
+    h3 Active Credit Sales Variance Ledger
+    p.section-subtitle Monitoring active volume changes strictly for credit items that have recorded marketplace sales.
+
+    .table-responsive
+      table
+        thead
+          tr
+            th No.
+            th Item Name
+            th Supplier & Factory
+            th Stock at Hand
+            th Total Units Sold
+            th Status
+            th Procurement Value
+
+        tbody#varianceTableBody
+          if credits && credits.length
+            - let activeCreditSales = 0
+            each credit in credits
+              - const unitsSold = (credit.originalQuantity || 0) - (credit.currentQuantity || 0)
+              
+              if unitsSold > 0
+                - activeCreditSales++
+                tr
+                  td= activeCreditSales
+                  td.font-semibold= credit.itemName || 'N/A'
+                  td #{credit.supplierName || 'N/A'} (#{credit.companyName || 'N/A'})
+                  
+                  td.font-bold(style="color: #2563eb;")= credit.currentQuantity || 0
+                  td.font-bold(style="color: #ff4757;")= unitsSold
+                  
+                  td
+                    if Number(credit.currentQuantity) === 0
+                      span.badge.out Sold Out
+                    else if Number(credit.currentQuantity) <= 50
+                      span.badge.critical Low Stock
+                    else
+                      span.badge.low Active Stock
+                  
+                  td.font-semibold UGX #{Number((credit.buyingPrice || 0) * (credit.originalQuantity || 0)).toLocaleString()}
+            
+            if activeCreditSales === 0
+              tr
+                td.table-fallback-row(colspan="7" style="text-align: center; color: #888; padding: 20px;") No credit-procured stock items have registered marketplace sales yet.
+          else
+            tr
+              td.table-fallback-row(colspan="7" style="text-align: center; color: #888; padding: 20px;") No credit items running variance monitoring.
+
+  // ================= REAL-TIME FILTER ENGINE =================
+  script.
+    document.getElementById('searchInput').addEventListener('keyup', function () {
+      const value = this.value.toLowerCase();
+      // Scope search to rows within both table bodies
+      const rows = document.querySelectorAll("#ledgerTableBody tr, #varianceTableBody tr");
+      rows.forEach(row => {
+        if(row.cells.length > 1) {
+          const textContent = row.innerText.toLowerCase();
+          row.style.display = textContent.includes(value) ? "" : "none";
+        }
+      });
+    });

@@ -34,8 +34,9 @@ block content
                 option(
                   value=item._id
                   data-price=item.sellingPrice
+                  data-stock=item.currentQuantity
                 )
-                  | #{item.itemName} - #{item.sellingPrice.toLocaleString()} UGX | Stock: #{item.quantity}
+                  | #{item.itemName} - #{item.sellingPrice.toLocaleString()} UGX | Stock: #{item.currentQuantity}
 
           .input-group
             label Quantity
@@ -45,6 +46,7 @@ block content
               placeholder="Qty"
               min="1"
               required
+              oninput="validateStockLimit(this)"
             )
 
           .input-group
@@ -141,8 +143,8 @@ block content
 
       availableItems.forEach(i => {
         options += `
-          <option value="${i._id}" data-price="${i.sellingPrice}">
-            ${i.itemName} - ${Number(i.sellingPrice).toLocaleString()} UGX | Stock: ${i.quantity}
+          <option value="${i._id}" data-price="${i.sellingPrice}" data-stock="${i.currentQuantity}">
+            ${i.itemName} - ${Number(i.sellingPrice).toLocaleString()} UGX | Stock: ${i.currentQuantity}
           </option>
         `;
       });
@@ -165,7 +167,7 @@ block content
 
         <div class="input-group">
           <label>Quantity</label>
-          <input type="number" name="items[quantity]" min="1" required />
+          <input type="number" name="items[quantity]" min="1" required oninput="validateStockLimit(this)" placeholder="Qty"/>
         </div>
 
         <div class="input-group">
@@ -196,11 +198,29 @@ block content
       const option = selectElement.options[selectElement.selectedIndex];
       const row = selectElement.closest('.item-row');
       const priceInput = row.querySelector('.price-display');
+      const qtyInput = row.querySelector('input[type="number"]');
 
       if (option && option.value) {
         priceInput.value = Number(option.dataset.price || 0).toLocaleString() + ' UGX';
+        validateStockLimit(qtyInput);
       } else {
         priceInput.value = '0 UGX';
+      }
+    }
+
+    function validateStockLimit(inputElement) {
+      const row = inputElement.closest('.item-row');
+      const select = row.querySelector('select');
+      const selectedOption = select.options[select.selectedIndex];
+
+      if (selectedOption && selectedOption.value) {
+        const maxStock = Number(selectedOption.dataset.stock || 0);
+        const enteredQty = Number(inputElement.value || 0);
+
+        if (enteredQty > maxStock) {
+          alert(`Error: Only ${maxStock} units available in stock hand ledger.`);
+          inputElement.value = maxStock;
+        }
       }
     }
 

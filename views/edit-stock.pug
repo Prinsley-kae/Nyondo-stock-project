@@ -1,114 +1,162 @@
 extends stock-layout
 
 block content
+  // Include the external stylesheet link
+  link(rel="stylesheet", href="/css/stock-form.css")
 
   // ================= PAGE HEADER =================
   .page-header
     h2 Edit Stock Item
-    p Update product details, pricing, and quantity
+    p.subtitle Update product details, pricing, and quantity profiles
 
-  // ================= EDIT FORM =================
-  .form-container
+  // ================= FORM SECTION =================
+  .recent-section
+    h3 Modify Product & Supplier Details
 
-    form(method="POST" action=`/store/inventory/edit/${stock._id}` enctype="multipart/form-data")
+    form#stockForm.form-section(
+      method="POST" 
+      action=`/store/inventory/edit/${stock._id}` 
+      enctype="multipart/form-data"
+    )
 
       .form-grid
 
-        // ================= PRODUCT DROPDOWN =================
-        .form-group
-          label Select Existing Item
+        // ========= ITEM NAME (Select Dropdown) =========
+        .input-group
+          label(for="itemName") Item Name
+          select#itemName(name="itemName" required)
+            option(value="" disabled) -- Select Item --
+            option(value="Cement iiN" selected=(stock.itemName === "Cement iiN")) Cement iiN
+            option(value="Cement iiiN" selected=(stock.itemName === "Cement iiiN")) Cement iiiN
+            option(value="Iron Sheets" selected=(stock.itemName === "Iron Sheets")) Iron Sheets
+            option(value="Nails inc 1" selected=(stock.itemName === "Nails inc 1")) Nails inc 1
+            option(value="Nails inc 3" selected=(stock.itemName === "Nails inc 3")) Nails inc 3
+            option(value="Nails inc 4" selected=(stock.itemName === "Nails inc 4")) Nails inc 4
+            option(value="Nails inc 5" selected=(stock.itemName === "Nails inc 5")) Nails inc 5
+            option(value="Iron bars 10mm" selected=(stock.itemName === "Iron bars 10mm")) Iron bars 10mm
+            option(value="Iron bars 12mm" selected=(stock.itemName === "Iron bars 12mm")) Iron bars 12mm
+            option(value="Iron bars 16mm" selected=(stock.itemName === "Iron bars 16mm")) Iron bars 16mm
+            option(value="Gauges" selected=(stock.itemName === "Gauges")) Gauges
+            option(value="Wire mesh" selected=(stock.itemName === "Wire mesh")) Wire mesh
+            option(value="Wheel barrows" selected=(stock.itemName === "Wheel barrows")) Wheel barrows
+            option(value="High tensile barbed wire" selected=(stock.itemName === "High tensile barbed wire")) High tensile barbed wire
+            option(value="Low tensile barbed wire" selected=(stock.itemName === "Low tensile barbed wire")) Low tensile barbed wire
 
-          select(name="itemName" required)
-            option(value="") -- Select Item --
-
-            each item in items
-              option(
-                value=item.itemName
-                selected=(item.itemName == stock.itemName)
-              )
-                | #{item.itemName} - #{item.quantity} (#{item.sellingPrice} UGX)
-
-        // ================= QUANTITY =================
-        .form-group
-          label Quantity
-
-          input(
-            type="number"
-            name="quantity"
-            min="0"
-            value=stock.quantity
+        // ========= ORIGINAL QUANTITY RECEIVED =========
+        .input-group
+          label(for="originalQuantity") Quantity Received
+          input#originalQuantity(
+            type="number" 
+            name="originalQuantity" 
+            value=(stock.originalQuantity || stock.quantity)
+            placeholder="E.g., 50" 
+            min="1" 
             required
           )
 
-        // ================= BUYING PRICE =================
-        .form-group
-          label Buying Price (UGX)
+        // ========= CURRENT QUANTITY IN STOCK =========
+        .input-group
+          label(for="currentQuantity") Current Stock at Hand
+          input#currentQuantity(
+            type="number" 
+            name="currentQuantity" 
+            value=(stock.currentQuantity !== undefined ? stock.currentQuantity : stock.quantity)
+            placeholder="E.g., 50" 
+            min="0" 
+            required
+          )
 
-          input(
-            type="number"
-            name="buyingPrice"
-            min="0"
+        // ========= BUYING PRICE =========
+        .input-group
+          label(for="buyingPrice") Buying Price (UGX)
+          input#buyingPrice(
+            type="number" 
+            name="buyingPrice" 
             value=stock.buyingPrice
+            placeholder="E.g., 28000" 
+            min="1" 
             required
           )
 
-        // ================= SELLING PRICE =================
-        .form-group
-          label Selling Price (UGX)
-
-          input(
-            type="number"
-            name="sellingPrice"
-            min="0"
+        // ========= SELLING PRICE =========
+        .input-group
+          label(for="sellingPrice") Selling Price (UGX)
+          input#sellingPrice(
+            type="number" 
+            name="sellingPrice" 
             value=stock.sellingPrice
+            placeholder="E.g., 33000" 
+            min="1" 
             required
           )
 
-        // ================= SUPPLIER =================
-        .form-group
-          label Supplier Name
-
-          input(
-            type="text"
-            name="supplier"
+        // ========= SUPPLIER NAME =========
+        .input-group
+          label(for="supplierName") Supplier Agent Name
+          input#supplierName(
+            type="text" 
+            name="supplierName" 
             value=stock.supplierName
+            placeholder="E.g., John Doe" 
+            required
           )
 
-        .form-group
-          label Supplier Contact
+        // ========= COMPANY NAME =========
+        .input-group
+          label(for="companyName") Company / Factory Name
+          input#companyName(
+            type="text" 
+            name="companyName" 
+            value=stock.companyName
+            placeholder="E.g., Tororo Cement" 
+            required
+          )
 
+        // ========= SUPPLIER CONTACT WITH FIXED PREFIX =========
+        .input-group
+          label(for="supplierContact") Supplier Contact
           .phone-input
             span.phone-prefix +256
-            input(
-              type="text"
-              name="supplierContact"
-              value=stock.supplierContact
+            input#supplierContact(
+              type="text" 
+              name="supplierContact" 
+              value=(stock.supplierContact ? stock.supplierContact.replace('+256', '') : '')
+              placeholder="7xxxxxxxx" 
+              maxlength="9" 
+              required
             )
 
-        // ================= PAYMENT METHOD =================
-        .form-group
+        // ========= PAYMENT METHOD =========
+        .input-group
           label(for="paymentMethod") Payment Method
-
           select#paymentMethod(name="paymentMethod" required)
-            option(value="Credit") Credit
-            option(value="Cash_at_hand") Cash at hand
+            option(value="cash_at_hand" selected=(stock.paymentMethod === 'cash_at_hand' || stock.paymentMethod === 'cash')) Cash at hand
+            option(value="credit" selected=(stock.paymentMethod === 'credit')) Credit
 
-        // ================= ITEM IMAGE =================
-        .form-group
-          label(for="itemImage") Item Image
-
+        // ========= IMAGE SELECTION =========
+        .input-group
+          label(for="itemImage") Update Item Image
           input#itemImage(
-            type="file"
-            name="itemImage"
+            type="file" 
+            name="itemImage" 
+            accept="image/*"
           )
 
-        // ================= CURRENT IMAGE PREVIEW =================
+        // ========= CURRENT IMAGE PREVIEW COMPONENT =========
         if stock.itemImage
-          .form-group
-            img(src=`/uploads/${stock.itemImage}` width="100")
+          .input-group
+            label Current Document Image
+            .image-preview-wrapper
+              img(src=`/uploads/${stock.itemImage}` width="85" alt=stock.itemName)
 
-      // ================= SUBMIT =================
-      .form-actions
-        button.btn(type="submit")
+      hr.form-divider
+
+      // ================= ACTION BUTTONS GROUP =================
+      .button-group
+        button.btn.primary-btn(type="submit")
           i.fa-solid.fa-floppy-disk
-          | Update Stock
+          |  Save Stock Changes
+
+        a.btn.secondary-btn(href=(stock.paymentMethod === 'credit' ? '/store/credits' : '/store/inventory'))
+          i.fa-solid.fa-xmark
+          |  Cancel Modification

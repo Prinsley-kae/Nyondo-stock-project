@@ -2,14 +2,13 @@ extends admin-layout
 
 block content
 
-  // ================= PAGE HEADER =================
+  //- ================= PAGE HEADER =================
   .page-header
     h2 Admin Dashboard
     p System overview: sales, stock, suppliers, and credit status
 
-  // ================= KPI CARDS =================
+  //- ================= KPI CARDS =================
   .stats-grid
-
     .card
       i.fa-solid.fa-coins.icon-revenue
       .info
@@ -34,12 +33,18 @@ block content
         h3 Outstanding Credit
         p UGX #{totalCredit ? totalCredit.toLocaleString() : 0}
 
-  // ================= SYSTEM SUMMARY =================
+  //- ================= REPORTING CENTER =================
+  .summary-section
+    h3 Reporting Center
+    .action-buttons(style="display: flex; gap: 15px; margin-top: 15px; margin-bottom: 30px;")
+      a.btn.action-btn(href="/sales/report-archive" style="background-color: #6c757d; color: white;")
+        i.fa-solid.fa-folder-open
+        | View Report Archive
+
+  //- ================= SYSTEM SUMMARY =================
   .summary-section
     h3 System Overview
-
     .summary-grid
-
       .summary-card
         .summary-card-header
           i.fa-solid.fa-chart-line
@@ -58,24 +63,16 @@ block content
           h4 Supplier Activity
         p Procurement credit updates, balance purchases, and milestone tracking.
 
-  // ================= QUICK NAVIGATION =================
+  //- ================= QUICK NAVIGATION =================
   .quick-actions
-    h3 Quick Actions
-
+    h3 Admin Management
     .action-buttons
-
-      a.btn.action-btn(href="/admin/users")
-        i.fa-solid.fa-users
-        span Manage Users
-
-      a.btn.action-btn(href="/admin/sales-report")
-        i.fa-solid.fa-chart-line
-        span Sales Report
-
+      a.btn.action-btn(href="/sales/analytics" style="background-color: #17a2b8; color: white;")
+        i.fa-solid.fa-chart-pie
+        span View Analytics
       a.btn.action-btn(href="/admin/stock-report")
         i.fa-solid.fa-boxes-stacked
         span Stock Report
-
       a.btn.action-btn(href="/admin/credit-report")
         i.fa-solid.fa-money-bill
         span Credit Report
