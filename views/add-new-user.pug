@@ -2,88 +2,150 @@ extends admin-layout
 
 block content
 
-  // ================= PAGE HEADER =================
-  .page-header
-    h2 Add New User
-    p Create a new secure system user account
+  //- ================= PAGE HEADER =================
+  .admin-page-header
+    h2.header-title Add New User
+    p.header-subtitle Create a new secure system user account
 
-  // ================= FORM CONTAINER =================
-  .form-section
-    h3 Account Configuration Credentials
+  //- ================= FORM CONTAINER =================
+  .admin-card
+    h3.card-title Account Configuration Credentials
 
-    form(method='POST' action='/admin/users/add' onsubmit='return validatePasswords()')
-
+    form(method='post' action='/admin/add-user' onsubmit='return validatePasswords()' novalidate)
       .form-grid
 
-        // ================= USERNAME =================
-        .input-group
-          label Username
-          .icon-input-wrapper
-            i.fa-solid.fa-user.input-icon
-            input(type='text' name='username' placeholder='Enter username' required)
+        //- ================= USERNAME =================
+        .admin-input-group
+          label Username (First Last)
+          .input-container
+            i.fa-solid.fa-user.icon
+            input.admin-input(
+              type='text'
+              name='username'
+              placeholder='e.g. John Doe'
+              value=(oldData ? oldData.username : '')
+              class=(errors && errors.username ? 'input-error' : '')
+              required
+            )
+          if errors && errors.username
+            span.error-text= errors.username.msg
 
-        // ================= EMAIL =================
-        .input-group
+        //- ================= EMAIL =================
+        .admin-input-group
           label Email Address
-          .icon-input-wrapper
-            i.fa-solid.fa-envelope.input-icon
-            input(type='email' name='email' placeholder='Enter email' required)
+          .input-container
+            i.fa-solid.fa-envelope.icon
+            input.admin-input(
+              type='email'
+              name='email'
+              placeholder='email@example.com'
+              value=(oldData ? oldData.email : '')
+              class=(errors && errors.username ? 'input-error' : '')
+              required
+            )
+          if errors && errors.email
+            span.error-text= errors.email.msg
 
-        // ================= PHONE =================
-        .input-group
-          label Phone Number
-          .icon-input-wrapper
-            i.fa-solid.fa-phone.input-icon
-            input(type='text' name='phoneNumber' placeholder='Enter phone number' required)
+        //- ================= PHONE =================
+        .admin-input-group
+          label Phone Number (+2567...)
+          .input-container
+            i.fa-solid.fa-phone.icon
+            input.admin-input(
+              type='text'
+              name='phonenumber'
+              placeholder='+2567xxxxxxxx'
+              pattern='\\+2567\\d{8}'
+              title='Must start with +2567 and be 12 digits'
+              value=(oldData ? oldData.phonenumber : '')
+              class=(errors && errors.username ? 'input-error' : '')
+              required
+            )
+          if errors && errors.phonenumber
+            span.error-text= errors.phonenumber.msg
 
-        // ================= NIN =================
-        .input-group
-          label NIN Number (Optional)
-          .icon-input-wrapper
-            i.fa-solid.fa-id-card.input-icon
-            input(type='text' name='nin' placeholder='Enter National ID Number')
+        //- ================= NIN =================
+        .admin-input-group
+          label NIN Number
+          .input-container
+            i.fa-solid.fa-id-card.icon
+            input.admin-input(
+              type='text'
+              name='nin'
+              placeholder='14 Characters'
+              pattern='[A-Z0-9]{14}'
+              title='14 alphanumeric characters (Uppercase only)'
+              value=(oldData ? oldData.nin : '')
+              class=(errors && errors.username ? 'input-error' : '')
+              required
+            )
+          if errors && errors.nin
+            span.error-text= errors.nin.msg
 
-        // ================= ROLE =================
-        .input-group
+        //- ================= ROLE =================
+        .admin-input-group
           label Access Assignment Role
-          .icon-input-wrapper
-            i.fa-solid.fa-user-gear.input-icon
-            select(name='role' required)
-              option(value='' disabled selected) Choose designated staff role...
-              option(value='sales_attendant') Sales Attendant
-              option(value='store_manager') Store Manager
-              option(value='admin') Admin / Accounts
+          .input-container
+            i.fa-solid.fa-user-gear.icon
+            select.admin-input(name='role' required)
+              option(value='' disabled selected=(!oldData || !oldData.role)) Choose staff role...
+              option(value='sales_attendant' selected=(oldData && oldData.role === 'sales_attendant')) Sales Attendant
+              option(value='store_manager' selected=(oldData && oldData.role === 'store_manager')) Store Manager
+              option(value='admin' selected=(oldData && oldData.role === 'admin')) Admin / Accounts
+          if errors && errors.role
+            span.error-text= errors.role.msg
 
-        // ================= PASSWORD =================
-        .input-group
+        //- ================= PASSWORD =================
+        .admin-input-group
           label Password
-          .icon-input-wrapper
-            i.fa-solid.fa-lock.input-icon
-            input(type='password' name='password' id='signupPassword' placeholder='Create strong password' required)
+          .input-container
+            i.fa-solid.fa-lock.icon
+            input.admin-input(
+              type='password'
+              name='password'
+              id='signupPassword'
+              placeholder='8+ chars, upper, lower, #, special'
+              pattern='(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}'
+              title='Must be 8+ characters with uppercase, lowercase, number, and special character'
+              class=(errors && errors.username ? 'input-error' : '')
+              required
+            )
             span.toggle-password-icon(onclick='toggleFieldVisibility("signupPassword", this)')
               i.fa-solid.fa-eye
+          if errors && errors.password
+            span.error-text= errors.password.msg
 
-        // ================= CONFIRM PASSWORD =================
-        .input-group
+        //- ================= CONFIRM PASSWORD =================
+        .admin-input-group
           label Confirm Password
-          .icon-input-wrapper
-            i.fa-solid.fa-shield-halved.input-icon
-            input(type='password' name='confirmPassword' id='confirmPassword' placeholder='Confirm security password' required)
+          .input-container
+            i.fa-solid.fa-shield-halved.icon
+            input.admin-input(
+              type='password'
+              name='confirmPassword'
+              id='confirmPassword'
+              placeholder='Confirm security password'
+              class=(errors && errors.username ? 'input-error' : '')
+              required
+            )
             span.toggle-password-icon(onclick='toggleFieldVisibility("confirmPassword", this)')
               i.fa-solid.fa-eye
+          if errors && errors.confirmPassword
+            span.error-text= errors.confirmPassword.msg
 
-      // ================= FORM SUBMIT SUB-BAR =================
-      .form-actions-bar
-        a.btn.action-btn(href="/admin/users") Cancel
-        button.btn.action-btn.primary-action-btn(type='submit')
+      //- ================= FORM SUBMIT SUB-BAR =================
+      .admin-form-actions
+        a.btn-secondary(href="/admin/users") Cancel
+        button.btn-primary(type='submit')
           i.fa-solid.fa-user-plus
           span Create User Account
 
-  // ================= UTILITY INTERACTION SCRIPTS =================
+  //- ================= SCRIPTS =================
   script.
     function toggleFieldVisibility(fieldId, element) {
       const field = document.getElementById(fieldId);
       const icon = element.querySelector('i');
+
       if (field.type === 'password') {
         field.type = 'text';
         icon.classList.replace('fa-eye', 'fa-eye-slash');
@@ -96,9 +158,31 @@ block content
     function validatePasswords() {
       const p1 = document.getElementById('signupPassword').value;
       const p2 = document.getElementById('confirmPassword').value;
+
       if (p1 !== p2) {
-        alert("❌ Error: Passwords do not match. Please verify values.");
+        alert("Error: Passwords do not match. Please verify.");
         return false;
       }
+
       return true;
     }
+
+    //- 1. Client-side empty field validation
+    document.querySelector('form').addEventListener('submit', function(e) {
+      let hasError = false;
+
+      //- Target inputs and selects
+      const fields = this.querySelectorAll('.admin-input');
+
+      fields.forEach(field => {
+        if (field.value.trim() === '') {
+          field.classList.add('input-error');
+          hasError = true;
+        }
+      });
+
+      if (hasError) {
+        e.preventDefault();
+        alert("Please fill in all required fields.");
+      }
+    });

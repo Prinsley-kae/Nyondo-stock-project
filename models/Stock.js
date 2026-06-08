@@ -5,7 +5,7 @@ const StockSchema = new mongoose.Schema(
     // Added Batch ID for grouping items
     batchId: {
       type: String,
-      index: true, // Speeds up searches for specific batches
+      index: true, 
     },
 
     supplierName: {

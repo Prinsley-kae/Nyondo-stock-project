@@ -1,29 +1,23 @@
-// LOGIN AND SIGNUP PASSWORD INPUTS:
-function toggleLoginPassword(event) {
-  const input = document.getElementById("loginPassword");
-  toggleField(input, event);
-}
+/**
+ * Toggles password visibility
+ * @param {string} inputId - 
+ * @param {HTMLElement} toggleElement - 
+ */
+function togglePassword(inputId, toggleElement) {
+    const passwordInput = document.getElementById(inputId);
+    const icon = toggleElement.querySelector('i');
 
-function toggleSignupPassword(event) {
-  const input = document.getElementById("signupPassword");
-  toggleField(input, event);
-}
-
-function toggleConfirmPassword(event) {
-  const input = document.getElementById("confirmPassword");
-  toggleField(input, event);
-}
-
-function toggleField(input, event) {
-  const icon = event.target;
-
-  if (input.type === "password") {
-    input.type = "text";
-    icon.classList.remove("fa-eye");
-    icon.classList.add("fa-eye-slash");
-  } else {
-    input.type = "password";
-    icon.classList.remove("fa-eye-slash");
-    icon.classList.add("fa-eye");
-  }
+    if (passwordInput.type === 'password') {
+        // Show password
+        passwordInput.type = 'text';
+        // Change eye icon to eye-slash
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    } else {
+        // Hide password
+        passwordInput.type = 'password';
+        // Change back to eye icon
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    }
 }

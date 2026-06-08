@@ -1,14 +1,12 @@
-// =========================
-// DEPENDENCIES
-// =========================
 
+// DEPENDENCIES
 const express = require('express');
 const expressSession = require('express-session');
 const path = require('path');
 const mongoose = require('mongoose');
 const passport = require('passport');
-const flash = require('connect-flash'); // Added Flash dependency
-
+const flash = require('connect-flash');
+const puppeteer = require('puppeteer');
 const MongoStore = require('connect-mongo').default;
 const LocalStrategy = require('passport-local').Strategy;
 
@@ -18,24 +16,18 @@ const connectDb = require('./config/start');
 // Import user model
 const Registration = require('./models/Registration');
 
-// =========================
 // APP SETUP
-// =========================
 const app = express();
 const port = 3000;
 
 // Connect to database
 connectDb();
 
-// =========================
 // VIEW ENGINE
-// =========================
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
-// =========================
 // MIDDLEWARE
-// =========================
 app.use(express.static(path.join(__dirname, 'public')));
 // app.use('/public/uploads', express.static(__dirname + '/public/uploads'));
 app.use(express.urlencoded({ extended: true }));
@@ -58,9 +50,7 @@ app.use(flash()); // Registered connect-flash middleware immediately following t
 app.use(passport.initialize());
 app.use(passport.session());
 
-// =========================
-// PASSPORT CONFIGURATION (FIXED)
-// =========================
+// PASSPORT CONFIGURATION 
 passport.use(new LocalStrategy(
   { usernameField: 'email' },   
   Registration.authenticate()
@@ -69,35 +59,27 @@ passport.use(new LocalStrategy(
 passport.serializeUser(Registration.serializeUser());
 passport.deserializeUser(Registration.deserializeUser());
 
-// =========================
-// GLOBAL CONTEXT VARIATION PASSWORDS (for Pug)
-// =========================
+// GLOBAL CONTEXT VARIATION PASSWORDS 
 app.use((req, res, next) => {
   res.locals.user = req.user || null;
-  // Added global access values for your notification banners
   res.locals.success_msg = req.flash('success_msg');
   res.locals.error_msg = req.flash('error_msg');
   next();
 });
 
-// =========================
+
 // ROUTES
-// =========================
 app.use('/', require('./routes/indexRoutes'));
 app.use('/', require('./routes/adminRoutes'));
 app.use('/', require('./routes/salesRoutes'));
 app.use('/', require('./routes/stockRoutes'));
 
-// =========================
 // 404 HANDLER
-// =========================
 app.use((req, res) => {
   res.status(404).send('Oops! Route not found.');
 });
 
-// =========================
 // START SERVER
-// =========================
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
 });

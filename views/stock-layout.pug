@@ -14,10 +14,10 @@ html(lang="en")
 
   body
 
-    // ================= WRAPPER =================
+    //- ================= WRAPPER =================
     .dashboard-wrapper
 
-      // ================= SIDEBAR =================
+      //- ================= SIDEBAR =================
       aside.sidebar
 
         .brand
@@ -26,28 +26,34 @@ html(lang="en")
 
         ul.nav-links
 
-          // ================= DASHBOARD =================
+          //- ================= DASHBOARD =================
           li(class=(currentPath === '/store' ? 'active' : ''))
             a(href="/store")
               i.fa-solid.fa-gauge
               span Dashboard
 
-          // ================= STOCK MODULE =================
+          //- ================= STOCK MODULE =================
           li(class=(currentPath === '/store/inventory' ? 'active' : ''))
             a(href="/store/inventory")
               i.fa-solid.fa-boxes-stacked
               span Stock List
 
-          // ================= LOGOUT =================
+          //- ================= REPORT HISTORY =================
+          li(class=(currentPath === '/store/reports-history' ? 'active' : ''))
+            a(href="/store/reports-history")
+              i.fa-solid.fa-clock-rotate-left
+              span Report History
+
+          //- ================= LOGOUT =================
           li
-            a(href="/")
+            a(href="/logout")
               i.fa-solid.fa-right-from-bracket
               span Logout
 
-      // ================= MAIN CONTENT =================
+      //- ================= MAIN CONTENT =================
       main.main-content
 
-        // ================= TOPBAR =================
+        //- ================= TOPBAR =================
         header.topbar
 
           .left
@@ -58,6 +64,6 @@ html(lang="en")
               i.fa-solid.fa-user-tie
               span Store Manager
 
-        // ================= PAGE CONTENT =================
+        //- ================= PAGE CONTENT =================
         section.content
           block content

@@ -1,10 +1,8 @@
 extends admin-layout
 
 block content
-  
   .ledger-container
-
-    // ================= PAGE HEADER =================
+    //- ================= PAGE HEADER =================
     .ledger-header
       .header-badge-icon
         i.fa-solid.fa-file-invoice-dollar
@@ -12,62 +10,67 @@ block content
         h2 Credit Sales Ledger
         p Register customer purchases on credit, calculate logistics, and log down payments
 
-    // ================= FORM CONTAINER =================
+    //- ================= FORM CONTAINER =================
     .ledger-card
       h3 Credit Agreement & Transaction Details
 
-      //- ================= FLASH ALERTS FEEDBACK LAYER =================
-      if messages && messages.error_msg
+      //-- ================= FLASH ALERTS FEEDBACK LAYER =================
+      if messages && messages.error_msg && messages.error_msg.length > 0
         .alert-box.alert-danger(style="background-color: #f8d7da; color: #721c24; padding: 12px; border-radius: 6px; margin-bottom: 20px; border: 1px solid #f5c6cb; display: flex; align-items: center; gap: 10px;")
           i.fa-solid.fa-triangle-exclamation
           span= messages.error_msg
 
-      if messages && messages.success_msg
+      if messages && messages.success_msg && messages.success_msg.length > 0
         .alert-box.alert-success(style="background-color: #d4edda; color: #155724; padding: 12px; border-radius: 6px; margin-bottom: 20px; border: 1px solid #c3e6cb; display: flex; align-items: center; gap: 10px;")
           i.fa-solid.fa-circle-check
           span= messages.success_msg
 
-      form(method="POST" action="/admin/deposits")
-
-        // ================= CUSTOMER DETAILS =================
+      //- Added novalidate to allow our custom JS validation
+      form(method="POST" action="/admin/deposits" novalidate)
+        //- ================= CUSTOMER DETAILS =================
         .section-title-wrapper
           i.fa-solid.fa-id-badge
           span Customer Profile Information
 
         .form-grid
-
-          // CUSTOMER NAME
+          //- CUSTOMER NAME
           .input-group
             label Customer Name
             .icon-input-wrapper
               i.fa-solid.fa-user.input-icon
-              input(
+              input.validate-me(
                 type="text"
                 name="customerName"
                 placeholder="Enter full name"
                 value=(oldData ? oldData.customerName : '')
+                class=(errors && errors.customerName ? 'is-invalid' : '')
                 required
               )
+            if errors && errors.customerName
+              span.error-text(style="color: #dc3545; font-size: 0.8em; margin-top: 4px; display: block;")= errors.customerName.msg
 
-          // CUSTOMER ADDRESS
+          //- CUSTOMER ADDRESS
           .input-group
             label Customer Address / Location
             .icon-input-wrapper
               i.fa-solid.fa-location-dot.input-icon
-              input(
+              input.validate-me(
                 type="text"
                 name="customerAddress"
                 placeholder="Town / Village / Zone"
                 value=(oldData ? oldData.customerAddress : '')
+                class=(errors && errors.customerAddress ? 'is-invalid' : '')
                 required
               )
+            if errors && errors.customerAddress
+              span.error-text(style="color: #dc3545; font-size: 0.8em; margin-top: 4px; display: block;")= errors.customerAddress.msg
 
-          // CUSTOMER CONTACT
+          //- CUSTOMER CONTACT
           .input-group
             label Customer Contact
             .icon-input-wrapper
               i.fa-solid.fa-phone.input-icon
-              input(
+              input.validate-me(
                 type="tel"
                 name="customerContact"
                 id="customerPhoneInput"
@@ -75,28 +78,38 @@ block content
                 maxlength="13"
                 pattern="^\\+256\\d{9}$"
                 title="Phone number must start with +256 followed by exactly 9 digits"
+                class=(errors && errors.customerContact ? 'is-invalid' : '')
                 required
               )
+            if errors && errors.customerContact
+              span.error-text(style="color: #dc3545; font-size: 0.8em; margin-top: 4px; display: block;")= errors.customerContact.msg
 
-          // NIN NUMBER
+          //- NIN NUMBER
           .input-group
             label NIN Number (National ID)
             .icon-input-wrapper
               i.fa-solid.fa-id-card.input-icon
-              input(
+              input.validate-me(
                 type="text"
                 name="nin"
                 placeholder="Enter National ID Number"
                 value=(oldData ? oldData.nin : '')
+                class=(errors && errors.nin ? 'is-invalid' : '')
+                required
               )
+            if errors && errors.nin
+              span.error-text(style="color: #dc3545; font-size: 0.8em; margin-top: 4px; display: block;")= errors.nin.msg
 
         hr.form-divider
 
-        // ================= ITEMS SECTION =================
+        //- ================= ITEMS SECTION =================
         .items-management-section
           .section-title-wrapper
             i.fa-solid.fa-boxes-stacked
             span Materials & Hardware Items Ordered
+
+          if errors && errors.items
+            .alert-box.alert-danger(style="background-color: #f8d7da; color: #721c24; padding: 10px; margin-bottom: 10px; border-radius: 4px; border: 1px solid #f5c6cb;")= errors.items.msg
 
           .items-table-container
             table#itemsTable
@@ -109,48 +122,28 @@ block content
                   th(style="width: 10%; text-align: center;") Action
               tbody
                 tr.item-row
-                  // ITEM SELECT
                   td
                     .icon-input-wrapper
                       i.fa-solid.fa-layer-group.input-icon
-                      select(
+                      select.item-select.validate-me(
                         name="items[0][itemId]"
-                        class="item-select"
                         required
                         onchange="calculateRowTotals(this)"
                       )
-                        option(
-                          value=""
-                          disabled
-                          selected
-                          data-price="0"
-                        ) Choose stock item...
+                        option(value="" disabled selected data-price="0") Choose stock item...
                         if items && items.length > 0
                           each item in items
                             option(
                               value=item._id
                               data-price=item.sellingPrice
-                            ) #{item.itemName} - #{item.sellingPrice.toLocaleString()} UGX (Stock: #{item.currentQuantity})
-                        else
-                          option(
-                            value=""
-                            disabled
-                            data-price="0"
-                          ) No inventory items discovered
-
-                  // UNIT PRICE
+                            )
+                              | #{item.itemName} - #{item.sellingPrice.toLocaleString()} UGX (Stock: #{item.currentQuantity})
                   td
-                    input.form-control-static.unit-price-display(
-                      type="text"
-                      value="0"
-                      readonly
-                    )
-
-                  // QUANTITY
+                    input.form-control-static.unit-price-display(type="text" value="0" readonly)
                   td
                     .icon-input-wrapper
                       i.fa-solid.fa-arrow-up-9-1.input-icon
-                      input.item-quantity(
+                      input.item-quantity.validate-me(
                         type="number"
                         name="items[0][quantity]"
                         min="1"
@@ -158,22 +151,10 @@ block content
                         required
                         oninput="calculateRowTotals(this)"
                       )
-
-                  // TOTAL PRICE
                   td
-                    input.form-control-static.total-price-display(
-                      type="text"
-                      value="0"
-                      readonly
-                    )
-
-                  // REMOVE BUTTON
+                    input.form-control-static.total-price-display(type="text" value="0" readonly)
                   td(style="text-align: center;")
-                    button.btn-remove-row(
-                      type="button"
-                      onclick="removeRow(this)"
-                      title="Remove Item"
-                    )
+                    button.btn-remove-row(type="button" onclick="confirmAndRemove(this)")
                       i.fa-solid.fa-trash-can
 
           button#btnAddRow.btn-secondary-action(type="button")
@@ -182,29 +163,46 @@ block content
 
         hr.form-divider
 
-        // ================= PAYMENT & DELIVERY =================
+        //- ================= PAYMENT & DELIVERY =================
         .section-title-wrapper
           i.fa-solid.fa-wallet
           span Logistics & Settlement Processing
 
         .form-grid
-
-          // DISTANCE
           .input-group
+            label Delivery / Fulfillment Method
+            .icon-input-wrapper
+              i.fa-solid.fa-truck.input-icon
+              select(
+                name="deliveryMethod"
+                id="deliveryMethodSelect"
+                required
+                onchange="toggleDeliveryFields()"
+              )
+                option(
+                  value="delivery"
+                  selected=(oldData ? oldData.deliveryMethod === 'delivery' : true)
+                ) Store Delivery
+                option(
+                  value="self-pick"
+                  selected=(oldData ? oldData.deliveryMethod === 'self-pick' : false)
+                ) Self-Pick
+
+          .input-group#distanceInputGroup
             label Transit Distance (Km)
             .icon-input-wrapper
               i.fa-solid.fa-route.input-icon
-              input(
+              input.validate-me(
                 type="number"
                 name="distance"
+                id="distanceInput"
                 min="0"
                 step="0.1"
-                placeholder="Distance to drop site"
                 value=(oldData ? oldData.distance : "0")
+                class=(errors && errors.distance ? 'is-invalid' : '')
                 required
               )
 
-          // PAYMENT TYPE
           .input-group
             label Credit Settlement Profile
             .icon-input-wrapper
@@ -218,170 +216,110 @@ block content
                 option(
                   value="credit"
                   selected=(oldData ? oldData.paymentType === 'credit' : true)
-                ) Full Credit (Zero Deposit)
+                ) Full Credit
                 option(
                   value="partial"
                   selected=(oldData ? oldData.paymentType === 'partial' : false)
-                ) Partial Payment (Initial Deposit)
+                ) Partial Payment
 
-          // AMOUNT PAID
           .input-group
             label Amount Advanced / Paid (UGX)
             .icon-input-wrapper
               i.fa-solid.fa-money-bill-wave.input-icon
-              input(
+              input.validate-me(
                 type="number"
                 name="amountPaid"
                 id="amountPaidInput"
                 value=(oldData ? oldData.amountPaid : "0")
                 min="0"
-                placeholder="Enter custom deposit amount"
+                class=(errors && errors.amountPaid ? 'is-invalid' : '')
               )
 
-          // NOTES
           .input-group.input-group-full
             label Terms & Operational Notes
-            .icon-input-wrapper
-              i.fa-solid.fa-comment-dots.input-icon.textarea-icon
-              textarea.form-textarea(
-                name="notes"
-                placeholder="Add custom terms or delivery parameters..."
-              )= (oldData ? oldData.notes : '')
+            textarea.form-textarea.validate-me(name="notes" required)= (oldData ? oldData.notes : '')
 
-        // ================= FORM ACTIONS =================
         .form-actions-bar
           a.action-btn.cancel-btn(href="/admin") Cancel
           button.action-btn.primary-action-btn(type="submit")
             i.fa-solid.fa-credit-card
             span Save Credit Sale
 
-  // ================= MAIN INTERACTION HANDLING SCRIPTS =================
-  script.
-    let rowCounter = 1;
-    const availableItems = !{JSON.stringify(items || [])};
-
-    function buildOptions() {
-      let options = `<option value="" disabled selected data-price="0">Choose stock item...</option>`;
-      if (availableItems.length > 0) {
-        availableItems.forEach(item => {
-          options += `
-            <option value="${item._id}" data-price="${item.sellingPrice}">
-              ${item.itemName} - ${Number(item.sellingPrice).toLocaleString()} UGX (Stock: ${item.currentQuantity})
-            </option>
-          `;
-        });
-      } else {
-        options += `<option value="" disabled data-price="0">No inventory items discovered</option>`;
-      }
-      return options;
-    }
-
-    function calculateRowTotals(element) {
-      const row = element.closest('.item-row');
-      const select = row.querySelector('.item-select');
-      const quantityInput = row.querySelector('.item-quantity');
-      const unitPriceDisplay = row.querySelector('.unit-price-display');
-      const totalPriceDisplay = row.querySelector('.total-price-display');
-
-      const selectedOption = select.options[select.selectedIndex];
-      const price = parseFloat(selectedOption.dataset.price || 0);
-      const quantity = parseInt(quantityInput.value || 0);
-
-      unitPriceDisplay.value = price.toLocaleString();
-      totalPriceDisplay.value = (price * quantity).toLocaleString();
-    }
-
-    // CHANGED: Removed grand total calculations to allow custom, manually typed values 
-    function handlePaymentTypeChange() {
-      const paymentType = document.getElementById('paymentTypeSelect').value;
-      const amountInput = document.getElementById('amountPaidInput');
-
-      if (paymentType === 'credit') {
-        amountInput.value = "0";
-        amountInput.setAttribute('readonly', true);
-        amountInput.classList.add('disabled-input');
-      } else {
-        amountInput.removeAttribute('readonly');
-        amountInput.classList.remove('disabled-input');
-        // Clear out the automatic zero so managers can freely type their deposit values
-        if(amountInput.value === "0") {
-          amountInput.value = "";
+      style.
+        .is-invalid {
+          border: 2px solid #dc3545 !important;
         }
-        amountInput.focus();
-      }
-    }
 
-    function removeRow(buttonElement) {
-      const rows = document.querySelectorAll('#itemsTable tbody .item-row');
-      if (rows.length > 1) {
-        buttonElement.closest('tr').remove();
-        reindexRows();
-      } else {
-        alert("At least one item is required.");
-      }
-    }
+      script.
+        let rowCounter = 1;
 
-    function reindexRows() {
-      const rows = document.querySelectorAll('#itemsTable tbody .item-row');
-      rows.forEach((row, index) => {
-        const selectElement = row.querySelector('.item-select');
-        const inputElement = row.querySelector('.item-quantity');
-        if (selectElement) selectElement.setAttribute('name', `items[${index}][itemId]`);
-        if (inputElement) inputElement.setAttribute('name', `items[${index}][quantity]`);
-      });
-      rowCounter = rows.length;
-    }
+        function calculateRowTotals(el) {
+          const row = el.closest('.item-row');
+          const select = row.querySelector('.item-select');
+          const qty = row.querySelector('.item-quantity').value || 0;
+          const price = select.options[select.selectedIndex].getAttribute('data-price') || 0;
 
-    document.addEventListener('DOMContentLoaded', function() {
-      handlePaymentTypeChange();
-      const itemsTableBody = document.querySelector('#itemsTable tbody');
-      const btnAddRow = document.getElementById('btnAddRow');
+          row.querySelector('.unit-price-display').value = price;
+          row.querySelector('.total-price-display').value = (price * qty);
+        }
 
-      btnAddRow.addEventListener('click', function() {
-        const newRow = document.createElement('tr');
-        newRow.className = 'item-row';
-        newRow.innerHTML = `
-          <td>
-            <div class="icon-input-wrapper">
-              <i class="fa-solid fa-layer-group input-icon"></i>
-              <select name="items[${rowCounter}][itemId]" class="item-select" required onchange="calculateRowTotals(this)">
-                ${buildOptions()}
+        document.getElementById('btnAddRow').addEventListener('click', function() {
+          const tbody = document.querySelector('#itemsTable tbody');
+          const newRow = document.createElement('tr');
+          newRow.className = 'item-row';
+          
+          newRow.innerHTML = `
+            <td>
+              <select name="items[${rowCounter}][itemId]" class="item-select" onchange="calculateRowTotals(this)">
+                ${document.querySelector('.item-select').innerHTML}
               </select>
-            </div>
-          </td>
-          <td>
-            <input type="text" class="form-control-static unit-price-display" value="0" readonly />
-          </td>
-          <td>
-            <div class="icon-input-wrapper">
-              <i class="fa-solid fa-arrow-up-9-1 input-icon"></i>
-              <input type="number" name="items[${rowCounter}][quantity]" class="item-quantity" min="1" placeholder="Qty" required oninput="calculateRowTotals(this)" />
-            </div>
-          </td>
-          <td>
-            <input type="text" class="form-control-static total-price-display" value="0" readonly />
-          </td>
-          <td style="text-align:center;">
-            <button class="btn-remove-row" type="button" onclick="removeRow(this)" title="Remove Item">
-              <i class="fa-solid fa-trash-can"></i>
-            </button>
-          </td>
-        `;
-        itemsTableBody.appendChild(newRow);
-        rowCounter++;
-      });
+            </td>
+            <td><input type="text" class="unit-price-display" value="0" readonly /></td>
+            <td>
+              <input type="number" name="items[${rowCounter}][quantity]" class="item-quantity" min="1" placeholder="Qty" oninput="calculateRowTotals(this)" />
+            </td>
+            <td><input type="text" class="total-price-display" value="0" readonly /></td>
+            <td style="text-align: center;">
+              <button class="btn-remove-row" type="button" onclick="removeRow(this)">
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
+            </td>
+          `;
+          
+          tbody.appendChild(newRow);
+          rowCounter++;
+        });
 
-      const phoneInput = document.getElementById('customerPhoneInput');
-      phoneInput.addEventListener('input', function() {
-        let value = phoneInput.value;
-        if (!value.startsWith('+')) value = '+' + value.replace(/[^0-9]/g, '');
-        if (value.length < 4) value = '+256';
-        const prefix = value.substring(0, 4);
-        const rest = value.substring(4).replace(/[^0-9]/g, '');
-        phoneInput.value = prefix + rest.substring(0, 9);
-      });
+        function removeRow(btn) { btn.closest('.item-row').remove(); }
 
-      phoneInput.addEventListener('keydown', function(e) {
-        if (e.key === 'Backspace' && phoneInput.value.length <= 4) e.preventDefault();
-      });
-    });
+        function handlePaymentTypeChange() {
+          const type = document.getElementById('paymentTypeSelect').value;
+          const amountInput = document.getElementById('amountPaidInput');
+          amountInput.readOnly = (type === 'credit');
+          if (type === 'credit') amountInput.value = "0";
+        }
+
+        document.querySelector('form').addEventListener('submit', function(e) {
+          let hasError = false;
+          const allInputs = this.querySelectorAll('input[required], select[required], textarea[required]');
+
+          allInputs.forEach(field => {
+            if (field.value.trim() === "") {
+              field.classList.add('is-invalid');
+              hasError = true;
+            } else {
+              field.classList.remove('is-invalid');
+            }
+          });
+
+          if (hasError) {
+            e.preventDefault();
+            alert("Please fill in all required fields marked in red.");
+          }
+        });
+
+        document.addEventListener('input', function(e) {
+          if (e.target.hasAttribute('required')) {
+            e.target.classList.remove('is-invalid');
+          }
+        });

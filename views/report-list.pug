@@ -1,0 +1,49 @@
+doctype html
+html(lang="en")
+  head
+    title Report Archive
+    link(rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css")
+    link(rel="stylesheet" href="/css/sales.css")
+  body
+    .container
+      .page-header
+        .header-content
+          h2 Report Archive
+          a.back-link(href="javascript:history.back()") 
+            i.fa-solid.fa-arrow-left
+            |  Back to Dashboard
+      
+      table
+        thead
+          tr
+            th No.
+            th Category
+            th Report Title
+            th Prepared By
+            th Date Generated
+            th Actions
+        tbody
+          if reports && reports.length > 0
+            each report, index in reports
+              tr
+                td= index + 1
+                td
+                  span(class=`badge bg-${report.category ? report.category.toLowerCase() : 'secondary'}`)
+                    = report.category || 'General'
+                td(style="font-weight: 600;")= report.title
+                td= report.generatedBy
+                td= new Date(report.createdAt).toLocaleString('en-GB')
+                td.action-btns
+                  a.btn.btn-view(href=`/reports/${report.filename}` target="_blank" title="View")
+                    i.fa-solid.fa-eye
+                  a.btn.btn-download(href=`/reports/${report.filename}` download title="Download")
+                    i.fa-solid.fa-download
+                  button.btn.btn-print(onclick=`window.open('/reports/${report.filename}').print()` title="Print")
+                    i.fa-solid.fa-print
+                  if userRole === 'admin' || userRole === 'sales_attendant'
+                    a.btn.btn-danger(href=`/sales/reports/list/delete/${report._id}` 
+                        onclick="return confirm('Delete this report?')" title="Delete")
+                      i.fa-solid.fa-trash
+          else
+            tr
+              td(colspan="6" class="no-data") No archived reports found.

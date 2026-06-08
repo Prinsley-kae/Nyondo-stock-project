@@ -11,7 +11,7 @@ block content
 
     a.btn.secondary(href="/sales/add-sale")
       i.fa-solid.fa-plus
-      |  New Sale
+      |   New Sale
 
 
   //- ================= SALES TABLE =================
@@ -29,11 +29,12 @@ block content
             th Date
             th Item Name
             th Customer Name
+            th Delivery Method
             th Quantity
-            th Selling Price
-            th Sub Total
-            th Transport Fee
-            th Final Total
+            th Selling Price (UGX)
+            th Sub Total (UGX)
+            th Transport Fee (UGX)
+            th Final Total (UGX)
             th Actions
 
         tbody
@@ -71,6 +72,15 @@ block content
                     small.text-muted #{sale.phoneNumber || 'No Phone'}
                   else
                     span.text-muted Walk-in
+
+                //- ================= DELIVERY METHOD =================
+                td(style="white-space: nowrap;")
+                  if sale.deliveryMethod === 'self-pick' || !sale.distance || sale.distance === 0
+                    span.badge.badge-info(style="background-color: #e3f2fd; color: #0d47a1; padding: 4px 8px; border-radius: 4px; font-size: 0.85em; white-space: nowrap;") Self-Pick
+                  else
+                    span.badge.badge-success(style="background-color: #e8f5e9; color: #1b5e20; padding: 4px 8px; border-radius: 4px; font-size: 0.85em; white-space: nowrap;") Delivery
+                    br
+                    small.text-muted #{sale.distance} KM
 
                 //- ================= QUANTITY =================
                 td
@@ -121,4 +131,4 @@ block content
           else
 
             tr
-              td(colspan="10") No sales found in the system.
+              td(colspan="11") No sales found in the system.

@@ -9,56 +9,153 @@ html
     link(href='https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap' rel='stylesheet')
     link(rel='stylesheet' href='/css/style.css')
 
+    //-- Inline style for error handling
+    style.
+      /* Increase specificity by targeting the input specifically */
+      input.input-error {
+        border: 2px solid #ff4d4d !important;
+        background-color: #fff0f0 !important;
+      }
+
   body
-    .auth-container
-      .auth-box
-        h2 Login
-        p.subtitle Access your NYONDO account
+    .container-login
+      h1 Welcome Back
+      p Please login to access your account.
 
-        //- ======================================================
-        //- FLASH MESSAGES SYSTEM
-        //- ======================================================
-        if error_msg && error_msg.length > 0
-          .alert-banner.alert-danger
-            i.fa-solid.fa-circle-exclamation
-            span= error_msg
+      if error_msg && error_msg.length > 0
+        .alert-danger
+          i.fa-solid.fa-circle-exclamation
+          span= error_msg
 
-        if success_msg && success_msg.length > 0
-          .alert-banner.alert-success
-            i.fa-solid.fa-circle-check
+      if success_msg && success_msg.length > 0
+        .alert.alert-success(style="background: #d4edda; color: #155724; padding: 15px; border-radius: 5px; margin-bottom: 20px;")
+            i.fa-solid.fa-check-circle
             span= success_msg
-        //- ======================================================
 
-        form(method='POST' action='/login')
 
-          // EMAIL
-          .input-group
-            label Email
-            .icon-input
-              i.fa-solid.fa-envelope
-              input(type='email' name='email' placeholder='Enter email' required)
+      form(method='post' action='/login' novalidate)
+        .input-group
+          label Email
+          input(
+            type='email'
+            name='email'
+            placeholder='name@company.com'
+            class=(isError ? 'input-error' : '')
+            required
+          )
 
-          // PASSWORD WITH TOGGLE ICON
-          .input-group
-            label Password
-            .password-wrapper
-              input(type='password' name='password' id='loginPassword' placeholder='Enter password' required)
-              span.toggle-password(onclick='toggleLoginPassword(event)')
-                i.fa-solid.fa-eye
+        .input-group
+          label Password
 
-          button.btn.primary(type='submit')
-            i.fa-solid.fa-right-to-bracket
-            | Login
+          .password-wrapper
+            input(
+              type='password'
+              name='password'
+              id='loginPass'
+              placeholder='••••••••'
+              class=(isError ? 'input-error' : '')
+              required
+            )
 
-        .auth-links
-          p
-            | Don't have an account?
-            a(href='/signup') Sign Up
+            span.toggle-password(onclick="togglePassword('loginPass', this)")
+              i.fa-solid.fa-eye
 
-    footer
-      p © 2026 NYONDO General Hardware LTD
-      p
-        i.fa-solid.fa-location-dot
-        | Nansana, Uganda
+        button.btn.primary(type='submit') Login
+
+      .auth-links
+        p 
+          a(href='/forgot-password') Forgot Password?
+
+        p Don't have an account?
+          a(href='/signup') Sign Up
+
+      .footer
+        p © 2026 NYONDO General Hardware LTD
+
+    //- ================= LOGOUT MODAL =================
+    #logoutModal.modal-overlay
+      .modal-content
+        h2 Logged Out
+        p You have successfully logged out of the Nyondo Hardware system.
 
     script(src='/js/script.js')
+
+    script.
+      document.addEventListener("DOMContentLoaded", function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const modal = document.getElementById('logoutModal');
+
+        if (urlParams.get('logout') === 'true' && modal) {
+          modal.style.display = 'flex';
+
+          setTimeout(() => {
+            modal.style.display = 'none';
+
+            //- Clean URL to prevent reappearance on refresh
+            window.history.replaceState({}, document.title, window.location.pathname);
+          }, 3000);
+        }
+      });
+
+      function togglePassword(id, el) {
+        const input = document.getElementById(id);
+        const icon = el.querySelector('i');
+
+        if (input.type === 'password') {
+          input.type = 'text';
+          icon.classList.replace('fa-eye', 'fa-eye-slash');
+        } else {
+          input.type = 'password';
+          icon.classList.replace('fa-eye-slash', 'fa-eye');
+        }
+      }
+
+      //-- Red inputs on submission of an empty form
+      document.querySelector('form').addEventListener('submit', function(e) {
+        const inputs = this.querySelectorAll('input');
+        let hasError = false;
+
+        inputs.forEach(input => {
+          //- Check if the trimmed value is empty
+          if (input.value.trim() === '') {
+            input.classList.add('input-error');
+            hasError = true;
+          } else {
+            //- Remove class if they fix it and try submitting again
+            input.classList.remove('input-error');
+          }
+        });
+
+        if (hasError) {
+          e.preventDefault(); //- Stop form submission
+          alert('Please fill in all required fields.');
+        }
+      });
+
+      //- Optional: Remove error style as the user starts typing
+      document.querySelectorAll('input').forEach(input => {
+        input.addEventListener('input', () => {
+          if (input.value.trim() !== '') {
+            input.classList.remove('input-error');
+          }
+        });
+      });
+
+      //- Wait for the DOM to load
+      document.addEventListener('DOMContentLoaded', () => {
+        //- Select the alert message element
+        const alertMessage = document.querySelector('.alert-success');
+        
+        if (alertMessage) {
+          //- Set a timer for 5000 milliseconds (5 seconds)
+          setTimeout(() => {
+            alertMessage.style.transition = 'opacity 0.5s ease';
+            alertMessage.style.opacity = '0';
+            
+            //- Remove it from the DOM after the fade-out effect completes
+            setTimeout(() => {
+              alertMessage.remove();
+            }, 500); 
+          }, 5000);
+        }
+      });

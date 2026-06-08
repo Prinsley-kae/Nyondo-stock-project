@@ -1,154 +1,134 @@
 extends sales-layout
 
 block content
+  //- ================= STYLES =================
+  style.
+    .input-error { border: 2px solid red !important; }
+    .error-msg { color: red; font-size: 12px; display: block; margin-top: 4px; }
 
-  // ================= PAGE HEADER =================
+  //- ================= PAGE HEADER =================
   .page-header
     div
       h2 Add New Sale
       p View and manage your daily sales records
 
-  // ================= FORM SECTION =================
+  //- ================= FLASH MESSAGES =================
+  if success_msg && success_msg.length > 0
+    .alert.alert-success(style="color: green; background: #d4edda; padding: 15px; border-radius: 5px; margin-bottom: 20px;")
+      = success_msg
+
+  //- ================= FORM SECTION =================
   .recent-section
     h3 Record Transaction Details
+    form#salesForm.form-section(method="post", action="/sales/add-sale" novalidate)
 
-    form#salesForm.form-section(
-      method="post"
-      action="/sales/add-sale"
-    )
-
-      // ================= ITEMS CONTAINER =================
+      //- ================= ITEMS CONTAINER =================
       .items-container#itemsContainer
-
         .item-row(data-index="0")
-
           .input-group
             label Item Name
-            select(
-              name="items[item]"
-              required
-              onchange="updateRowData(this)"
-            )
+            select(name="items[0][itemId]", class="item-select", required, onchange="updateRowData(this)")
               option(value="") -- Select Item --
               each item in items
-                option(
-                  value=item._id
-                  data-price=item.sellingPrice
-                  data-stock=item.currentQuantity
-                )
+                option(value=item._id, data-price=item.sellingPrice, data-stock=item.currentQuantity)
                   | #{item.itemName} - #{item.sellingPrice.toLocaleString()} UGX | Stock: #{item.currentQuantity}
+            span.error-msg
 
           .input-group
             label Quantity
-            input(
-              type="number"
-              name="items[quantity]"
-              placeholder="Qty"
-              min="1"
-              required
-              oninput="validateStockLimit(this)"
-            )
+            input(type="number", name="items[0][quantity]", class="item-quantity", placeholder="Qty", min="1", required, oninput="validateStockLimit(this)")
+            span.error-msg
 
           .input-group
             label Selling Price
-            input.price-display(
-              type="text"
-              readonly
-              value="0 UGX"
-            )
+            input.price-display(type="text", readonly, value="0 UGX")
 
           .action-group
-            button.remove-btn(
-              type="button"
-              onclick="removeRow(this)"
-              title="Remove Item"
-            )
+            button.remove-btn(type="button", onclick="removeRow(this)", title="Remove Item")
               i.fa-solid.fa-trash
 
-      // ================= ADD BUTTON =================
-      button.btn.secondary(
-        type="button"
-        onclick="addItemRow()"
-      )
+      //- ================= ADD BUTTON =================
+      button.btn.secondary(type="button", onclick="addItemRow()")
         i.fa-solid.fa-plus
         |  Add Another Item
 
       hr.form-divider
 
-      // ================= CUSTOMER DETAILS =================
+      //- ================= CUSTOMER DETAILS =================
       h3.customer-section-title Customer & Delivery Details
-
       .form-grid
-
         .input-group
           label Customer Name
-          input(
-            type="text"
-            name="customerName"
-            placeholder="Walk-in Customer"
-            required
-          )
+          input(type="text", name="customerName", placeholder="John Doe", value=(formData ? formData.customerName : ""), required, class=(errors && errors.customerName ? "input-error" : ""))
+          span.error-msg #{errors && errors.customerName ? errors.customerName : ""}
 
         .input-group
           label Phone Number
           .phone-input
             span.phone-prefix +256
-            input(
-              type="text"
-              name="phoneNumber"
-              placeholder="700000000"
-              maxlength="9"
-              required
-            )
+            input(type="text", name="phoneNumber", id="customerPhoneInput", placeholder="700000000", maxlength="9", value=(formData ? formData.phoneNumber : ""), required, class=(errors && errors.phoneNumber ? "input-error" : ""))
+          //- The error message is placed inside the .input-group, 
+          //- so the parent.querySelector('.error-msg') logic will find it.
+          span.error-msg #{errors && errors.phoneNumber ? errors.phoneNumber : ""}
 
         .input-group
           label Customer Address
-          input(
-            type="text"
-            name="customerAddress"
-            placeholder="E.g., Seeta, Mukono"
-            required
-          )
+          input(type="text", name="customerAddress", placeholder="E.g., Seeta, Mukono", value=(formData ? formData.customerAddress : ""), required)
+          span.error-msg
 
         .input-group
-          label Distance (KM)
-          input(
-            type="number"
-            name="distance"
-            min="0"
-            required
-          )
+          label Delivery / Fulfillment Method
+          select(name="deliveryMethod", id="deliveryMethodSelect", required, onchange="toggleDeliveryFields()")
+            option(value="delivery", selected=(formData && formData.deliveryMethod === 'delivery')) Store Delivery / Paid Transport
+            option(value="self-pick", selected=(formData && formData.deliveryMethod === 'self-pick')) Customer Transport (Self-Pick)
+          span.error-msg
 
-      // ================= BUTTONS =================
+        .input-group#distanceInputGroup
+          label Distance (KM)
+          input(type="number", name="distance", id="distanceInput", min="0", step="0.1", placeholder="Distance to site", value=(formData ? formData.distance : "0"), required)
+          span.error-msg
+
+      //- ================= BUTTONS =================
       .button-group
         button.btn.btn-submit(type="submit")
           i.fa-solid.fa-cart-plus
           |  Complete Sale
-
-        button.btn.btn-reset(
-          type="reset"
-          onclick="setTimeout(resetFormTotals, 10)"
-        )
+        button.btn.btn-reset(type="button", onclick="window.location.href='/sales'")
           i.fa-solid.fa-rotate-left
-          |  Clear Form
+          |  Cancel Sale
 
-  // ================= SAFE DATA INJECTION =================
+  //- ================= SCRIPTS =================
   script.
     const availableItems = !{JSON.stringify(items || [])};
+    let rowCounter = 1;
 
-  // ================= MAIN JS =================
-  script.
-    function buildOptions() {
-      let options = `<option value="">-- Select Item --</option>`;
+    document.getElementById('salesForm').addEventListener('submit', function(event) {
+      let isValid = true;
+      const requiredFields = this.querySelectorAll('[required]');
+      
+      requiredFields.forEach(field => {
+        field.classList.remove('input-error');
+        const errorSpan = field.nextElementSibling;
+        if (errorSpan && errorSpan.classList.contains('error-msg')) errorSpan.textContent = "";
 
-      availableItems.forEach(i => {
-        options += `
-          <option value="${i._id}" data-price="${i.sellingPrice}" data-stock="${i.currentQuantity}">
-            ${i.itemName} - ${Number(i.sellingPrice).toLocaleString()} UGX | Stock: ${i.currentQuantity}
-          </option>
-        `;
+        if (!field.value || field.value.trim() === "") {
+          field.classList.add('input-error');
+          if (errorSpan && errorSpan.classList.contains('error-msg')) {
+            errorSpan.textContent = "This field is required.";
+          }
+          isValid = false;
+        }
       });
 
+      if (!isValid) event.preventDefault();
+      alert("Please correct the highlighted fields before saving.");
+    });
+
+    function buildOptions() {
+      let options = `<option value="">-- Select Item --</option>`;
+      availableItems.forEach(i => {
+        options += `<option value="${i._id}" data-price="${i.sellingPrice}" data-stock="${i.currentQuantity}">${i.itemName} - ${Number(i.sellingPrice).toLocaleString()} UGX | Stock: ${i.currentQuantity}</option>`;
+      });
       return options;
     }
 
@@ -156,76 +136,69 @@ block content
       const container = document.getElementById('itemsContainer');
       const row = document.createElement('div');
       row.className = 'item-row';
-
       row.innerHTML = `
         <div class="input-group">
           <label>Item Name</label>
-          <select name="items[item]" required onchange="updateRowData(this)">
-            ${buildOptions()}
-          </select>
+          <select name="items[${rowCounter}][itemId]" class="item-select" required onchange="updateRowData(this)">${buildOptions()}</select>
+          <span class="error-msg"></span>
         </div>
-
         <div class="input-group">
           <label>Quantity</label>
-          <input type="number" name="items[quantity]" min="1" required oninput="validateStockLimit(this)" placeholder="Qty"/>
+          <input type="number" name="items[${rowCounter}][quantity]" class="item-quantity" min="1" required oninput="validateStockLimit(this)" placeholder="Qty"/>
+          <span class="error-msg"></span>
         </div>
-
         <div class="input-group">
           <label>Selling Price</label>
           <input type="text" class="price-display" readonly value="0 UGX" />
         </div>
-
         <div class="action-group">
-          <button type="button" class="remove-btn" onclick="removeRow(this)">
-            <i class="fa-solid fa-trash"></i>
-          </button>
-        </div>
-      `;
-
+          <button type="button" class="remove-btn" onclick="removeRow(this)"><i class="fa-solid fa-trash"></i></button>
+        </div>`;
       container.appendChild(row);
+      rowCounter++;
     }
 
     function removeRow(button) {
       const rows = document.querySelectorAll('.item-row');
       if (rows.length > 1) {
         button.closest('.item-row').remove();
-      } else {
-        alert('At least one item is required.');
-      }
+        reindexRows();
+      } else { alert('At least one item is required.'); }
+    }
+
+    function reindexRows() {
+      const rows = document.querySelectorAll('.item-row');
+      rows.forEach((row, index) => {
+        row.querySelector('.item-select').setAttribute('name', `items[${index}][itemId]`);
+        row.querySelector('.item-quantity').setAttribute('name', `items[${index}][quantity]`);
+      });
+      rowCounter = rows.length;
     }
 
     function updateRowData(selectElement) {
       const option = selectElement.options[selectElement.selectedIndex];
       const row = selectElement.closest('.item-row');
-      const priceInput = row.querySelector('.price-display');
-      const qtyInput = row.querySelector('input[type="number"]');
-
-      if (option && option.value) {
-        priceInput.value = Number(option.dataset.price || 0).toLocaleString() + ' UGX';
-        validateStockLimit(qtyInput);
-      } else {
-        priceInput.value = '0 UGX';
-      }
+      row.querySelector('.price-display').value = option && option.value ? Number(option.dataset.price || 0).toLocaleString() + ' UGX' : '0 UGX';
     }
 
     function validateStockLimit(inputElement) {
       const row = inputElement.closest('.item-row');
       const select = row.querySelector('select');
       const selectedOption = select.options[select.selectedIndex];
-
       if (selectedOption && selectedOption.value) {
         const maxStock = Number(selectedOption.dataset.stock || 0);
-        const enteredQty = Number(inputElement.value || 0);
-
-        if (enteredQty > maxStock) {
-          alert(`Error: Only ${maxStock} units available in stock hand ledger.`);
+        if (Number(inputElement.value) > maxStock) {
+          alert(`Error: Only ${maxStock} units available.`);
           inputElement.value = maxStock;
         }
       }
     }
 
-    function resetFormTotals() {
-      document.querySelectorAll('.price-display').forEach(i => {
-        i.value = '0 UGX';
-      });
+    function toggleDeliveryFields() {
+      const deliveryMethod = document.getElementById('deliveryMethodSelect').value;
+      const distanceInput = document.getElementById('distanceInput');
+      distanceInput.value = (deliveryMethod === 'self-pick') ? "0" : distanceInput.value;
+      distanceInput.readOnly = (deliveryMethod === 'self-pick');
     }
+
+    document.addEventListener('DOMContentLoaded', toggleDeliveryFields);

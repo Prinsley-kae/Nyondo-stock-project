@@ -1,78 +1,81 @@
 extends admin-layout
 
 block content
-
-  //- ================= PAGE HEADER =================
   .page-header
     h2 Admin Dashboard
     p System overview: sales, stock, suppliers, and credit status
 
-  //- ================= KPI CARDS =================
   .stats-grid
     .card
-      i.fa-solid.fa-coins.icon-revenue
+      i.fa-solid.fa-coins
       .info
         h3 Sales Revenue
         p UGX #{stats && stats.salesRevenue ? stats.salesRevenue.toLocaleString() : 0}
 
     .card
-      i.fa-solid.fa-boxes-stacked.icon-expenditure
+      i.fa-solid.fa-boxes-stacked
       .info
         h3 Stock Expenditure
         p UGX #{stats && stats.inventoryValue ? stats.inventoryValue.toLocaleString() : 0}
 
     .card
-      i.fa-solid.fa-truck-field.icon-suppliers
+      i.fa-solid.fa-truck-field
       .info
         h3 Suppliers
         p #{supplierCount || 0}
 
     .card
-      i.fa-solid.fa-money-bill-trend-up.icon-credit
+      i.fa-solid.fa-money-bill-trend-up
       .info
         h3 Outstanding Credit
         p UGX #{totalCredit ? totalCredit.toLocaleString() : 0}
 
-  //- ================= REPORTING CENTER =================
   .summary-section
-    h3 Reporting Center
-    .action-buttons(style="display: flex; gap: 15px; margin-top: 15px; margin-bottom: 30px;")
-      a.btn.action-btn(href="/sales/report-archive" style="background-color: #6c757d; color: white;")
+    h3 Admin Management & Reporting Center
+
+    .action-buttons
+      a.btn(href="/sales/reports/list")
         i.fa-solid.fa-folder-open
         | View Report Archive
 
-  //- ================= SYSTEM SUMMARY =================
-  .summary-section
-    h3 System Overview
-    .summary-grid
-      .summary-card
-        .summary-card-header
-          i.fa-solid.fa-chart-line
-          h4 Sales Performance
-        p Total transactions processed across all active hardware attendants.
-
-      .summary-card
-        .summary-card-header
-          i.fa-solid.fa-warehouse
-          h4 Inventory Status
-        p Current operational material stock levels and item product availability.
-
-      .summary-card
-        .summary-card-header
-          i.fa-solid.fa-handshake
-          h4 Supplier Activity
-        p Procurement credit updates, balance purchases, and milestone tracking.
-
-  //- ================= QUICK NAVIGATION =================
-  .quick-actions
-    h3 Admin Management
-    .action-buttons
-      a.btn.action-btn(href="/sales/analytics" style="background-color: #17a2b8; color: white;")
+      a.btn(href="/sales/analytics")
         i.fa-solid.fa-chart-pie
         span View Analytics
-      a.btn.action-btn(href="/admin/stock-report")
-        i.fa-solid.fa-boxes-stacked
-        span Stock Report
-      a.btn.action-btn(href="/admin/credit-report")
+
+      a.btn(href="/admin/credit-ledger" target="_blank")
         i.fa-solid.fa-money-bill
-        span Credit Report
+        span Credit Report (PDF)
+
+      a.btn(href="/admin/credit-follow-up")
+        i.fa-solid.fa-phone-volume
+        span Credit Follow-up
+
+  //- Simple, clean footer area for system status
+  .summary-section(style="margin-top: 30px; text-align: center; color: #888;")
+    p System ready. All modules are currently operational.
+    small Last updated: 
+      span#current-time
+
+  //- ================= SUCCESS MODAL =================
+  #successModal.modal-overlay
+    .modal-content
+      h2 CONGRATULATIONS!
+      p You have successfully signed into the Nyondo Hardware system. Feel at home.
+
+  script.
+    //- Set the current time for the system status
+    document.getElementById('current-time').innerText = new Date().toLocaleString();
+
+    document.addEventListener("DOMContentLoaded", function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const modal = document.getElementById('successModal');
+
+      if (urlParams.get('success') === 'true' && modal) {
+        modal.style.display = 'flex';
+
+        setTimeout(() => {
+          modal.style.display = 'none';
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }, 3000);
+      }
+    });

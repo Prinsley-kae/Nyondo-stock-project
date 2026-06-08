@@ -10,12 +10,12 @@ block content
       margin-bottom: 25px;
     }
 
-  // ================= PAGE HEADER =================
+  //- ================= PAGE HEADER =================
   .page-header
     h2 Store Manager Dashboard
     p Overview of stock, pricing, and supplier activity
 
-  // ================= SUMMARY CARDS =================
+  //- ================= SUMMARY CARDS =================
   .stats-grid
     .card
       i.fa-solid.fa-boxes-stacked
@@ -35,7 +35,7 @@ block content
         h3 Inventory Value
         p UGX #{stats && stats.inventoryValue ? stats.inventoryValue.toLocaleString() : 0}
 
-    .card(style="border-left: 4px solid #28a745;")
+    .card
       i.fa-solid.fa-chart-line
       .info
         h3 Projected Profit
@@ -47,46 +47,51 @@ block content
         h3 Suppliers
         p #{stats && stats.suppliers ? stats.suppliers : 0}
 
-  // ================= QUICK ACTIONS =================
+  //- ================= QUICK ACTIONS =================
   .quick-actions
-    h3 Quick Actions & Reporting
+  h3 Quick Actions & Reporting
 
-    .action-buttons(style="margin-bottom: 15px;")
-      a.btn.primary-btn(href="/store/add-stock")
-        i.fa-solid.fa-plus
-        |  Add Stock
-      a.btn.secondary-btn(href="/store/inventory")
-        i.fa-solid.fa-boxes-stacked
-        |  View Stock
-      a.btn.secondary-btn(href="/store/credits")
-        i.fa-solid.fa-tags
-        |  View Credits
+  .action-buttons
+    a.btn(href="/store/add-stock")
+      i.fa-solid.fa-plus
+      | Add Stock
+    a.btn(href="/store/inventory")
+      i.fa-solid.fa-boxes-stacked
+      | View Stock
+    a.btn(href="/store/credits")
+      i.fa-solid.fa-tags
+      | View Credits
+    a.btn(href="/store/payment-history")
+      i.fa-solid.fa-history
+      | Payment History
 
-    .action-buttons(style="border-top: 1px solid #ddd; padding-top: 15px; margin-top: 5px;")
-      a.btn.secondary-btn(href="/admin/stock-report" style="background-color: #28a745; color: white; border-color: #28a745; margin-right: 10px;")
-        i.fa-solid.fa-file-csv
-        |  Inventory Report
-      a.btn.secondary-btn(href="/admin/credit-report" style="background-color: #e67e22; color: white; border-color: #e67e22; margin-right: 10px;")
-        i.fa-solid.fa-file-invoice-dollar
-        |  Credit Liability
-      a.btn.secondary-btn(href="/store/payment-history" style="background-color: #6c757d; color: white; border-color: #6c757d;")
-        i.fa-solid.fa-history
-        |  Payment History
+  .action-buttons(style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 20px;")
+    a.btn(href="/store/reports/inventory-valuation")
+      i.fa-solid.fa-file-pdf
+      | Inventory Valuation (PDF)
+    a.btn(href="/store/reports/sales-movement")
+      i.fa-solid.fa-chart-pie
+      | Weekly Sales Movement
+    a.btn(href="/store/reports/credit-liability")
+      i.fa-solid.fa-file-invoice-dollar
+      | Credit Liability
 
-  // ================= LOW STOCK SECTION =================
+  //- ================= LOW STOCK SECTION =================
   .recent-section
     h3 Low Stock Items
     .table-responsive
       table
         thead
           tr
+            th No.
             th Product Name
             th Remaining Stock
             th Alert Status
         tbody
           if lowStockItems && lowStockItems.length
-            each item in lowStockItems
+            each item, i in lowStockItems
               tr
+                td.text-center= i + 1
                 td.font-semibold= item.itemName || 'N/A'
                 td.font-bold= item.currentQuantity || 0
                 td
@@ -100,3 +105,27 @@ block content
             tr
               td(colspan="3" style="text-align: center; color: #888; padding: 20px;")
                 | No low stock alerts. All inventory levels normal.
+
+
+                //- ================= SUCCESS MODAL =================
+  #successModal.modal-overlay
+    .modal-content
+      h2 CONGRATULATIONS!
+      p You have successfully signed into the Nyondo Hardware system. Feel at home.
+
+  script.
+    document.addEventListener("DOMContentLoaded", function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const modal = document.getElementById('successModal');
+
+      if (urlParams.get('success') === 'true' && modal) {
+        modal.style.display = 'flex';
+
+        setTimeout(() => {
+          modal.style.display = 'none';
+
+          //- Clean URL to prevent reappearance on refresh
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }, 3000);
+      }
+    });

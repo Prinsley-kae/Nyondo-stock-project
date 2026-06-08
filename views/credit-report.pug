@@ -1,0 +1,36 @@
+doctype html
+html
+  head
+    style.
+      body { font-family: 'Helvetica', sans-serif; padding: 20px; }
+      .header { border-bottom: 2px solid #eee; margin-bottom: 20px; }
+      table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+      th, td { padding: 10px; border: 1px solid #e2e8f0; font-size: 0.9rem; }
+      th { background: #f8fafc; }
+      .total-row { font-weight: bold; background: #fee2e2; }
+  body
+    .header
+      h2 Supplier Credit Liability Report
+      p Date Generated: #{new Date().toLocaleDateString('en-GB')}
+      p Store Manager: #{user ? user.fullname : 'N/A'}
+    table
+      thead
+        tr
+          th No.
+          th Supplier Name
+          th Item Name
+          th Amount Owed (UGX)
+      tbody
+        if credits && credits.length
+          each item, i in credits
+            tr
+              td= i + 1
+              td= item.supplierName || 'N/A'
+              td= item.itemName || 'N/A'
+              td= (Number(item.buyingPrice) * Number(item.currentQuantity)).toLocaleString()
+          tr.total-row
+            td(colspan="3" style="text-align: right;") Total Liability:
+            td UGX #{totalDebt.toLocaleString()}
+        else
+          tr
+            td(colspan="4" style="text-align: center;") No outstanding credit records found.

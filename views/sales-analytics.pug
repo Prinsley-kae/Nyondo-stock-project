@@ -4,33 +4,31 @@ html(lang="en")
     meta(charset="UTF-8")
     meta(name="viewport" content="width=device-width, initial-scale=1.0")
     title Sales Analytics Report
-    //- Icons & Fonts
-    link(rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css")
+    link(rel="preconnect" href="https://fonts.googleapis.com")
+    link(rel="preconnect" href="https://fonts.gstatic.com" crossorigin)
     link(href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet")
-
-    //- Main CSS
-    link(rel="stylesheet" href="/css/sales.css")
-
+    link(rel="stylesheet" href="/css/analytics.css")
     style.
-      body { font-family: sans-serif; background: #f4f7f6; padding: 40px; display: flex; flex-direction: column; align-items: center; }
-      .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 800px; }
-      .back-btn { margin-bottom: 20px; text-decoration: none; color: #555; font-weight: bold; }
-    
-  body
+      .analytics-body { font-family: 'Poppins', sans-serif; background: #fdfaf6; padding: 2rem; }
+      .main-panel { background: #ffffff; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+      .panel-header h2 { color: #451A03; margin-bottom: 0.5rem; }
+      .subtitle { color: #92400E; margin-bottom: 2rem; font-weight: 400; }
+      .back-btn { display: inline-block; margin-bottom: 1rem; color: #92400E; text-decoration: none; font-weight: 600; }
+
+  body.analytics-body
     a.back-btn(href="javascript:history.back()") ← Back to Dashboard
     
-    .card
-      h2(style="margin-top:0;") Sales Performance Analytics
-      p.text-muted Top 5 Best-Selling Items
-      canvas#salesChart
-
-    //- Include Chart.js from CDN
-    script(src="https://cdn.jsdelivr.net/npm/chart.js")
-    
-    script.
-      // Prepare the data from the server
-      const topProducts = !{JSON.stringify(topProducts)};
+    .main-panel
+      .panel-header
+        h2 Sales Performance
+        p.subtitle Top 5 Best-Selling Items
       
+      .chart-wrapper(style="height: 400px;")
+        canvas#salesChart
+
+    script(src="https://cdn.jsdelivr.net/npm/chart.js")
+    script.
+      const topProducts = !{JSON.stringify(topProducts)};
       const labels = topProducts.map(p => p.productDetails[0]?.itemName || 'Unknown');
       const data = topProducts.map(p => p.totalQty);
 
@@ -40,14 +38,38 @@ html(lang="en")
           data: {
               labels: labels,
               datasets: [{
-                  label: 'Total Items Sold',
+                  label: 'Items Sold',
                   data: data,
-                  backgroundColor: '#3498db',
-                  borderRadius: 5
+                  backgroundColor: '#D97706',
+                  hoverBackgroundColor: '#B45309',
+                  borderRadius: 8,
+                  barPercentage: 0.8,
+                  categoryPercentage: 0.8,
+                  barThickness: 80
               }]
           },
           options: {
               responsive: true,
-              scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+              maintainAspectRatio: false,
+              plugins: {
+                  legend: { display: false },
+                  tooltip: {
+                      backgroundColor: '#451A03',
+                      padding: 12,
+                      bodyFont: { family: 'Poppins' },
+                      titleFont: { family: 'Poppins', weight: 'bold' }
+                  }
+              },
+              scales: { 
+                  y: { 
+                      beginAtZero: true, 
+                      grid: { color: '#FDE68A', lineWidth: 0.5 },
+                      ticks: { color: '#78350F', font: { family: 'Poppins' } } 
+                  },
+                  x: { 
+                      grid: { display: false },
+                      ticks: { color: '#78350F', font: { family: 'Poppins' } } 
+                  }
+              }
           }
       });

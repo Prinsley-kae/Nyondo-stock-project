@@ -1,13 +1,8 @@
 extends stock-layout
 
 block content
-  //- Control bar wrapper hidden during printing
-  .quick-actions.no-print(style="justify-content: flex-end; margin-bottom: 20px;")
-    button.btn.primary-btn(
-      type="button"
-      style="background: #10b981; border-color: #10b981;"
-      onclick="window.print()"
-    )
+  .quick-actions.no-print
+    button.btn.primary-btn(type="button" onclick="window.print()")
       i.fa-solid.fa-print
       |  Print Voucher
 
@@ -17,59 +12,47 @@ block content
     .receipt-header
       .receipt-title-area
         h1.clearance-title Liability Clearance Voucher
-        p(style="margin: 5px 0 0 0; color: #64748b;")
-          | Supplier Accounts Payable Settlement Receipt
+        p Supplier Accounts Payable Settlement Receipt
 
-      .receipt-logo-area(style="text-align: right;")
-        h2(style="margin: 0; color: #10b981;") PAID
-        small(style="color: #64748b;")
-          | Ref: VOUCH-#{item._id.toString().substring(18).toUpperCase()}
+      .receipt-logo-area
+        h2.text-success PAID
+        small Ref: VOUCH-#{item._id.toString().substring(18).toUpperCase()}
 
     .receipt-meta-grid
       .receipt-meta-block.clearance-bg
         strong Beneficiary (Supplier Account):
-        p(style="margin: 8px 0 4px 0; font-weight: 600;")
-          = item.supplierName || 'N/A'
-        p(style="margin: 0 0 4px 0; color: #64748b;")
-          | Company: #{item.companyName || 'N/A'}
-        p(style="margin: 0; font-size: 14px;")
-          | Account Contact: 
-          = item.supplierContact && item.supplierContact !== 'N/A' ? item.supplierContact.replace(/(\+\d{3})(\d{2})(\d{3})(\d{4})/, '$1 $2 $3 $4') : 'N/A'
+        p.font-semibold= item.supplierName || 'N/A'
+        p.text-muted Company: #{item.companyName || 'N/A'}
+        p Account Contact: #{item.supplierContact || 'N/A'}
 
-      .receipt-meta-block(style="text-align: right;")
+      .receipt-meta-block.text-right
         strong Payment Parameters:
-        p(style="margin: 8px 0 4px 0;")
-          | Settlement Date: #{new Date().toLocaleDateString('en-GB')}
-        p(style="margin: 0 0 4px 0;")
-          | Intake Batch Date: #{new Date(item.createdAt).toLocaleDateString('en-GB')}
-        p(style="margin: 0; font-weight: bold; color: #10b981;")
-          | Status: Closed Account
+        p Settlement Date: #{new Date().toLocaleDateString('en-GB')}
+        p Intake Batch Date: #{new Date(item.createdAt).toLocaleDateString('en-GB')}
+        p.text-success Status: Closed Account
 
     table.receipt-table
       thead
         tr
           th Clear Ordered Item
-          th(style="text-align: center;") Intake Batch Volume
-          th(style="text-align: right;") Agreed Unit Price
-          th(style="text-align: right;") Total Disbursed Balance
+          th.text-center Intake Batch Volume
+          th.text-right Agreed Unit Price
+          th.text-right Total Disbursed Balance
       tbody
         tr
-          td(style="font-weight: 600; color: #1e293b;")= item.itemName
-          td(style="text-align: center;")= item.originalQuantity || 0
-          td(style="text-align: right;")
-            | UGX #{Number(item.buyingPrice || 0).toLocaleString()}
-          td(style="text-align: right; font-weight: 600; color: #10b981;")
-            | UGX #{Number((item.buyingPrice || 0) * (item.originalQuantity || 0)).toLocaleString()}
+          td.font-semibold= item.itemName
+          td.text-center= item.originalQuantity || 0
+          td.text-right UGX #{Number(item.buyingPrice || 0).toLocaleString()}
+          td.text-right.text-success UGX #{Number((item.buyingPrice || 0) * (item.originalQuantity || 0)).toLocaleString()}
         tr.receipt-total-row
           td(colspan="2")
-          td(style="text-align: right;") Total Paid out:
-          td(style="text-align: right; color: #10b981;")
-            | UGX #{Number((item.buyingPrice || 0) * (item.originalQuantity || 0)).toLocaleString()}
+          td.text-right Total Paid out:
+          td.text-right.text-success UGX #{Number((item.buyingPrice || 0) * (item.originalQuantity || 0)).toLocaleString()}
 
     .receipt-signatures
       .receipt-sig-line
         span.sig-label Disbursed By:
-        span.sig-name #{user ? user.fullname : 'Store Manager'}
+        span.sig-name= user ? user.fullname : 'Store Manager'
       .receipt-sig-line
         span.sig-label Received & Confirmed By:
-        span.sig-name #{item.supplierName || 'Supplier'}
+        span.sig-name= item.supplierName || 'Supplier'

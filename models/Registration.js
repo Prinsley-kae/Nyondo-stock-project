@@ -26,7 +26,22 @@ const registrationSchema = new mongoose.Schema({
         required: true,
         enum: ['sales_attendant', 'store_manager', 'admin'],
         default: 'sales_attendant'
+    },
+    isActive: {
+        type: Boolean,
+        default: true
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    },
+    resetPasswordToken: { 
+        type: String 
+    },
+    resetPasswordExpires: { 
+        type: Date 
     }
+
 });
 
 registrationSchema.plugin(passportLocalMongoose, {

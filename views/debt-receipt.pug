@@ -1,0 +1,309 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title Credit Account Receipt - #{sale._id}
+    style.
+      body {
+        background-color: #f3f4f6;
+        font-family: system-ui, -apple-system, sans-serif;
+        padding: 40px 20px;
+        margin: 0;
+        color: #1f2937;
+      }
+      .receipt-card {
+        max-width: 750px;
+        margin: 0 auto;
+        background: #ffffff;
+        padding: 40px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        position: relative;
+      }
+      .receipt-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        border-bottom: 2px solid #f3f4f6;
+        padding-bottom: 24px;
+        margin-bottom: 24px;
+      }
+      .company-details h1 {
+        margin: 0 0 6px 0;
+        font-size: 1.6rem;
+        color: #111827;
+        font-weight: 800;
+        letter-spacing: -0.025em;
+      }
+      .company-details p {
+        margin: 0 0 4px 0;
+        font-size: 0.875rem;
+        color: #4b5563;
+      }
+      .receipt-meta {
+        text-align: right;
+      }
+      .receipt-meta h2 {
+        margin: 0 0 6px 0;
+        font-size: 1.4rem;
+        color: #2563eb;
+        letter-spacing: 0.05em;
+      }
+      .receipt-meta p {
+        margin: 0 0 4px 0;
+        font-size: 0.875rem;
+        color: #4b5563;
+      }
+      
+      .info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        margin-bottom: 32px;
+        background: #f9fafb;
+        padding: 20px;
+        border-radius: 6px;
+        border: 1px solid #e5e7eb;
+      }
+      .info-block h3 {
+        margin: 0 0 8px 0;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        color: #9ca3af;
+        letter-spacing: 0.05em;
+      }
+      .info-block p {
+        margin: 0 0 4px 0;
+        font-size: 0.95rem;
+      }
+      .status-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        margin-top: 4px;
+      }
+      .status-cleared { background: #d1fae5; color: #065f46; }
+      .status-partial { background: #fef3c7; color: #92400e; }
+      
+      .receipt-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 32px;
+      }
+      .receipt-table th {
+        background: #111827;
+        padding: 12px;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        color: #ffffff;
+        border-bottom: 1px solid #e5e7eb;
+        text-align: left;
+      }
+      .receipt-table td {
+        padding: 14px 12px;
+        border-bottom: 1px solid #f3f4f6;
+        font-size: 0.9rem;
+      }
+      .text-right { text-align: right !important; }
+      .text-center { text-align: center !important; }
+      
+      .totals-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-top: 20px;
+      }
+      .payment-notes {
+        max-width: 330px;
+        font-size: 0.85rem;
+        color: #6b7280;
+        line-height: 1.4;
+      }
+      .totals-section {
+        width: 350px;
+      }
+      .total-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        font-size: 0.9rem;
+      }
+      .total-row.settled-alert {
+        background: #f8fafc;
+        padding: 6px;
+        border-left: 3px solid #64748b;
+        margin: 4px 0;
+      }
+      .total-row.grand-total {
+        border-top: 2px solid #111827;
+        font-weight: 700;
+        font-size: 1.2rem;
+        color: #111827;
+        padding-top: 12px;
+        margin-top: 4px;
+      }
+      .text-success { color: #16a34a; font-weight: bold; }
+      .text-pending { color: #b45309; font-weight: bold; }
+      
+      .receipt-footer {
+        text-align: center;
+        margin-top: 48px;
+        border-top: 1px dashed #e5e7eb;
+        padding-top: 24px;
+        font-size: 0.875rem;
+        color: #6b7280;
+      }
+      
+      .action-bar {
+        max-width: 750px;
+        margin: 0 auto 20px auto;
+        display: flex;
+        justify-content: space-between;
+      }
+      .btn-action {
+        padding: 10px 20px;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .btn-back { background: #e5e7eb; color: #374151; }
+      .btn-print { background: #111827; color: white; }
+
+      @media print {
+        body { background: white; padding: 0; }
+        .receipt-card { box-shadow: none; padding: 0; max-width: 100%; }
+        .action-bar { display: none; }
+      }
+
+  body
+    .action-bar
+      a.btn-action.btn-back(href="/admin/credit-follow-up") ← Back to Ledger
+      button.btn-action.btn-print(onclick="window.print()") Print Receipt
+
+    .receipt-card
+      //- ================= HEADER =================
+      .receipt-header
+        .company-details
+          h1 NYONDO GENERAL HARDWARE
+          p Nansana, Uganda
+          p Wholesale & Retail of Heavy & Light Construction Materials
+          p Tel: +256 772 456789 / +256 701 987654
+        .receipt-meta
+          h2 TRANSACTION STATEMENT
+          p # #{sale._id ? sale._id.toString().slice(-6).toUpperCase() : 'N/A'}
+          p Date: #{new Date(sale.createdAt || Date.now()).toLocaleDateString('en-GB')}
+          
+      //- ================= CLIENT & ACCOUNT INFO =================
+      .info-grid
+        .info-block
+          h3 Customer Account:
+          p: strong #{sale.customerName || 'Walk-in Customer'}
+          p Phone: #{sale.customerContact || 'N/A'}
+          if sale.nin
+            p NIN: #{sale.nin}
+        .info-block
+          h3 Account Status:
+          p Statement Printed: #{new Date().toLocaleDateString('en-GB')}
+          if sale.balance <= 0
+            span.status-badge.status-cleared Account Fully Cleared
+          else
+            span.status-badge.status-partial Partial Balance Pending
+          
+      //- ================= ITEM BREAKDOWN FROM DATABASE =================
+      h3(style="font-size: 0.85rem; text-transform: uppercase; color: #4b5563; margin-bottom: 12px; letter-spacing: 0.05em;") Purchased Items Summary
+      table.receipt-table
+        thead
+          tr
+            th Item Description
+            th.text-center Qty
+            th.text-right Unit Price
+            th.text-right Total Price
+        tbody
+          if sale.items && sale.items.length
+            each itemEntry in sale.items
+              tr
+                td 
+                  if itemEntry.item && itemEntry.item.itemName
+                    | #{itemEntry.item.itemName}
+                  else if itemEntry.itemName
+                    | #{itemEntry.itemName}
+                  else if itemEntry.name
+                    | #{itemEntry.name}
+                  else
+                    | General Hardware Supplies
+                
+                td.text-center #{itemEntry.quantity || 1}
+                
+                //- Safe evaluation with inline conditional chains to stop undefined lookups
+                - var qty = itemEntry.quantity || 1
+                - var uPrice = itemEntry.unitPrice || (itemEntry.item && itemEntry.item.sellingPrice) || 0
+                - var tPrice = itemEntry.totalPrice || (uPrice * qty) || 0
+                
+                td.text-right #{uPrice.toLocaleString()} UGX
+                td.text-right #{tPrice.toLocaleString()} UGX
+          else
+            tr
+              td Material Hardware Supplies (Aggregated Ledger Profile)
+              td.text-center 1
+              td.text-right #{(sale.subtotal || sale.totalAmount || 0).toLocaleString()} UGX
+              td.text-right #{(sale.subtotal || sale.totalAmount || 0).toLocaleString()} UGX
+
+      //- ================= FINANCIAL BREAKDOWN SEQUENCE =================
+      .totals-container
+        .payment-notes
+          p: strong Ledger Notes:
+          if sale.notes
+            p #{sale.notes}
+          else if sale.balance <= 0
+            p This document acts as official confirmation that the balance outstanding under this credit account profile has been paid in full. No balance remains outstanding.
+          else
+            p This document serves as a receipt statement for credit installments. Please ensure the remaining account balance is settled in accordance with your agreed credit terms.
+        
+        .totals-section
+          //- Subtotal
+          .total-row
+            span Subtotal:
+            - var subTotalVal = sale.subtotal || sale.totalAmount || 0
+            span #{subTotalVal.toLocaleString()} UGX
+            
+          //- Transport / Delivery Fee
+          if sale.transportFee
+            .total-row
+              span Delivery/Transport Fee:
+              span #{sale.transportFee.toLocaleString()} UGX
+            
+          //- Grand Total Cost
+          .total-row(style="border-top: 1px solid #e5e7eb; padding-top: 8px; font-weight: 600;")
+            span Total Invoice Value:
+            - var totalAmtVal = sale.totalAmount || 0
+            span #{totalAmtVal.toLocaleString()} UGX
+            
+          //- Cumulative Amount Deposited/Paid so far
+          .total-row.settled-alert
+            span Total Amount Paid:
+            - var amtPaidVal = sale.amountPaid || 0
+            span.text-success #{amtPaidVal.toLocaleString()} UGX
+              
+          //- Current Active Dynamic Remaining Balance
+          .total-row.grand-total
+            span Balance Outstanding:
+            if sale.balance <= 0
+              span.text-success 0 UGX
+            else
+              - var balVal = sale.balance || 0
+              span.text-pending #{balVal.toLocaleString()} UGX
+          
+      //- ================= FOOTER =================
+      .receipt-footer
+        p Serving you with Quality Building Materials since 2018
+        p Issued by: #{sale.fullname || sale.adminName || (sale.admin && sale.admin.fullname) || 'System Administrator'} on #{new Date().toLocaleDateString('en-GB')} at #{new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}

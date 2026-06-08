@@ -1,0 +1,36 @@
+doctype html
+html
+  head
+    style.
+      body { font-family: 'Helvetica', sans-serif; padding: 20px; }
+      .header { border-bottom: 2px solid #eee; margin-bottom: 20px; }
+      table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+      th, td { padding: 10px; border: 1px solid #e2e8f0; font-size: 0.9rem; }
+      th { background: #f8fafc; }
+      .text-center { text-align: center; }
+  body
+    .header
+      h2 Sales Movement Report
+      p Period: #{startDate} to #{endDate}
+      p Date Generated: #{new Date().toLocaleDateString('en-GB')}
+      p Store Manager: #{user ? user.fullname : 'N/A'}
+    table
+      thead
+        tr
+          th No.
+          th Item Name
+          th Date Sold
+          th Quantity
+          th Total Amount (UGX)
+      tbody
+        if items && items.length
+          each item, i in items
+            tr
+              td.text-center= i + 1
+              td= item.itemName || 'N/A'
+              td= new Date(item.updatedAt).toLocaleDateString('en-GB')
+              td= (item.originalQuantity - item.currentQuantity) || 0
+              td= (Number(item.sellingPrice) * (item.originalQuantity - item.currentQuantity)).toLocaleString()
+        else
+          tr
+            td(colspan="5" style="text-align: center;") No sales recorded in this period.

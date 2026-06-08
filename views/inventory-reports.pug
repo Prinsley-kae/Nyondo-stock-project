@@ -1,0 +1,41 @@
+doctype html
+html
+  head
+    style.
+      body { font-family: 'Helvetica', sans-serif; padding: 20px; }
+      .header-info { margin-bottom: 20px; }
+      .report-title { color: #1e293b; font-size: 1.5rem; font-weight: bold; }
+      .meta-info { color: #475569; font-size: 0.9rem; }
+      table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+      th { background-color: #f8fafc; text-align: left; padding: 10px; border: 1px solid #e2e8f0; font-size: 0.9rem; }
+      td { padding: 10px; border: 1px solid #e2e8f0; font-size: 0.9rem; }
+      .total-row { font-weight: bold; background-color: #f1f5f9; }
+      .text-right { text-align: right; }
+  body
+    .header-info
+      .report-title Inventory Valuation Report
+      p.meta-info Store Manager: #{user ? user.fullname : 'N/A'}
+      p.meta-info Date Generated: #{new Date().toLocaleDateString('en-GB')}
+    table
+      thead
+        tr
+          th No.
+          th Item Name
+          th Current Qty
+          th Buying Price (UGX)
+          th Total Value (UGX)
+      tbody
+        if stocks && stocks.length
+          each stock, i in stocks
+            tr
+              td= i + 1
+              td= stock.itemName || 'N/A'
+              td= stock.currentQuantity || 0
+              td= Number(stock.buyingPrice || 0).toLocaleString()
+              td= (Number(stock.currentQuantity || 0) * Number(stock.buyingPrice || 0)).toLocaleString()
+          tr.total-row
+            td(colspan="4" class="text-right") Grand Total:
+            td UGX #{totalValue.toLocaleString()}
+        else
+          tr
+            td(colspan="5" style="text-align: center;") No records available.

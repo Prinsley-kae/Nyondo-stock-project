@@ -1,22 +1,28 @@
 extends admin-layout
 
 block content
-  
+
+  style.
+    .receipt-table { width: 100% !important; table-layout: fixed !important; }
+    .receipt-table td, .receipt-table th { padding: 20px 10px !important; text-align: left; }
+    .col-no { width: 10% !important; text-align: center !important; }
+    .col-item { width: 30% !important; }
+    .col-price, .col-total { width: 20% !important; text-align: right !important; }
+    .col-qty { width: 10% !important; text-align: center !important; }
+
   .receipt-container
     .receipt-box
-
-      // ================= BRANDING HEADER WITH LOGO =================
+      //- Header Section
       .receipt-header
         .receipt-logo-wrapper
           img(src="/images/logo.png" alt="Nyondo Hardware Logo" class="receipt-logo-img")
-          
         h2 NYONDO HARDWARE LTD
         p.location Nansana, Uganda
         .receipt-title Deposit Credit Receipt
         if sale._id
-          p.receipt-id-tag(style="font-family: monospace; color: #666; margin-top: 4px; font-size: 14px;") Ref No: ##{sale._id.toString().slice(-6).toUpperCase()}
+          p.receipt-id-tag Ref No: ##{sale._id.toString().slice(-6).toUpperCase()}
 
-      // ================= CUSTOMER INFO =================
+      //- Customer Info
       .receipt-section
         h3.section-heading Customer Profiles
         .info-row
@@ -34,38 +40,39 @@ block content
 
       hr.divider
 
-      // ================= TRANSACTION DETAILS (EXPANDED FINANCIAL TABLE) =================
+      //- Order Details
       .receipt-section
         h3.section-heading Order Details
-        
-        table.receipt-table(style="width: 100%; border-collapse: collapse; margin-top: 10px; margin-bottom: 10px;")
+        table.receipt-table
           thead
-            tr(style="border-bottom: 2px solid #333; text-align: left; font-weight: bold; font-size: 14px;")
-              th(style="padding: 6px 0; width: 45%;") Material / Item
-              th(style="padding: 6px 0; text-align: right; width: 20%;") Unit Price
-              th(style="padding: 6px 0; text-align: right; width: 15%;") Qty
-              th(style="padding: 6px 0; text-align: right; width: 20%;") Subtotal
+            tr
+              th.col-no No.
+              th.col-item Item Name
+              th.col-qty  Qty
+              th.col-price Unit Price
+              th.col-total Subtotal
           tbody
             if sale.items && sale.items.length > 0
-              each entry in sale.items
+              each entry, index in sale.items
                 - const unitPrice = entry.item ? (entry.item.sellingPrice || 0) : 0
                 - const subtotal = unitPrice * entry.quantity
-                tr(style="border-bottom: 1px dashed #ddd; font-size: 14px;")
-                  td(style="padding: 8px 0; max-width: 180px; word-wrap: break-word;") #{entry.item ? entry.item.itemName : 'Unknown Item'}
-                  td(style="padding: 8px 0; text-align: right;") UGX #{unitPrice.toLocaleString()}
-                  td(style="padding: 8px 0; text-align: right;") #{entry.quantity}
-                  td(style="padding: 8px 0; text-align: right; font-weight: 500;") UGX #{subtotal.toLocaleString()}
+                tr
+                  td.col-no #{index + 1}
+                  td.col-item #{entry.item ? entry.item.itemName : 'Unknown Item'}
+                  td.col-qty #{entry.quantity}
+                  td.col-price UGX #{unitPrice.toLocaleString()}
+                  td.col-total UGX #{subtotal.toLocaleString()}
             else
               tr
-                td(style="padding: 8px 0; color: #888;" colspan="4") No items attached to this record.
+                td(colspan="5" style="text-align: center; color: #888;") No items attached to this record.
 
-        .info-row(style="margin-top: 16px;")
+        .info-row
           strong Profile Type:
-          span.payment-profile-type(style="text-transform: capitalize;") #{sale.paymentType}
+          span.payment-profile-type #{sale.paymentType}
 
       hr.divider
 
-      // ================= LOGISTICS & ROUTING DATA =================
+      //- Logistics
       .receipt-section
         h3.section-heading Delivery & Logistics
         .info-row
@@ -73,13 +80,11 @@ block content
           span #{sale.distance || 0} Km
         .info-row
           strong Transport Fee:
-          // FIXED: Cascades down common backend schema naming options if sale.transportFee isn't set directly
-          - const deliveryCost = sale.transportFee || 0
-          span.transit-fee-amt UGX #{sale.transportFee.toLocaleString()}
+          span.transit-fee-amt UGX #{sale.transportFee ? sale.transportFee.toLocaleString() : 0}
 
       hr.divider
 
-      // ================= FINANCIAL METRICS =================
+      //- Financials
       .receipt-section.financials-block
         .info-row
           strong Total Value:
@@ -89,32 +94,26 @@ block content
           span.amount-paid UGX #{sale.amountPaid ? sale.amountPaid.toLocaleString() : 0}
         .info-row
           strong Outstanding Balance:
-          // FIXED: Added a fallback lookups for balance calculation variables
           - const remainingDebt = sale.balance !== undefined ? sale.balance : (sale.outstandingBalance || 0)
           span.remaining-balance UGX #{remainingDebt.toLocaleString()}
 
       hr.divider
 
-      // ================= TRANSACTION TIMESTAMP & AUDIT =================
+      //- Footer
       .receipt-footer-meta
         .info-row.meta-row
           strong Issued By:
-          // FIXED: Clear logical fallbacks to match whatever variable structure your auth/database is returning
           span #{(sale.admin && sale.admin.fullname) || 'N/A'}
-
-
         .info-row.meta-row
           strong Date Issued:
           span #{new Date(sale.date || sale.createdAt || Date.now()).toLocaleString()}
-        
         p.thank-you Thank you for doing business with us!
 
-    // ================= ACTION CONTROLS =================
+    //- Controls
     .receipt-actions-wrapper
       button.btn.btn-print(onclick="window.print()")
         i.fa-solid.fa-print
         span Print Receipt
-
       a.btn.btn-back(href="/admin/deposits")
         i.fa-solid.fa-arrow-left
         span Back to Ledger

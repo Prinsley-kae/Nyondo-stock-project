@@ -2,12 +2,12 @@ extends sales-layout
 
 block content
 
-  // ================= HEADER =================
+  //- ================= HEADER =================
   .page-header
     h2 Sales Receipts
     p View and manage completed sales transactions
 
-  // ================= RECEIPTS TABLE =================
+  //- ================= RECEIPTS TABLE =================
   .table-container
 
     table
@@ -27,39 +27,39 @@ block content
         if sales && sales.length
           each sale in sales
             tr
-              // Receipt short ID
+              //- Receipt short ID
               td= sale._id.toString().slice(-6)
 
-              // Customer
+              //- Customer
               td
                 if sale.customerName
                   | #{sale.customerName}
                 else
                   span.text-muted Walk-in
 
-              // Product (from populated Stock)
+              //- Product (from populated Stock)
               td
                 if sale.itemName && sale.itemName.itemName
                   | #{sale.itemName.itemName}
                 else
                   span.text-muted Deleted Item
 
-              // Quantity
+              //- Quantity
               td= sale.quantity
 
-              // Total
+              //- Total
               td UGX #{sale.total ? sale.total.toLocaleString() : 0}
 
-              // Transport fee
+              //- Transport fee
               td UGX #{sale.transportFee ? sale.transportFee.toLocaleString() : 0}
 
-              // Final total
+              //- Final total
               td UGX #{sale.finalTotal ? sale.finalTotal.toLocaleString() : 0}
 
-              // Date (your model uses "date", not createdAt)
+              //- Date (your model uses "date", not createdAt)
               td= new Date(sale.date).toDateString()
 
-              // Action
+              //- Action
               td
                 a.btn.small(href=`/sales/receipt/${sale._id}`)
                   |  View

@@ -1,7 +1,7 @@
 extends stock-layout
 
 block content
-  // Include the external print stylesheet
+  //- Include the external print stylesheet
   link(rel="stylesheet", href="/css/grn-receipt.css")
 
   //- Control bar wrapper hidden automatically during printing execution
@@ -52,7 +52,7 @@ block content
           td.total-valuation-label Total Valuation:
           td.total-valuation-value UGX #{Number((item.buyingPrice || 0) * (item.originalQuantity || item.quantity || 0)).toLocaleString()}
 
-    // ================= DYNAMIC SIGNATURE SECTION =================
+    //- ================= DYNAMIC SIGNATURE SECTION =================
     .receipt-signatures
       
       //- Left Column: Store Manager Profile

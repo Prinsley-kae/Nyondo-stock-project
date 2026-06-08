@@ -2,25 +2,24 @@ extends sales-layout
 
 block content
 
-  // ================= PAGE HEADER =================
+  //- ================= PAGE HEADER =================
   .page-header.no-print
     div
       h2 Transaction Receipt
       p View details or print the invoice record for this sale
 
-  // ================= RECEIPT CARD CONTAINER =================
+  //- ================= RECEIPT CARD CONTAINER =================
   .receipt-container
 
-    // ================= HEADER =================
+    //- ================= HEADER =================
     .receipt-header
-      img.logo(src="/Images/logo.png" alt="Company Logo")
       h2 NYONDO GENERAL HARDWARE LTD
       p.branch Nansana Branch
       p.receipt-type Receipt for Goods Purchased
 
     hr.receipt-divider
 
-    // ================= RECEIPT INFO META GRID =================
+    //- ================= RECEIPT INFO META GRID =================
     .receipt-info
       .info-group
         span.info-label Receipt ID:
@@ -36,7 +35,7 @@ block content
       
       .info-group
         span.info-label Phone:
-        span.info-value +256 #{sale.phoneNumber}
+        span.info-value +256#{sale.phoneNumber}
       
       .info-group
         span.info-label Address:
@@ -52,7 +51,7 @@ block content
 
     hr.receipt-divider
 
-    // ================= ITEMS DATA TABLE =================
+    //- ================= ITEMS DATA TABLE =================
     .table-section
       .table-container
         table.receipt-table
@@ -76,7 +75,7 @@ block content
 
     hr.receipt-divider
 
-    // ================= SUMMARY BREAKDOWN =================
+    //- ================= SUMMARY BREAKDOWN =================
     .receipt-summary
       .summary-row
         span.summary-label Subtotal:
@@ -92,12 +91,12 @@ block content
 
     hr.receipt-divider
 
-    // ================= FOOTER TERMS =================
+    //- ================= FOOTER TERMS =================
     .receipt-footer
       p Thank you for shopping with NYONDO GENERAL HARDWARE LTD
       p.terms Notice: Goods once sold are not returnable
 
-  // ================= ACTIONS CONTROL PANEL =================
+  //- ================= ACTIONS CONTROL PANEL =================
   .receipt-actions.no-print
     button.btn.btn-print-primary(type="button" onclick="window.print()")
       i.fa-solid.fa-print

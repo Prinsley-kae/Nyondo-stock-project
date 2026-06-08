@@ -2,10 +2,10 @@ extends admin-layout
 
 block content
 
-  // ================= MAIN CONTAINER =================
+  //- ================= MAIN CONTAINER =================
   .sales-dashboard
 
-    // ================= TOP BAR: HEADER & PRIMARY ACTION =================
+    //- ================= TOP BAR: HEADER & PRIMARY ACTION =================
     .page-header-container
       .page-header
         h2 Customer Deposits & Credit Ledger
@@ -16,7 +16,7 @@ block content
           i.fa-solid.fa-plus
           span New Deposit
 
-    // ================= CONTROLS ROW: SEARCH & UTILITY REPORTING =================
+    //- ================= CONTROLS ROW: SEARCH & UTILITY REPORTING =================
     .filter-action-bar
       .search-box-wrapper
         i.fa-solid.fa-magnifying-glass.search-icon
@@ -29,9 +29,9 @@ block content
       .utility-actions
         button.btn.action-btn.secondary-action-btn(type="button" onclick="window.print()")
           i.fa-solid.fa-print
-          span Generate Report
+          span Print Page
 
-    // ================= DEPOSITS TABLE =================
+    //- ================= DEPOSITS TABLE =================
     .recent-section
       .table-responsive
         table#depositsTable.receipts-table
@@ -42,6 +42,7 @@ block content
               th Customer Name
               th Contact
               th NIN Number
+              th Delivery Method
               th Item Name
               th Quantity
               th Deposit
@@ -56,36 +57,56 @@ block content
           tbody
             if deposits && deposits.length
               each deposit, i in deposits
+                //-- Data setup for logic
                 - const d = new Date(deposit.createdAt || deposit.date || Date.now())
+                - const currentBalance = deposit.balance && deposit.balance > 0 ? deposit.balance : 0
+                - const isCleared = (currentBalance <= 0 || deposit.status === 'cleared')
+                
+                //-- Corrected Handled By logic: Checks fields in order of priority
+                - const handlerName = deposit.fullname || (deposit.admin ? deposit.admin.fullname : null) || deposit.adminName || 'System'
+                
                 tr
                   td #{i + 1}
                   
-                  // RECEIPT ID
+                  //- RECEIPT ID
                   td
                     span.receipt-id ##{deposit._id ? deposit._id.toString().slice(-6).toUpperCase() : 'N/A'}
                   
-                  // CUSTOMER NAME
+                  //- CUSTOMER NAME
                   td.font-semibold #{deposit.customerName || 'Walk-in'}
                   
-                  // CONTACT
+                  //- CONTACT
                   td #{deposit.customerContact || 'N/A'}
                   
-                  // NIN NUMBER
+                  //- NIN NUMBER
                   td #{deposit.nin || 'N/A'}
                   
-                  // ITEM NAME (Stacked Line-by-Line Column)
+                  //- DELIVERY METHOD
+                  td(style="white-space: nowrap;")
+                    if deposit.deliveryMethod === 'self-pick' || !deposit.distance || deposit.distance === 0
+                      span.badge.status-active(style="background-color: #e3f2fd; color: #0d47a1; padding: 4px 8px; border-radius: 4px; font-size: 0.85em; display: inline-block; white-space: nowrap;") Self-Pick
+                    else
+                      span.badge.status-warning(style="background-color: #e8f5e9; color: #1b5e20; padding: 4px 8px; border-radius: 4px; font-size: 0.85em; display: inline-block; white-space: nowrap;") Delivery
+                      br
+                      small.timestamp-sub-text #{deposit.distance} KM
+                  
+                  //- ITEM NAME
                   td
                     if deposit.items && deposit.items.length
                       .stacked-items-cell(style="display: flex; flex-direction: column; gap: 4px;")
                         each itemEntry in deposit.items
-                          if itemEntry.item
+                          if itemEntry.itemName
+                            span(style="white-space: nowrap;") #{itemEntry.itemName}
+                          else if itemEntry.item && itemEntry.item.itemName
                             span(style="white-space: nowrap;") #{itemEntry.item.itemName}
+                          else if itemEntry.name
+                            span(style="white-space: nowrap;") #{itemEntry.name}
                           else
-                            span.badge.status-disabled Unknown Material
+                            span.badge.status-disabled General Material
                     else
                       span.badge.status-disabled No Items
                   
-                  // QUANTITY (Stacked Line-by-Line Column matching Item Index)
+                  //- QUANTITY
                   td.center-text
                     if deposit.items && deposit.items.length
                       .stacked-qty-cell(style="display: flex; flex-direction: column; gap: 4px; font-weight: 600;")
@@ -94,74 +115,55 @@ block content
                     else
                       | 0
 
-                  // DEPOSIT
+                  //- DEPOSIT
                   td.currency-amt UGX #{deposit.amountPaid ? deposit.amountPaid.toLocaleString() : 0}
                   
-                  // BALANCE
-                  - const currentBalance = deposit.balance && deposit.balance > 0 ? deposit.balance : 0
+                  //- BALANCE
                   td(class=(currentBalance > 0 ? "text-danger font-semibold currency-amt" : "final-total-cell currency-amt"))
                     | UGX #{currentBalance.toLocaleString()}
                   
-                  // TRANSPORT FEE
+                  //- TRANSPORT FEE
                   td.currency-amt UGX #{deposit.transportFee ? deposit.transportFee.toLocaleString() : 0}
 
-                  // TOTAL PROFILE
+                  //- TOTAL PROFILE
                   td.currency-amt UGX #{deposit.totalAmount ? deposit.totalAmount.toLocaleString() : 0}
                   
-                  // HANDLED BY
-                  td
-                    if deposit.admin
-                      span #{deposit.admin.fullname || deposit.admin.fullname}
-                    else if deposit.adminName
-                      span #{deposit.adminName}
-                    else
-                      span.text-muted System
+                  //- HANDLED BY (CORRECTED)
+                  td #{handlerName}
                   
-                  // LOGGED DATE
+                  //- LOGGED DATE
                   td
                     span #{d.toLocaleDateString()}
                     br
                     small.timestamp-sub-text #{d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                   
-                  // STATUS
+                  //- STATUS BADGE ENGINE
                   td
-                    if currentBalance <= 0 || deposit.status === 'cleared'
+                    if isCleared
                       span.badge.status-active Cleared
+                    else if deposit.amountPaid === 0 || deposit.amountPaid <= 0 || deposit.status === 'pending'
+                      span.badge.status-disabled Pending
                     else if deposit.status === 'partial' || (currentBalance > 0 && deposit.amountPaid > 0)
                       span.badge.status-warning Partial
                     else
                       span.badge.status-disabled Pending
 
-                  // ACTIONS
+                  //- ACTIONS
                   td
-                    .table-actions-flex-wrapper
-                      a.btn-action.btn-view(
-                        href=`/admin/depositreceipt/${deposit._id}`
-                        title="View Deposit Receipt"
-                      )
+                    .table-actions-flex-wrapper(style="display: flex; gap: 12px; align-items: center;")
+                      a.btn-action.btn-view(href=`/admin/depositreceipt/${deposit._id}`, title="View Deposit Receipt", style="font-size: 1.1rem;")
                         i.fa-solid.fa-eye
-
-                      a.btn-action.btn-edit(
-                        href=`/admin/deposits/edit/${deposit._id}`
-                        title="Edit Record"
-                      )
+                      a.btn-action.btn-receipt(href=`/admin/receipt/${deposit._id}`, title="View Debt Clearance Receipt", style="color: #2ec4b6; font-size: 1.1rem;")
+                        i.fa-solid.fa-file-invoice-dollar
+                      a.btn-action.btn-edit(href=`/admin/deposits/edit/${deposit._id}`, title="Edit & Process Payment", style="color: #ffc107; font-size: 1.1rem;")
                         i.fa-solid.fa-pen
-
-                      form.inline-form(
-                        action=`/admin/deposits/delete/${deposit._id}`
-                        method="POST"
-                        onsubmit="return confirm('Are you sure you want to completely drop this ledger document record?')"
-                      )
-                        button.btn-action.btn-delete(
-                          type="submit"
-                          title="Delete Permanently"
-                        )
+                      form.inline-form(action=`/admin/deposit-details/delete/${deposit._id}`, method="POST", onsubmit="return confirm('Are you sure you want to completely drop this ledger document record?')", style="margin: 0; display: inline;")
+                        button.btn-action.btn-delete(type="submit", title="Delete Permanently", style="background: none; border: none; padding: 0; color: #dc3545; font-size: 1.1rem; cursor: pointer;")
                           i.fa-solid.fa-trash
             else
               tr
-                td.table-fallback-row(colspan="15") No customer ledger deposits or credit agreements found in system repository data.
+                td.table-fallback-row(colspan="16") No customer ledger deposits or credit agreements found in system repository data.
 
-  // ================= CLIENT SIDE REAL-TIME SEARCH FILTER ENGINE =================
   script.
     function executeTableFilter() {
       const input = document.getElementById("searchInput");
@@ -173,7 +175,7 @@ block content
         if(tr[i].getElementsByClassName("table-fallback-row").length > 0) continue;
 
         let rowMatched = false;
-        const textTargetCells = [1, 2, 3, 5]; 
+        const textTargetCells = [1, 2, 3, 6]; 
         
         for (let targetIndex of textTargetCells) {
           const td = tr[i].getElementsByTagName("td")[targetIndex];

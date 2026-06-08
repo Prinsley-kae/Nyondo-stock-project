@@ -3,256 +3,189 @@ html
   head
     meta(charset='UTF-8')
     meta(name='viewport' content='width=device-width, initial-scale=1.0')
-
     title Sign Up - NYONDO Stock System
 
-    //- FONT AWESOME
-    link(
-      rel='stylesheet'
-      href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css'
-    )
-
-    //- GOOGLE FONTS
-    link(
-      href='https://fonts.googleapis.com/css2?family=Poppins:wght=300;400;500;600&display=swap'
-      rel='stylesheet'
-    )
-
-    //- MAIN CSS
+    link(rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css')
+    link(href='https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap' rel='stylesheet')
     link(rel='stylesheet' href='/css/style.css')
 
     style.
-      /* Small helper style for inline errors if not defined in your style.css */
-      .inline-error-msg {
-        color: #d9534f;
-        font-size: 0.825rem;
-        margin-top: 5px;
-        margin-left: 2px;
-        font-weight: 500;
-        display: flex;
-        align-items: center;
-        gap: 4px;
-      }
+      .input-error { border: 2px solid #ff4d4d !important; }
+      .error-message { color: #ff4d4d; font-size: 0.8rem; margin-top: 5px; display: block; }
+      .alert-success { background: rgba(46, 204, 113, 0.2); border: 1px solid #2ecc71; color: #27ae60; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+      .alert-danger { background: rgba(255, 77, 77, 0.2); border: 1px solid #ff4d4d; color: #cc0000; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
 
   body
+    .container-signup
+      h1 Create Account
+      p.subtitle Register to access NYONDO system
 
-    .auth-container
+      //- Success and Error Messages
+      if success_msg && success_msg.length > 0
+        .alert-success= success_msg
 
-      .auth-box
+      if errors && errors.system
+        .alert-danger= errors.system
 
-        h2 Create Account
+      form(method='post' action='/signup' novalidate)
 
-        p.subtitle Register to access NYONDO system
+        //- Helper to apply 'input-error' class if a specific field has an error
+        .input-group
+          label Full Name
+          input(
+            type='text'
+            name='fullname'
+            placeholder='John Doe'
+            value=fullname
+            required
+            class=(errors && errors.fullname ? 'input-error' : '')
+          )
+          if errors && errors.fullname
+            span.error-message= errors.fullname
 
-        //- System-wide/Database level errors show up here if needed
-        if errors && errors.system
-          .alert-banner.alert-danger
-            i.fa-solid.fa-circle-exclamation
-            span= errors.system
+        .input-group
+          label Email Address
+          input(
+            type='email'
+            name='email'
+            placeholder='name@company.com'
+            value=email
+            required
+            class=(errors && errors.email ? 'input-error' : '')
+          )
+          if errors && errors.email
+            span.error-message= errors.email
 
-        if success_msg && success_msg.length > 0
-          .alert-banner.alert-success
-            i.fa-solid.fa-circle-check
-            span= success_msg
+        .input-group
+          label Phone Number
+          .phone-input(class=(errors && errors.phonenumber ? 'input-error' : ''))
+            span.phone-prefix(style="margin-right:10px; color:#6b7280;") +256
+            input(
+              type='text'
+              name='phonenumber'
+              placeholder='7XXXXXXXX'
+              maxlength='9'
+              value=phonenumber
+              required
+              style="border:none; padding:0; outline:none;"
+            )
+          if errors && errors.phonenumber
+            span.error-message= errors.phonenumber
 
-        form(method='post' action='/signup')
+        .input-group
+          label NIN Number
+          input(
+            type='text'
+            name='nin'
+            placeholder='Enter NIN'
+            value=nin
+            required
+            class=(errors && errors.nin ? 'input-error' : '')
+          )
+          if errors && errors.nin
+            span.error-message= errors.nin
 
-          //- =========================
-          //- FULL NAME
-          //- =========================
-          .input-group
-            label Full Name
+        .input-group
+          label Role
+          select(name='role' required class=(errors && errors.role ? 'input-error' : ''))
+            option(value='' disabled selected) Select role
+            option(value='sales_attendant' selected=(role=='sales_attendant')) Sales Attendant
+            option(value='store_manager' selected=(role=='store_manager')) Store Manager
+            option(value='admin' selected=(role=='admin')) Admin
+          if errors && errors.role
+            span.error-message= errors.role
 
-            .icon-input
-              i.fa-solid.fa-user
+        .input-group
+          label Password
+          .password-wrapper(class=(errors && errors.password ? 'input-error' : ''))
+            input(
+              type='password'
+              name='password'
+              id='signupPass'
+              placeholder='••••••••'
+              required
+            )
+            span.toggle-password(onclick="togglePassword('signupPass', this)")
+              i.fa-solid.fa-eye
+          if errors && errors.password
+            span.error-message= errors.password
 
-              input(
-                type='text'
-                name='fullname'
-                placeholder='Enter full name'
-                value=fullname
-                required
-              )
-            if errors && errors.fullname
-              p.inline-error-msg
-                i.fa-solid.fa-circle-exclamation
-                span= errors.fullname
+        .input-group
+          label Confirm Password
+          .password-wrapper(class=(errors && errors.confirmPassword ? 'input-error' : ''))
+            input(
+              type='password'
+              name='confirmPassword'
+              id='confirmPass'
+              placeholder='••••••••'
+              required
+            )
+            span.toggle-password(onclick="togglePassword('confirmPass', this)")
+              i.fa-solid.fa-eye
+          if errors && errors.confirmPassword
+            span.error-message= errors.confirmPassword
 
+        button.btn.primary(type='submit')
+          i.fa-solid.fa-user-plus
+          |  Sign Up
 
-          //- =========================
-          //- EMAIL
-          //- =========================
-          .input-group
-            label Email Address
-
-            .icon-input
-              i.fa-solid.fa-envelope
-
-              input(
-                type='email'
-                name='email'
-                placeholder='Enter email address'
-                value=email
-                required
-              )
-            if errors && errors.email
-              p.inline-error-msg
-                i.fa-solid.fa-circle-exclamation
-                span= errors.email
-
-
-          //- =========================
-          //- PHONE NUMBER
-          //- =========================
-          .input-group
-            label Phone Number
-
-            .phone-input
-
-              span.phone-prefix +256
-
-              input(
-                type='text'
-                name='phonenumber'
-                placeholder='7XXXXXXXX'
-                maxlength='10'
-                value=phonenumber
-                required
-              )
-            if errors && errors.phonenumber
-              p.inline-error-msg
-                i.fa-solid.fa-circle-exclamation
-                span= errors.phonenumber
-
-
-          //- =========================
-          //- NIN
-          //- =========================
-          .input-group
-            label NIN Number
-
-            .icon-input
-              i.fa-solid.fa-id-card
-
-              input(
-                type='text'
-                name='nin'
-                placeholder='Enter NIN number'
-                value=nin
-                required
-              )
-            if errors && errors.nin
-              p.inline-error-msg
-                i.fa-solid.fa-circle-exclamation
-                span= errors.nin
-
-
-          //- =========================
-          //- ROLE
-          //- =========================
-          .input-group
-            label Role
-
-            select(name='role' required)
-              option(value='' disabled selected=(!role))
-                | Select role
-
-              option(value='sales_attendant' selected=(role === 'sales_attendant'))
-                | Sales Attendant
-
-              option(value='store_manager' selected=(role === 'store_manager'))
-                | Store Manager
-
-              option(value='admin' selected=(role === 'admin'))
-                | Admin / Accounts
-
-
-          //- =========================
-          //- PASSWORD
-          //- =========================
-          .input-group
-            label Password
-
-            .password-wrapper
-
-              input(
-                type='password'
-                name='password'
-                id='signupPassword'
-                placeholder='Create password'
-                required
-              )
-
-              span.toggle-password(
-                onclick='toggleSignupPassword(event)'
-              )
-                i.fa-solid.fa-eye
-            if errors && errors.password
-              p.inline-error-msg
-                i.fa-solid.fa-circle-exclamation
-                span= errors.password
-
-
-          //- =========================
-          //- CONFIRM PASSWORD
-          //- =========================
-          .input-group
-            label Confirm Password
-
-            .password-wrapper
-
-              input(
-                type='password'
-                name='confirmPassword'
-                id='confirmPassword'
-                placeholder='Confirm password'
-                required
-              )
-
-              span.toggle-password(
-                onclick='toggleConfirmPassword(event)'
-              )
-                i.fa-solid.fa-eye
-            if errors && errors.confirmPassword
-              p.inline-error-msg
-                i.fa-solid.fa-circle-exclamation
-                span= errors.confirmPassword
-
-
-          //- =========================
-          //- SUBMIT BUTTON
-          //- =========================
-          button.btn.primary(type='submit')
-
-            i.fa-solid.fa-user-plus
-
-            |  Sign Up
-
-
-        //- =========================
-        //- LOGIN LINK
-        //- =========================
-        .auth-links
-
-          p
-            | Already have an account?
-
-            a(href='/login')
-              |  Login
-
-
-    //- =========================
-    //- FOOTER
-    //- =========================
-    footer
-
-      p
-        | © 2026 NYONDO General Hardware LTD
-
-      p
-        | i.fa-solid.fa-location-dot
-
-        |   Nansana, Uganda
-
+      .auth-links
+        p Already have an account?
+          a(href='/login') Login
 
     script(src='/js/script.js')
+
+    script.
+      //- Logic to clear red border when typing
+      document.querySelectorAll('input, select').forEach(el => {
+        el.addEventListener('input', () => {
+          el.classList.remove('input-error');
+
+          //- Also clear parent wrapper if it has the error class
+          if(el.parentElement.classList.contains('input-error')) {
+            el.parentElement.classList.remove('input-error');
+          }
+
+          //- Remove error text
+          const errorSpan = el.parentElement.nextElementSibling;
+          if(errorSpan && errorSpan.classList.contains('error-message')) {
+            errorSpan.style.display = 'none';
+          }
+        });
+      });
+
+      function togglePassword(id, el) {
+        const input = document.getElementById(id);
+        const icon = el.querySelector('i');
+
+        input.type = input.type === 'password' ? 'text' : 'password';
+        icon.classList.toggle('fa-eye');
+        icon.classList.toggle('fa-eye-slash');
+      }
+
+      //- Red inputs on submission of an empty form
+      document.querySelector('form').addEventListener('submit', function(e) {
+        let hasError = false;
+        const inputs = this.querySelectorAll('input, select');
+
+        inputs.forEach(input => {
+          //- Check if field is empty
+          if (input.value.trim() === '') {
+            hasError = true;
+
+            //- 1. Add error class to the input itself
+            input.classList.add('input-error');
+
+            //- 2. Also add it to the parent if it's a wrapper (like password/phone)
+            const parent = input.parentElement;
+            if (parent.classList.contains('password-wrapper') || parent.classList.contains('phone-input')) {
+              parent.classList.add('input-error');
+            }
+          }
+        });
+
+        if (hasError) {
+          e.preventDefault();
+          alert('Please fill in all required fields.');
+        }
+      });

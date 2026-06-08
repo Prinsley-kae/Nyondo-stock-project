@@ -1,12 +1,21 @@
 extends admin-layout
 
 block content
-  // ================= PAGE HEADER =================
+  //- ================= FLASH MESSAGES =================
+  if success_msg && success_msg.length > 0
+    .alert.alert-success(style="background: #d4edda; color: #155724; padding: 15px; border-radius: 5px; margin-bottom: 20px;")
+      = success_msg
+      
+  if error_msg && error_msg.length > 0
+    .alert.alert-danger(style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px; margin-bottom: 20px;")
+      = error_msg
+
+  //- ================= PAGE HEADER =================
   .page-header
     h2 Transport Rules Management
     p Configure delivery charges and free transport conditions
 
-  // ================= CURRENT RULES CARDS (Using Summary Grid) =================
+  //- ================= CURRENT RULES CARDS =================
   .summary-section
     h3 Current Transport Policy
     .summary-grid
@@ -30,67 +39,74 @@ block content
         - const currentFee = (rules && rules.deliveryFee) ? rules.deliveryFee : 30000;
         p.font-semibold UGX #{Number(currentFee).toLocaleString()}
 
-  // ================= UPDATE FORM =================
+  //- ================= UPDATE FORM =================
   .form-section
     h3 Update Transport Rules
-    
-    form(method="POST" action="/admin/transport-rules/update")
-      //- Smart Grid For Scalable Multi-Column Inputs
+    form#transportForm(method="POST" action="/admin/transport-rules/update" novalidate)
       .form-grid
-        
-        // ================= FREE RADIUS =================
         .input-group
           label Free Delivery Radius (KM)
           .icon-input-wrapper
             i.fa-solid.fa-location-dot.input-icon
-            input(
-              type="number"
-              name="freeRadius"
-              min="0"
-              value=(rules && rules.freeRadius) ? rules.freeRadius : ""
-              required
-              placeholder="e.g. 10"
-            )
+            input(type="number" name="freeRadius" min="0" value=(rules ? rules.freeRadius : "") required)
 
-        // ================= MIN ORDER =================
         .input-group
           label Minimum Order for Free Delivery (UGX)
           .icon-input-wrapper
             i.fa-solid.fa-money-bill-wave.input-icon
-            input(
-              type="number"
-              name="minOrder"
-              min="0"
-              value=(rules && rules.minOrder) ? rules.minOrder : ""
-              required
-              placeholder="e.g. 500000"
-            )
+            input(type="number" name="minOrder" min="0" value=(rules ? rules.minOrder : "") required)
 
-        // ================= DELIVERY FEE =================
         .input-group
           label Standard Delivery Fee (UGX)
           .icon-input-wrapper
             i.fa-solid.fa-truck-ramp-box.input-icon
-            input(
-              type="number"
-              name="deliveryFee"
-              min="0"
-              value=(rules && rules.deliveryFee) ? rules.deliveryFee : ""
-              required
-              placeholder="e.g. 30000"
-            )
+            input(type="number" name="deliveryFee" min="0" value=(rules ? rules.deliveryFee : "") required)
 
-      // ================= FORM ACTIONS BAR =================
       .form-actions-bar
         button.btn.primary-action-btn(type="submit")
           i.fa-solid.fa-truck
           span Update Transport Rules
 
-  // ================= INFO SECTION =================
-  .form-section(style="margin-top: 32px;")
-    h3 How Transport Works in NYONDO System
-    ul(style="padding-left: 20px; color: var(--text-muted); display: flex; flex-direction: column; gap: 8px;")
-      li Customers within the free radius **AND** order above the minimum qualify for free delivery.
-      li Otherwise, the standard delivery fee is automatically applied.
-      li Attendants must calculate transport during sales entry.
-      li Managers and Admins can update these system rules at any given time.
+  //- ================= STYLES & SCRIPTS =================
+  style.
+    .is-invalid { border: 2px solid #dc3545 !important; }
+
+  script.
+    //- 1. AUTO-HIDE SUCCESS MESSAGE
+    document.addEventListener('DOMContentLoaded', function() {
+      const successAlert = document.querySelector('.alert-success');
+      if (successAlert) {
+        setTimeout(function() {
+          successAlert.style.transition = "opacity 0.5s ease";
+          successAlert.style.opacity = "0";
+          setTimeout(function() { successAlert.style.display = "none"; }, 500);
+        }, 5000);
+      }
+    });
+
+    //- 2. FORM VALIDATION
+    document.getElementById('transportForm').addEventListener('submit', function(e) {
+      let hasError = false;
+      const inputs = this.querySelectorAll('input[required]');
+
+      inputs.forEach(input => {
+        if (!input.value.trim()) {
+          input.classList.add('is-invalid');
+          hasError = true;
+        } else {
+          input.classList.remove('is-invalid');
+        }
+      });
+
+      if (hasError) {
+        e.preventDefault();
+        alert("Please fill in all required fields marked in red.");
+      }
+    });
+
+    //- Clear red borders on input
+    document.addEventListener('input', function(e) {
+      if (e.target.classList.contains('is-invalid')) {
+        e.target.classList.remove('is-invalid');
+      }
+    });

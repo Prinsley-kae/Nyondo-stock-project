@@ -1,0 +1,112 @@
+extends admin-layout
+
+block content
+  .ledger-container
+
+    .header-section
+      h2 Credit Follow-up Ledger
+      p Customers with outstanding balances
+
+    .table-scroll-wrapper
+      table.table-responsive
+
+        thead
+          tr
+            th No.
+            th Date
+            th Customer
+            th Contact
+            th Delivery Method
+            th Balance (UGX)
+            th Status
+            th Notes
+            th Actions
+
+        tbody
+          if pendingSales && pendingSales.length > 0
+
+            each sale, index in pendingSales
+              - var balance = sale.totalAmount - sale.amountPaid
+
+              tr
+                td= index + 1
+
+                td(style="white-space: nowrap;")
+                  = new Date(sale.date).toLocaleDateString('en-GB')
+
+                td= sale.customerName
+
+                //- ================= CONTACT COLUMN MODIFIED =================
+                td(style="white-space: nowrap;")
+
+                  //- WhatsApp Link
+                  //- Note: Assumes number is in international format (e.g., 2567xxxxxxxx)
+                  a(
+                    href=`https://wa.me/${sale.customerContact.replace(/\+/g, '')}`
+                    target="_blank"
+                    title="Message or call on WhatsApp"
+                  )
+                    i.fa-brands.fa-whatsapp(
+                      style="color: #25d366; font-size: 1.2em;"
+                    )
+
+                  span(style="margin-left: 8px;")
+                    = sale.customerContact
+
+                //- ================= DELIVERY METHOD COLUMN =================
+                td(style="white-space: nowrap;")
+
+                  if sale.deliveryMethod === 'self-pick' || !sale.distance || sale.distance === 0
+
+                    span.badge(
+                      style="background-color: #e3f2fd; color: #0d47a1; padding: 4px 8px; border-radius: 4px; font-size: 0.8em;"
+                    )
+                      | Self-Pick
+
+                  else
+
+                    span.badge(
+                      style="background-color: #e8f5e9; color: #1b5e20; padding: 4px 8px; border-radius: 4px; font-size: 0.8em;"
+                    )
+                      | Delivery
+
+                    br
+
+                    small.text-muted(style="font-size: 0.75em;")
+                      | #{sale.distance} KM
+
+                td
+                  b= balance.toLocaleString()
+
+                td
+                  span.badge(class=(balance >= sale.totalAmount) ? 'badge-danger' : 'badge-warning')
+                    = (balance >= sale.totalAmount) ? 'Unpaid' : 'Partially Paid'
+
+                td.notes-cell= sale.notes
+
+                td.action-icons
+
+                  a.btn-pay(
+                    href=`/admin/deposits/edit/${sale._id}`
+                    title="Pay Debt"
+                  )
+                    i.fa-solid.fa-money-bill-wave
+
+                  a.btn-receipt(
+                    href=`/admin/receipt/${sale._id}`
+                    title="Debt Clearance Receipt"
+                  )
+                    i.fa-solid.fa-file-invoice
+
+                  a.btn-delete(
+                    href=`/admin/deposits/delete/${sale._id}`
+                    title="Delete Record"
+                    onclick="return confirm('Are you sure?')"
+                  )
+                    i.fa-solid.fa-trash
+
+          else
+
+            tr
+              td(colspan="9", class="text-center")
+                | No outstanding credit records found.

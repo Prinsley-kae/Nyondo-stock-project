@@ -23,7 +23,7 @@ const SaleSchema = new mongoose.Schema({
     required: true
   },
 
-  // ================= MULTIPLE ITEMS =================
+  // MULTIPLE ITEMS
   items: [
     {
       item: {

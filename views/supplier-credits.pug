@@ -1,12 +1,12 @@
 extends stock-layout
 
 block content
-  // ================= PAGE HEADER =================
+  //- ================= PAGE HEADER =================
   .page-header
     h2 Supplier Credit Obligations
     p Track active balances, stock performance, and outstanding debts to suppliers.
 
-  // ================= FILTER BAR =================
+  //- ================= FILTER BAR =================
   .quick-actions
     .filter-wrapper
       .input-group.search-group
@@ -18,11 +18,9 @@ block content
 
       button.btn.primary-btn.report-btn(type="button" onclick="window.print()")
         i.fa-solid.fa-print
-        |  Print Debt Report
+        |  Print Debt Page
 
-  // =========================================================
-  // ================= 1. SUPPLIER FINANCIAL LEDGER ==========
-  // =========================================================
+  //- ================= 1. SUPPLIER FINANCIAL LEDGER ==========
   .recent-section
     h3 Active Accounts Payable & Balances
     p.section-subtitle Financial debt summaries, procurement sources, and supplier contact profiles.
@@ -76,7 +74,7 @@ block content
                 
                 td
                   .button-group.table-actions
-                    //- FIXED: Removed onsubmit. Form now handles payment; server redirect handles receipts.
+                    //-- FIXED: Removed onsubmit. Form now handles payment; server redirect handles receipts.
                     form(action=`/store/credits/pay/${credit._id}` method="POST" style="display:inline")
                       button.btn.secondary-btn.action-sub-btn(
                         type="submit" 
@@ -111,9 +109,9 @@ block content
             tr
               td.table-fallback-row(colspan="11" style="text-align: center; color: #888; padding: 20px;") No outstanding credit obligations logged.
 
-  // =========================================================
-  // ================= 2. CREDIT ITEM STOCK VARIANCE =========
-  // =========================================================
+  //- =========================================================
+  //- ================= 2. CREDIT ITEM STOCK VARIANCE =========
+  //- =========================================================
   .recent-section.credit-section-margin
     h3 Active Credit Sales Variance Ledger
     p.section-subtitle Monitoring active volume changes strictly for credit items that have recorded marketplace sales.
@@ -126,9 +124,10 @@ block content
             th Item Name
             th Supplier & Factory
             th Stock at Hand
-            th Total Units Sold
+            th Units Sold
             th Status
             th Procurement Value
+            th Actions
 
         tbody#varianceTableBody
           if credits && credits.length
@@ -149,12 +148,21 @@ block content
                   td
                     if Number(credit.currentQuantity) === 0
                       span.badge.out Sold Out
-                    else if Number(credit.currentQuantity) <= 50
+                    else if Number(credit.currentQuantity) <= 100
                       span.badge.critical Low Stock
                     else
                       span.badge.low Active Stock
                   
                   td.font-semibold UGX #{Number((credit.buyingPrice || 0) * (credit.originalQuantity || 0)).toLocaleString()}
+
+                  td
+                    form(action=`/store/inventory/delete/${credit._id}` method="POST" style="display:inline")
+                      button.btn.secondary-btn.action-sub-btn.delete-action-btn(
+                        type="submit" 
+                        onclick="return confirm('Delete this supplier record permanently?')"
+                        title="Delete Record"
+                      )
+                        i.fa-solid.fa-trash
             
             if activeCreditSales === 0
               tr
@@ -163,11 +171,11 @@ block content
             tr
               td.table-fallback-row(colspan="7" style="text-align: center; color: #888; padding: 20px;") No credit items running variance monitoring.
 
-  // ================= REAL-TIME FILTER ENGINE =================
+  //- ================= REAL-TIME FILTER ENGINE =================
   script.
     document.getElementById('searchInput').addEventListener('keyup', function () {
       const value = this.value.toLowerCase();
-      // Scope search to rows within both table bodies
+      //- Scope search to rows within both table bodies
       const rows = document.querySelectorAll("#ledgerTableBody tr, #varianceTableBody tr");
       rows.forEach(row => {
         if(row.cells.length > 1) {

@@ -1,0 +1,237 @@
+extends admin-layout
+
+block content
+  style.
+    .form-container {
+      max-width: 600px;
+      margin: 40px auto;
+      background: #ffffff;
+      padding: 32px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+    .form-header {
+      border-bottom: 1px solid #e5e7eb;
+      padding-bottom: 16px;
+      margin-bottom: 24px;
+    }
+    .form-header h2 {
+      margin: 0;
+      color: #111827;
+      font-size: 1.5rem;
+    }
+    /* Summary Cards */
+    .ledger-summary {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .summary-card {
+      background: #f9fafb;
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid #e5e7eb;
+    }
+    .summary-card span {
+      display: block;
+      font-size: 0.75rem;
+      color: #6b7280;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .summary-card strong {
+      font-size: 1.1rem;
+      color: #111827;
+    }
+    .summary-card.highlight {
+      background: #fef3c7;
+      border-color: #fcd34d;
+    }
+    .summary-card.highlight strong {
+      color: #92400e;
+    }
+    
+    /* Items Section Styling */
+    .items-review-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 16px;
+      margin-bottom: 24px;
+    }
+    .items-review-box h3 {
+      margin: 0 0 12px 0;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      color: #475569;
+      letter-spacing: 0.05em;
+    }
+    .items-list-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    .items-list-table th {
+      text-align: left;
+      padding: 6px 8px;
+      color: #64748b;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      border-bottom: 1px solid #cbd5e1;
+    }
+    .items-list-table td {
+      padding: 10px 8px;
+      border-bottom: 1px solid #e2e8f0;
+      color: #334155;
+    }
+    .text-right { text-align: right !important; }
+    .text-center { text-align: center !important; }
+
+    /* Form Layout */
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: 6px;
+    }
+    .form-control {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 1rem;
+      box-sizing: border-box;
+      color: #111827;
+    }
+    .form-control:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    .form-control:disabled {
+      background-color: #f3f4f6;
+      color: #9ca3af;
+    }
+    .btn-group {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 28px;
+    }
+    .btn {
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      border: none;
+      transition: background-color 0.15s ease;
+    }
+    .btn-secondary {
+      background: #f3f4f6;
+      color: #4b5563;
+    }
+    .btn-secondary:hover {
+      background: #e5e7eb;
+    }
+    .btn-primary {
+      background: #16a34a;
+      color: white;
+    }
+    .btn-primary:hover {
+      background: #15803d;
+    }
+
+  .form-container
+    .form-header
+      h2 Process Debt Payment
+      p Customer: #{sale.customerName}
+    
+    - var balance = sale.totalAmount - sale.amountPaid
+    
+    .ledger-summary
+      .summary-card
+        span Total Due
+        strong #{sale.totalAmount.toLocaleString()} UGX
+      .summary-card
+        span Total Paid
+        strong #{sale.amountPaid.toLocaleString()} UGX
+      .summary-card.highlight
+        span Current Balance
+        strong #{balance.toLocaleString()} UGX
+
+    //- ================= ITEMS PURCHASED BREAKDOWN =================
+    .items-review-box
+      h3 Credit Purchase Items
+      table.items-list-table
+        thead
+          tr
+            th Description
+            th.text-center Qty
+            th.text-right Unit Price
+            th.text-right Total
+        tbody
+          if sale.items && sale.items.length
+            each itemEntry in sale.items
+              tr
+                td
+                  if itemEntry.item && itemEntry.item.itemName
+                    | #{itemEntry.item.itemName}
+                  else if itemEntry.itemName
+                    | #{itemEntry.itemName}
+                  else if itemEntry.name
+                    | #{itemEntry.name}
+                  else
+                    | General Hardware Supplies
+                
+                td.text-center #{itemEntry.quantity || 1}
+                
+                //- FIXED ERROR HERE: Extracted sellingPrice from populated 'item' subdocument model
+                - var itemQty = itemEntry.quantity || 1
+                - var uPrice = itemEntry.unitPrice || (itemEntry.item ? itemEntry.item.sellingPrice : 0)
+                - var tPrice = itemEntry.totalPrice || (uPrice * itemQty)
+                
+                td.text-right #{uPrice.toLocaleString()} UGX
+                td.text-right #{tPrice.toLocaleString()} UGX
+          else
+            tr
+              td(colspan="4", style="color: #64748b; font-style: italic;") Aggregated Balance Record (No granular item breakdown array detected)
+
+    //- ================= TRANSACTION ACTION FORM =================
+    form(action=`/admin/deposits/update/${sale._id}`, method="POST")
+      .form-group
+        label Customer Name
+        input.form-control(type="text", value=sale.customerName, disabled)
+        
+      .form-group
+        label New Payment Amount (UGX)
+        input.form-control(
+          type="number", 
+          name="paymentAmount", 
+          placeholder="e.g. 50000", 
+          max=balance, 
+          required, 
+          autofocus
+        )
+        
+      .form-group
+        label Payment Method
+        select.form-control(name="paymentMethod")
+          option(value="Cash") Cash
+          option(value="Mobile Money") Mobile Money (MoMo)
+          option(value="Bank Transfer") Bank Transfer
+          
+      .form-group
+        label Transaction/Follow-up Notes
+        textarea.form-control(name="notes", rows="3") #{sale.notes}
+
+      .btn-group
+        a.btn.btn-secondary(href="/admin") Cancel
+        button.btn.btn-primary(type="submit") Save Payment

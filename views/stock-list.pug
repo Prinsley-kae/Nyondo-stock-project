@@ -1,12 +1,17 @@
 extends stock-layout
 
 block content
-  // ================= PAGE HEADER =================
+
+  if success_msg && success_msg.length > 0
+    .alert.alert-success(style="padding: 15px; background: #d4edda; color: #155724; border: 1px solid #c3e6cb; margin-bottom: 20px; border-radius: 4px;")
+      = success_msg
+
+  //- ================= PAGE HEADER =================
   .page-header
     h2 Inventory & Stock Analytics
     p Monitor current warehouse quantities and track sales performance in real-time
 
-  // ================= FILTER + SEARCH BAR =================
+  //- ================= FILTER + SEARCH BAR =================
   .quick-actions
     .filter-wrapper
       .input-group.search-group
@@ -14,9 +19,9 @@ block content
         i.fa-solid.fa-magnifying-glass.search-icon
       button.btn.primary-btn.report-btn(type="button" onclick="window.print()")
         i.fa-solid.fa-print
-        |  Generate Report
+        |  Print Page
 
-  // ================= 1. CURRENT WAREHOUSE STOCK ============
+  //- ================= 1. CURRENT WAREHOUSE STOCK ============
   .recent-section
     h3 Current Warehouse Stock
     .table-responsive
@@ -27,6 +32,7 @@ block content
             th Batch ID
             th Date Received
             th Item Name
+            th Item Preview
             th Original Qty
             th Buying Price
             th Selling Price
@@ -39,6 +45,12 @@ block content
                 td: span.batch-badge= stock.batchId || 'N/A'
                 td= stock.createdAt ? new Date(stock.createdAt).toLocaleDateString('en-GB') : 'N/A'
                 td.font-semibold= stock.itemName || 'N/A'
+                td
+                  if stock.itemImage
+                    //- Add '/uploads/' before the stock.itemImage
+                    img(src=`/uploads/${stock.itemImage}`, alt=stock.itemName, style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px;")
+                  else
+                    span(style="color: #ccc; font-size: 0.8rem;") No Image
                 td.font-semibold= stock.originalQuantity || 0
                 td UGX #{Number(stock.buyingPrice || 0).toLocaleString()}
                 td UGX #{Number(stock.sellingPrice || 0).toLocaleString()}
@@ -48,13 +60,11 @@ block content
                       i.fa-solid.fa-file-invoice
                     a.btn.secondary-btn(href=`/store/inventory/edit/${stock._id}` title="Edit Stock")
                       i.fa-solid.fa-pen
-                    form(action=`/store/inventory/delete/${stock._id}` method="POST" style="display:inline")
-                      button.btn.secondary-btn(type="submit" title="Delete Record" onclick="return confirm('Are you sure?')")
-                        i.fa-solid.fa-trash(style="color: #dc2626;")
+                    
           else
-            tr: td(colspan="8" style="text-align: center;") No records found.
+            tr: td(colspan="9" style="text-align: center;") No records found.
 
-  // ================= 2. SALES VARIANCE LEDGER ============
+  //- ================= 2. SALES VARIANCE LEDGER ============
   .recent-section.credit-section-margin
     h3 Active Sales Variance Ledger
     .table-responsive
@@ -88,7 +98,7 @@ block content
           else
             tr: td(colspan="6" style="text-align: center;") No inventory data available.
 
-  // ================= STYLES + SEARCH SCRIPT =================
+  //- ================= STYLES + SEARCH SCRIPT =================
   style.
     .batch-badge { background: #eef2ff; color: #4f46e5; padding: 4px 8px; border-radius: 6px; font-family: monospace; font-size: 0.8rem; }
     .danger-btn { background: #fee2e2; color: #dc2626; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; }
@@ -101,3 +111,12 @@ block content
         row.style.display = row.innerText.toLowerCase().includes(value) ? "" : "none";
       });
     });
+
+      setTimeout(() => {
+      const alerts = document.querySelectorAll('.alert');
+      alerts.forEach(alert => {
+        alert.style.transition = 'opacity 0.5s ease';
+        alert.style.opacity = '0';
+        setTimeout(() => alert.remove(), 500); //- Removes the element from the DOM after fading out
+      });
+    }, 5000); //- 5000 milliseconds = 5 seconds

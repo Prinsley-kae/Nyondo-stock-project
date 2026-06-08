@@ -1,21 +1,50 @@
 extends sales-layout
 
 block content
-  .page-header
-    h2 Generate Sales Report
-    p Use the filters below to select the reporting period.
+  //- ================= STYLES =================
+  style.
+    .input-error { border: 2px solid red !important; }
+    .error-msg { color: red; font-size: 12px; display: block; margin-top: 4px; margin-bottom: 10px; }
 
-  .report-card
-    form(action="/sales/generate-report" method="GET")
+  .page-header
+    h2 Generate & Save Sales Report
+    p Configure the date range to archive your sales summary.
+
+  .report-container
+    //- Added id="reportForm" and novalidate
+    form#reportForm.report-form(action="/sales/report-archive/pdf" method="post" novalidate)
+      .form-group
+        label(for="reportTitle") Report Title
+        input(type="text" name="reportTitle" placeholder="e.g. May 2026 Sales Summary" required)
       
       .form-group
-        label(for="startDate") Start Date:
-        input.form-control(type="date" name="startDate" required)
+        label(for="startDate") Start Date
+        input(type="date" name="startDate" required)
       
       .form-group
-        label(for="endDate") End Date:
-        input.form-control(type="date" name="endDate" required)
+        label(for="endDate") End Date
+        input(type="date" name="endDate" required)
       
       button.btn-report(type="submit")
-        i.fa-solid.fa-file-invoice
-        |  Generate Report
+        i.fa-solid.fa-file-pdf
+        |  Generate & Save Report
+
+  //- ================= SCRIPTS =================
+  script.
+    document.getElementById('reportForm').addEventListener('submit', function(event) {
+      let isValid = true;
+      const requiredFields = this.querySelectorAll('[required]');
+      
+      requiredFields.forEach(field => {
+        field.classList.remove('input-error');
+        if (!field.value || field.value.trim() === "") {
+          field.classList.add('input-error');
+          isValid = false;
+        }
+      });
+
+      if (!isValid) {
+        event.preventDefault();
+        alert("Please fill in all required fields highlighted in red.");
+      }
+    });
